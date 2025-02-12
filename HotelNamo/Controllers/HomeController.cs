@@ -23,6 +23,26 @@ namespace HotelNamo.Controllers
             return View();
         }
 
+        public IActionResult Rooms()
+        {
+            return View();
+        }
+        public IActionResult About()
+        {
+            return View();
+        }
+        public IActionResult Services()
+        {
+            return View();
+        }
+        public IActionResult Booking()
+        {
+            return View();
+        }
+        public IActionResult Payment()
+        {
+            return View();
+        }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

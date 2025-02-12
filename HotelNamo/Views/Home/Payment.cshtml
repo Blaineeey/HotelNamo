@@ -1,0 +1,237 @@
+﻿@{
+    ViewData["Title"] = "Payment Processing";
+}
+
+<link rel="stylesheet" href="/css/site.css">
+
+<div class="payment-container">
+    <h2>Payment Processing</h2>
+
+    <form id="paymentForm">
+        <div class="form-group">
+            <label for="paymentMethod">Payment Method:</label>
+            <select id="paymentMethod" name="PaymentMethod" onchange="updatePaymentForm()" required>
+                <option value="">Select Payment Method</option>
+                <option value="card">Credit Card</option>
+                <option value="bank">Bank Transfer</option>
+                <option value="wallet">Online Wallet</option>
+            </select>
+        </div>
+
+        <!-- Credit Card Fields -->
+        <div id="creditCardFields">
+            <div class="form-group">
+                <label for="cardNumber">Card Number:</label>
+                <input type="text" id="cardNumber" name="CardNumber" required placeholder="1234 5678 9012 3456" />
+            </div>
+            <div class="form-group">
+                <label for="cvc">CVC:</label>
+                <input type="text" id="cvc" name="CVC" required placeholder="123" />
+            </div>
+        </div>
+
+        <!-- Bank Transfer Fields -->
+        <div id="bankFields" style="display: none;">
+            <div class="form-group">
+                <label for="bankName">Bank Name:</label>
+                <input type="text" id="bankName" name="BankName" required placeholder="Enter bank name" />
+            </div>
+        </div>
+
+        <!-- Online Wallet Fields -->
+        <div id="walletFields" style="display: none;">
+            <div class="form-group">
+                <label for="walletProvider">Wallet Provider:</label>
+                <select id="walletProvider" name="WalletProvider" onchange="updateWalletFields()" required>
+                    <option value="">Select Wallet</option>
+                    <option value="gcash">GCash</option>
+                    <option value="paypal">PayPal</option>
+                </select>
+            </div>
+
+            <div id="gcashField" class="form-group" style="display: none;">
+                <label for="gcashNumber">GCash Phone Number:</label>
+                <input type="text" id="gcashNumber" name="GCashNumber" placeholder="Enter GCash number" />
+            </div>
+
+            <div id="paypalField" class="form-group" style="display: none;">
+                <label for="paypalEmail">PayPal Email:</label>
+                <input type="email" id="paypalEmail" name="PayPalEmail" placeholder="Enter PayPal email" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="amount">Amount:</label>
+            <input type="number" id="amount" name="Amount" required placeholder="Enter amount" />
+        </div>
+
+        <button type="button" class="pay-button" onclick="processPayment()">Pay Now</button>
+    </form>
+</div>
+
+<!-- Receipt Section -->
+<div id="receiptContainer" style="display: none; margin-top: 20px; border: 1px solid #ccc; padding: 15px;">
+    <h2>Payment Receipt</h2>
+    <p><strong>Transaction ID:</strong> <span id="receiptTransaction"></span></p>
+    <p><strong>Date:</strong> <span id="receiptDate"></span></p>
+    <p><strong>Payment Method:</strong> <span id="receiptPaymentMethod"></span></p>
+    <p><strong>Details:</strong> <span id="receiptDetails"></span></p>
+    <p><strong>Amount Paid:</strong> $<span id="receiptAmount"></span></p>
+    <button onclick="downloadReceipt()">Download Receipt</button>
+</div>
+
+<script>
+    function updatePaymentForm() {
+        var paymentMethod = document.getElementById("paymentMethod").value;
+
+        document.getElementById("creditCardFields").style.display = paymentMethod === "card" ? "block" : "none";
+        document.getElementById("bankFields").style.display = paymentMethod === "bank" ? "block" : "none";
+        document.getElementById("walletFields").style.display = paymentMethod === "wallet" ? "block" : "none";
+
+        document.getElementById("walletProvider").value = "";
+        document.getElementById("gcashField").style.display = "none";
+        document.getElementById("paypalField").style.display = "none";
+    }
+
+    function updateWalletFields() {
+        var walletProvider = document.getElementById("walletProvider").value;
+
+        document.getElementById("gcashField").style.display = walletProvider === "gcash" ? "block" : "none";
+        document.getElementById("paypalField").style.display = walletProvider === "paypal" ? "block" : "none";
+    }
+
+    function processPayment() {
+        var paymentMethod = document.getElementById("paymentMethod").value;
+        var amount = document.getElementById("amount").value;
+
+        if (!paymentMethod || !amount) {
+            alert("Please fill in all required fields.");
+            return;
+        }
+
+        var details = "";
+        if (paymentMethod === "card") {
+            details = "Card ending in ****" + document.getElementById("cardNumber").value.slice(-4);
+        } else if (paymentMethod === "bank") {
+            details = "Bank: " + document.getElementById("bankName").value;
+        } else if (paymentMethod === "wallet") {
+            var walletProvider = document.getElementById("walletProvider").value;
+            if (walletProvider === "gcash") {
+                details = "GCash: " + document.getElementById("gcashNumber").value;
+            } else if (walletProvider === "paypal") {
+                details = "PayPal: " + document.getElementById("paypalEmail").value;
+            }
+        }
+
+        var transactionID = "TXN" + Math.floor(100000 + Math.random() * 900000); // Random Transaction ID
+        var date = new Date().toLocaleString();
+
+        document.getElementById("receiptTransaction").innerText = transactionID;
+        document.getElementById("receiptDate").innerText = date;
+        document.getElementById("receiptPaymentMethod").innerText = paymentMethod;
+        document.getElementById("receiptDetails").innerText = details;
+        document.getElementById("receiptAmount").innerText = amount;
+
+        document.getElementById("receiptContainer").style.display = "block";
+    }
+
+    function downloadReceipt() {
+        var transactionID = document.getElementById("receiptTransaction").innerText;
+        var date = document.getElementById("receiptDate").innerText;
+        var paymentMethod = document.getElementById("receiptPaymentMethod").innerText;
+        var details = document.getElementById("receiptDetails").innerText;
+        var amount = document.getElementById("receiptAmount").innerText;
+
+        var receiptText = `Payment Receipt\n
+        Transaction ID: ${transactionID}\n
+        Date: ${date}\n
+        Payment Method: ${paymentMethod}\n
+        Details: ${details}\n
+        Amount Paid: $${amount}\n`;
+
+        var blob = new Blob([receiptText], { type: "text/plain" });
+        var link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "receipt.txt";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+</script>
+
+<!-- Include jsPDF Library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script>
+    function processPayment() {
+        var paymentMethod = document.getElementById("paymentMethod").value;
+        var amount = document.getElementById("amount").value;
+
+        if (!paymentMethod || !amount) {
+            alert("Please fill in all required fields.");
+            return;
+        }
+
+        var details = "";
+        if (paymentMethod === "card") {
+            details = "Card ending in ****" + document.getElementById("cardNumber").value.slice(-4);
+        } else if (paymentMethod === "bank") {
+            details = "Bank: " + document.getElementById("bankName").value;
+        } else if (paymentMethod === "wallet") {
+            var walletProvider = document.getElementById("walletProvider").value;
+            if (walletProvider.toLowerCase() === "gcash") {
+                details = "GCash: " + document.getElementById("walletID").value;
+            } else if (walletProvider.toLowerCase() === "paypal") {
+                details = "PayPal: " + document.getElementById("walletID").value;
+            } else {
+                details = "Wallet: " + document.getElementById("walletID").value;
+            }
+        }
+
+        var transactionID = "TXN" + Math.floor(100000 + Math.random() * 900000); // Random Transaction ID
+        var date = new Date().toLocaleString();
+
+        generatePDF(transactionID, date, paymentMethod, details, amount);
+    }
+
+    function generatePDF(transactionID, date, paymentMethod, details, amount) {
+        var { jsPDF } = window.jspdf;
+        var doc = new jsPDF();
+
+        // Set up company branding
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(20);
+        doc.text("Company Name", 20, 20); // Replace with your company name
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "normal");
+        doc.text("123 Business Street, City, Country", 20, 30);
+        doc.text("Email: tagabukid@company.com | Phone: +63 9127 981274", 20, 40);
+        doc.line(20, 45, 190, 45); // Divider Line
+
+        // Transaction Details
+        doc.setFont("helvetica", "bold");
+        doc.text("Payment Receipt", 20, 55);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(10);
+        doc.text("Transaction ID: " + transactionID, 20, 65);
+        doc.text("Date: " + date, 20, 75);
+        doc.text("Payment Method: " + paymentMethod.toUpperCase(), 20, 85);
+        doc.text("Details: " + details, 20, 95);
+
+        // Table for amount details
+        doc.setFont("helvetica", "bold");
+        doc.text("Amount Paid", 20, 110);
+        doc.setFont("helvetica", "normal");
+        doc.rect(20, 115, 170, 10); // Table Border
+        doc.text("Amount: $" + amount, 25, 122);
+
+        // Footer
+        doc.line(20, 140, 190, 140); // Divider Line
+        doc.setFontSize(9);
+        doc.text("Thank you for your payment!", 20, 150);
+        doc.text("If you have any questions, contact us at support@company.com", 20, 160);
+
+        // Save the PDF
+        doc.save("Receipt_" + transactionID + ".pdf");
+    }
+</script>
