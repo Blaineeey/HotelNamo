@@ -4,15 +4,24 @@
 @{
     ViewData["Title"] = "Rooms";
 }
+<link rel="stylesheet" href="/css/rooms.css">
+
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <h1 class="display-4">Welcome to HotelNamo</h1>
+    <p>Book a comfortable stay with us.</p>
 </div>
 
 <section class="rooms">
     <h2 class="text-center">Our Rooms</h2>
+    <div class="categories text-center">
+        <button class="filter-btn" onclick="filterRooms('all')">All</button>
+        <button class="filter-btn" onclick="filterRooms('superior')">Superior Room</button>
+        <button class="filter-btn" onclick="filterRooms('deluxe')">Deluxe Room</button>
+        <button class="filter-btn" onclick="filterRooms('guest')">Guest Room</button>
+        <button class="filter-btn" onclick="filterRooms('single')">Single Room</button>
+    </div>
     <div class="room-container">
-        <div class="room-card">
+        <div class="room-card superior">
             <img src="/images/superior-room.jpg" alt="Superior Room">
             <h3>Superior Room</h3>
             <div class="icons">
@@ -20,7 +29,7 @@
             </div>
             <button class="book-btn">Book</button>
         </div>
-        <div class="room-card">
+        <div class="room-card deluxe">
             <img src="/images/deluxe-room.jpg" alt="Deluxe Room">
             <h3>Deluxe Room</h3>
             <div class="icons">
@@ -28,7 +37,7 @@
             </div>
             <button class="book-btn">Book</button>
         </div>
-        <div class="room-card">
+        <div class="room-card guest">
             <img src="/images/guest-room.jpg" alt="Guest Room">
             <h3>Guest Room</h3>
             <div class="icons">
@@ -36,7 +45,7 @@
             </div>
             <button class="book-btn">Book</button>
         </div>
-        <div class="room-card">
+        <div class="room-card single">
             <img src="/images/single-room.jpg" alt="Single Room">
             <h3>Single Room</h3>
             <div class="icons">
@@ -47,50 +56,15 @@
     </div>
 </section>
 
-<style>
-    .rooms {
-        padding: 2rem;
-        background: #f8f9fa;
+<script>
+    function filterRooms(category) {
+        let rooms = document.querySelectorAll('.room-card');
+        rooms.forEach(room => {
+            if (category === 'all' || room.classList.contains(category)) {
+                room.style.display = 'block';
+            } else {
+                room.style.display = 'none';
+            }
+        });
     }
-
-    .room-container {
-        display: flex;
-        justify-content: center;
-        gap: 20px;
-        flex-wrap: wrap;
-    }
-
-    .room-card {
-        background: #121212;
-        color: white;
-        border-radius: 10px;
-        overflow: hidden;
-        text-align: center;
-        padding: 15px;
-        width: 250px;
-    }
-
-        .room-card img {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-        }
-
-    .icons {
-        font-size: 1.5rem;
-        margin: 10px 0;
-    }
-
-    .book-btn {
-        background: blue;
-        color: white;
-        border: none;
-        padding: 10px 15px;
-        cursor: pointer;
-        border-radius: 5px;
-    }
-
-        .book-btn:hover {
-            background: darkblue;
-        }
-</style>
+</script>
