@@ -1,108 +1,122 @@
-﻿using HotelNamo.Models;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using HotelNamo.Models;
+using System.Threading.Tasks;
 
-namespace HotelNamo.Controllers
+public class AccountController : Controller
 {
-    public class AccountController : Controller
+    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly SignInManager<ApplicationUser> _signInManager;
+    private readonly RoleManager<IdentityRole> _roleManager;
+
+    public AccountController(UserManager<ApplicationUser> userManager,
+                             SignInManager<ApplicationUser> signInManager,
+                             RoleManager<IdentityRole> roleManager)
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
+        _userManager = userManager;
+        _signInManager = signInManager;
+        _roleManager = roleManager;
+    }
 
-        public AccountController(UserManager<ApplicationUser> userManager,
-                                 SignInManager<ApplicationUser> signInManager,
-                                 RoleManager<IdentityRole> roleManager)
-        {
-            _userManager = userManager;
-            _signInManager = signInManager;
-            _roleManager = roleManager;
-        }
+    [HttpGet]
+    public IActionResult Register()
+    {
+        return View();
+    }
 
-        // Register Action (GET)
-        public async Task<IActionResult> Register()
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Register(RegisterViewModel model)
+    {
+        if (!ModelState.IsValid)
         {
-            var model = new RegisterViewModel();
+            TempData["Error"] = "⚠️ Please fill in all required fields.";
             return View(model);
         }
 
-        // Register Action (POST)
-        [HttpPost]
-        public async Task<IActionResult> Register(RegisterViewModel model)
+        if (model.Password != model.ConfirmPassword)
         {
-            if (ModelState.IsValid)
+            TempData["Error"] = "⚠️ Passwords do not match.";
+            return View(model);
+        }
+
+        var user = new ApplicationUser
+        {
+            UserName = model.Email,
+            Email = model.Email,
+            FirstName = model.FirstName,
+            LastName = model.LastName
+        };
+
+        var result = await _userManager.CreateAsync(user, model.Password);
+        if (result.Succeeded)
+        {
+            if (!await _roleManager.RoleExistsAsync("User"))
             {
-                // Create a new user from the model
-                var user = new ApplicationUser
-                {
-                    UserName = model.Email,
-                    Email = model.Email,
-                    FirstName = model.FirstName,
-                    LastName = model.LastName
-                };
-
-                // Attempt to create the user with the provided password
-                var result = await _userManager.CreateAsync(user, model.Password);
-
-                if (result.Succeeded)
-                {
-                    // Automatically assign the "User" role
-                    await _userManager.AddToRoleAsync(user, "User");
-
-                    // Sign in the user
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                    return RedirectToAction("Index", "Home"); // Redirect to the home page after successful registration
-                }
-
-                // Add errors to the ModelState if the user creation fails
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, error.Description);
-                }
+                await _roleManager.CreateAsync(new IdentityRole("User"));
             }
 
-            // Return the model back to the view in case of failure
+            await _userManager.AddToRoleAsync(user, "User");
+            await _signInManager.SignInAsync(user, isPersistent: false);
+
+            return RedirectToAction("UserHome", "User");
+        }
+
+        TempData["Error"] = string.Join("\n", result.Errors.Select(e => e.Description));
+        return View(model);
+    }
+
+    [HttpGet]
+    public IActionResult Login()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Login(LoginViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            TempData["Error"] = "⚠️ Please fill in all required fields.";
             return View(model);
         }
 
-        // Login Action (GET)
-        public IActionResult Login()
+        var user = await _userManager.FindByEmailAsync(model.Email);
+        if (user == null)
         {
-            return View();
+            TempData["Error"] = "⚠️ Invalid email or password.";
+            return View(model);
         }
 
-        // Login Action (POST)
-        [HttpPost]
-        public async Task<IActionResult> Login(LoginViewModel model)
+        var result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, lockoutOnFailure: false);
+        if (result.Succeeded)
         {
-            if (ModelState.IsValid)
+            if (await _userManager.IsInRoleAsync(user, "Admin"))
             {
-                var user = await _userManager.FindByEmailAsync(model.Email);
-                if (user != null)
-                {
-                    var result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, false);
-                    if (result.Succeeded)
-                    {
-                        return RedirectToAction("Index", "Home"); // Redirect to the home page if login is successful
-                    }
-
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-                }
-                else
-                {
-                    ModelState.AddModelError(string.Empty, "User not found.");
-                }
+                return RedirectToAction("AdminHome", "Home");
             }
-
-            return View(model);
+            else if (await _userManager.IsInRoleAsync(user, "User"))
+            {
+                return RedirectToAction("UserHome", "User");
+            }
         }
 
-        // Logout Action
-        public async Task<IActionResult> Logout()
-        {
-            await _signInManager.SignOutAsync();
-            return RedirectToAction("Index", "Home");
-        }
+        TempData["Error"] = "⚠️ Invalid email or password.";
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Logout()
+    {
+        await _signInManager.SignOutAsync();
+        return RedirectToAction("Login", "Account");
+    }
+
+    [HttpGet]
+    public IActionResult AccessDenied()
+    {
+        return View();
     }
 }

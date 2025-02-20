@@ -1,100 +1,72 @@
-using HotelNamo.Models;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Set up the connection to SQL Server
+// Database connection
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(connectionString));
 
-// Set up Identity with ApplicationUser
+// Add Identity without UI
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
-// Add services to the container.
+// Add MVC services
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseDeveloperExceptionPage();
-}
-else
-{
-    app.UseExceptionHandler("/Home/Error");
-
-    app.UseHsts();
-}
-
-app.UseHttpsRedirection();
-app.UseStaticFiles();
-
-app.UseRouting();
-
-app.UseAuthentication();  // Add this to enable authentication
-app.UseAuthorization();
-
-// Seed roles and admin user if not already seeded
+// Ensure roles exist before running
 using (var scope = app.Services.CreateScope())
 {
-    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-
-    try
-    {
-        // Create roles if they don't exist
-        var roles = new[] { "Admin", "User" };
-        foreach (var role in roles)
-        {
-            var roleExists = await roleManager.RoleExistsAsync(role);
-            if (!roleExists)
-            {
-                await roleManager.CreateAsync(new IdentityRole(role));
-                logger.LogInformation($"Role {role} created.");
-            }
-        }
-
-        // Create admin user if it doesn't exist
-        var adminUser = await userManager.FindByEmailAsync("admin@user.com");
-        if (adminUser == null)
-        {
-            var user = new ApplicationUser
-            {
-                UserName = "admin@user.com",
-                Email = "admin@user.com",
-                FirstName = "Admin",
-                LastName = "User"
-            };
-            var result = await userManager.CreateAsync(user, "Admin123");
-
-            if (result.Succeeded)
-            {
-                await userManager.AddToRoleAsync(user, "Admin");
-                logger.LogInformation("Admin user created and assigned to Admin role.");
-            }
-            else
-            {
-                logger.LogError("Failed to create admin user.");
-            }
-        }
-        else
-        {
-            logger.LogInformation("Admin user already exists.");
-        }
-    }
-    catch (Exception ex)
-    {
-        logger.LogError(ex, "An error occurred during the seeding process.");
-    }
+    var services = scope.ServiceProvider;
+    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+    var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+    await SeedRolesAndAdmin(roleManager, userManager);
 }
 
+// Middleware
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();
+
+// Default MVC route
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
+
+// 🔥 Method to Seed Roles & Admin User
+async Task SeedRolesAndAdmin(RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager)
+{
+    string[] roleNames = { "Admin", "Manager", "User" };
+
+    foreach (var roleName in roleNames)
+    {
+        if (!await roleManager.RoleExistsAsync(roleName))
+        {
+            await roleManager.CreateAsync(new IdentityRole(roleName));
+        }
+    }
+
+    // Seed admin user
+    string adminEmail = "admin@example.com";
+    string adminPassword = "Admin@123";
+
+    if (await userManager.FindByEmailAsync(adminEmail) == null)
+    {
+        var adminUser = new ApplicationUser { UserName = adminEmail, Email = adminEmail };
+        var result = await userManager.CreateAsync(adminUser, adminPassword);
+
+        if (result.Succeeded)
+        {
+            await userManager.AddToRoleAsync(adminUser, "Admin");
+        }
+    }
+}

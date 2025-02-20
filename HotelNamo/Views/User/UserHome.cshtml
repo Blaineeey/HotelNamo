@@ -1,0 +1,16 @@
+﻿@model ApplicationUser
+@{
+    ViewData["Title"] = "User Dashboard";
+}
+
+<h2>User Dashboard</h2>
+<p>Book rooms and manage your reservations here.</p>
+
+<div>
+    <p><strong>Username:</strong> @Model.UserName</p>
+    <p><strong>Email:</strong> @Model.Email</p>
+</div>
+
+<form method="post" asp-action="Logout" asp-controller="User">
+    <button type="submit" class="btn btn-danger">Logout</button>
+</form>

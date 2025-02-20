@@ -1,28 +1,23 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace HotelNamo.Models
+public class RegisterViewModel
 {
-    public class RegisterViewModel
-    {
-        [Required]
-        public string FirstName { get; set; }
+    [Required]
+    [EmailAddress]
+    public string Email { get; set; }
 
-        [Required]
-        public string LastName { get; set; }
+    [Required]
+    [DataType(DataType.Password)]
+    public string Password { get; set; }
 
-        [Required]
-        [EmailAddress]
-        public string Email { get; set; }
+    [Required]
+    [DataType(DataType.Password)]
+    [Compare("Password", ErrorMessage = "Passwords do not match.")]
+    public string ConfirmPassword { get; set; }
 
-        [Required]
-        [DataType(DataType.Password)]
-        public string Password { get; set; }
+    [Required]
+    public string FirstName { get; set; }
 
-        [Required]
-        [DataType(DataType.Password)]
-        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
-        public string ConfirmPassword { get; set; }
-
-        public string Role { get; set; }
-    }
+    [Required]
+    public string LastName { get; set; }
 }
