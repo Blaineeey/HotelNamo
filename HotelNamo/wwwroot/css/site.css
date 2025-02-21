@@ -8,7 +8,8 @@ html {
     }
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, 
+.form-control:focus, .form-check-input:focus {
     box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
@@ -32,51 +33,52 @@ body {
     text-align: center;
 }
 
-    .payment-container h2 {
-        color: #333;
-        margin-bottom: 20px;
-    }
+.payment-container h2 {
+    color: #333;
+    margin-bottom: 20px;
+}
 
-    .payment-container .form-group {
-        margin-bottom: 15px;
-        text-align: left;
-    }
+.payment-container .form-group {
+    margin-bottom: 15px;
+    text-align: left;
+}
 
-    .payment-container label {
-        display: block;
-        font-weight: bold;
-        margin-bottom: 5px;
-    }
+.payment-container label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
 
-    .payment-container input,
-    .payment-container select {
-        width: 100%;
-        padding: 10px;
-        font-size: 14px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-    }
+.payment-container input,
+.payment-container select {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
 
-    .payment-container .form-row {
-        display: flex;
-        gap: 10px;
-    }
+.payment-container .form-row {
+    display: flex;
+    gap: 10px;
+}
 
-        .payment-container .form-row .form-group {
-            flex: 1;
-        }
+.payment-container .form-row .form-group {
+    flex: 1;
+}
 
-    .payment-container .pay-button {
-        background-color: #258cfb;
-        color: white;
-        border: none;
-        padding: 12px;
-        width: 100%;
-        font-size: 16px;
-        border-radius: 5px;
-        cursor: pointer;
-    }
+.payment-container .pay-button {
+    background-color: #258cfb;
+    color: white;
+    border: none;
+    padding: 12px;
+    width: 100%;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+}
 
-        .payment-container .pay-button:hover {
-            background-color: #1a6ed8;
-        }
+.payment-container .pay-button:hover {
+    background-color: #1a6ed8;
+}
