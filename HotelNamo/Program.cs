@@ -56,12 +56,15 @@ async Task SeedRolesAndAdmin(RoleManager<IdentityRole> roleManager, UserManager<
     }
 
     // Seed admin user
+    string adminFirstName = "Admin";
+    string adminLastName = "User";
     string adminEmail = "admin@example.com";
     string adminPassword = "Admin@123";
+    string adminRole = "Admin";
 
     if (await userManager.FindByEmailAsync(adminEmail) == null)
     {
-        var adminUser = new ApplicationUser { UserName = adminEmail, Email = adminEmail };
+        var adminUser = new ApplicationUser { UserName = adminEmail, Email = adminEmail, FirstName = adminFirstName, LastName = adminLastName, Role = adminRole};
         var result = await userManager.CreateAsync(adminUser, adminPassword);
 
         if (result.Succeeded)
