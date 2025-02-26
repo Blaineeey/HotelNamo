@@ -1,2 +1,92 @@
-﻿<h2>Admin Dashboard</h2>
-<p>Manage hotel bookings, rooms, and users here.</p>
+﻿@{
+	Layout = "_Layout2"; 
+}
+
+<!DOCTYPE html>
+
+<html class="no-js">
+ <!--<![endif]-->
+<head>
+	<meta charset="utf-8">
+	<title>Montana</title>
+	<meta name="description" content="">
+	<!-- Mobile Specific Meta -->
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<!-- <link rel="shortcut icon" href="img/favicon.png"> -->
+
+	<link href='http://fonts.googleapis.com/css?family=Lato:300,400,700' rel='stylesheet'>
+
+	<!-- Syntax Highlighter -->
+	<link rel="stylesheet" type="text/css" href="~/syntax-highlighter/styles/shCore.css" media="all">
+	<link rel="stylesheet" type="text/css" href="~/syntax-highlighter/styles/shThemeDefault.css" media="all">
+
+	<!-- Font Awesome CSS-->
+	<link rel="stylesheet" href="~/css/font-awesome.min.css">
+	<!-- Normalize/Reset CSS-->
+	<link rel="stylesheet" href="~/css/normalize.min.css">
+	<!-- Main CSS-->
+	<link rel="stylesheet" href="~/css/main.css">
+
+</head>
+
+<body id="welcome">
+
+	<aside class="left-sidebar">
+		<div class="logo">
+			<a href="#welcome">
+				<h1>HotelNamo</h1>
+			</a>
+		</div>
+		<nav class="left-nav">
+			<ul id="nav">
+				<li class="current"><a href="#accounts">Accounts Management</a></li>
+				<li><a href="#rooms">Rooms Management</a></li>
+				<li><a href="#bookings">Booking History</a></li>
+			</ul>
+		</nav>
+	</aside>
+
+	<div id="main-wrapper">
+		<div class="main-content">
+			<section id="accounts">
+				<div class="content-header">
+					<h1>Accounts</h1>
+				</div>
+			</section>
+
+			<section id="rooms">
+				<div class="content-header">
+					<h1>Rooms</h1>
+				</div>
+			</section>
+
+
+			<section id="bookings">
+				<div class="content-header">
+					<h1>Bookings</h1>
+				</div>
+			</section>
+
+
+
+		</div>
+	</div>
+
+
+	<!-- Essential JavaScript Libraries
+		==============================================-->
+	<script type="text/javascript" src="~/js/jquery-1.11.0.min.js"></script>
+	<script type="text/javascript" src="~/js/jquery.nav.js"></script>
+	<script type="text/javascript" src="~/syntax-highlighter/scripts/shCore.js"></script>
+	<script type="text/javascript" src="~/syntax-highlighter/scripts/shBrushXml.js"></script>
+	<script type="text/javascript" src="~/syntax-highlighter/scripts/shBrushCss.js"></script>
+	<script type="text/javascript" src="~/syntax-highlighter/scripts/shBrushJScript.js"></script>
+	<script type="text/javascript" src="~/syntax-highlighter/scripts/shBrushPhp.js"></script>
+	<script type="text/javascript">
+		SyntaxHighlighter.all()
+	</script>
+	<script type="text/javascript" src="~/js/custom.js"></script>
+
+</body>
+</html>
