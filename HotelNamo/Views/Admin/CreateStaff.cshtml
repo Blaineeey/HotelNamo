@@ -1,39 +1,41 @@
-﻿@model HotelNamo.Models.CreateStaffViewModel
+﻿@model CreateStaffViewModel
 @{
-    ViewData["Title"] = "Create Staff User";
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Create Staff Account";
 }
 
-<h2>Create Staff User</h2>
-
-<!-- Display all validation errors (e.g., from Identity) -->
+<h2>Create Staff Account</h2>
 <div asp-validation-summary="All" class="text-danger"></div>
 
 <form asp-action="CreateStaff" method="post">
-    <div class="form-group">
+    <div class="mb-3">
         <label asp-for="FirstName"></label>
         <input asp-for="FirstName" class="form-control" />
         <span asp-validation-for="FirstName" class="text-danger"></span>
     </div>
-    <div class="form-group">
+    <div class="mb-3">
         <label asp-for="LastName"></label>
         <input asp-for="LastName" class="form-control" />
         <span asp-validation-for="LastName" class="text-danger"></span>
     </div>
-    <div class="form-group">
+    <div class="mb-3">
         <label asp-for="Email"></label>
         <input asp-for="Email" class="form-control" />
         <span asp-validation-for="Email" class="text-danger"></span>
     </div>
-    <div class="form-group">
+    <div class="mb-3">
         <label asp-for="Password"></label>
-        <input asp-for="Password" class="form-control" />
+        <input asp-for="Password" class="form-control" type="password" />
         <span asp-validation-for="Password" class="text-danger"></span>
     </div>
-    <div class="form-group">
-        <label>Role</label>
-        <select asp-for="SelectedRole" class="form-control"
-                asp-items="@(new SelectList(Model.AvailableRoles))">
-        </select>
+    <div class="mb-3">
+        <label asp-for="SelectedRole">Role</label>
+        <input asp-for="SelectedRole" class="form-control" />
+        <small class="form-text text-muted">
+            Possible roles: Admin, FrontDesk, Housekeeping, User, etc.
+        </small>
+        <span asp-validation-for="SelectedRole" class="text-danger"></span>
     </div>
+
     <button type="submit" class="btn btn-primary">Create</button>
 </form>

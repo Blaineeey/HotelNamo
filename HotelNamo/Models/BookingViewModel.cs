@@ -1,0 +1,7 @@
+﻿public class BookingViewModel
+{
+    public int RoomId { get; set; }
+    public DateTime CheckInDate { get; set; }
+    public DateTime CheckOutDate { get; set; }
+    // No UserId property
+}

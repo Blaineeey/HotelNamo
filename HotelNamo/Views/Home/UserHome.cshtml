@@ -1,5 +1,12 @@
 ﻿@{
+    Layout = "_UserLayout";
     ViewData["Title"] = "User Home";
 }
-<h2>Welcome, User!</h2>
-<p>This is the user dashboard.</p>
+
+<h2>User Dashboard</h2>
+<p>Welcome to your user dashboard! From here, you can:</p>
+<ul>
+    <li><a asp-controller="Booking" asp-action="MyBookings">View My Bookings</a></li>
+    <li><a asp-controller="Room" asp-action="Index">Browse More Rooms</a></li>
+    <li><a asp-controller="Account" asp-action="Logout">Logout</a></li>
+</ul>

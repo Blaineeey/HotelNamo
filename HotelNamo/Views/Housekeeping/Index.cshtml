@@ -1,0 +1,41 @@
+﻿@model IEnumerable<HotelNamo.Models.HousekeepingTask>
+@{
+    Layout = "_AdminLayout"; // Use your staff/admin layout
+    ViewData["Title"] = "Housekeeping Dashboard";
+}
+
+<h2>Housekeeping Tasks</h2>
+<p>Schedule and track room cleaning or maintenance requests here.</p>
+
+<a asp-action="Create" class="btn btn-primary mb-3">Add Housekeeping Task</a>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Room</th>
+            <th>Description</th>
+            <th>Scheduled Time</th>
+            <th>Completed</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var task in Model)
+        {
+            <tr>
+                <td>@(task.Room?.RoomNumber ?? "N/A")</td>
+                <td>@task.Description</td>
+                <td>@task.ScheduledTime.ToString("g")</td>
+                <td>@(task.IsCompleted ? "Yes" : "No")</td>
+                <td>
+                    @if (!task.IsCompleted)
+                    {
+                        <a asp-action="Complete" asp-route-id="@task.Id" class="btn btn-sm btn-success">
+                            Mark Complete
+                        </a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

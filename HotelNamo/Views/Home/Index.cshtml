@@ -1,17 +1,27 @@
-﻿@*
-    Views/Home/Index.cshtml
-*@
-@{
+﻿@{
+    Layout = "_UserLayout";
     ViewData["Title"] = "Welcome to HotelNamo";
 }
 
-<div class="jumbotron text-center" style="background: url('/images/landing-bg.jpg') no-repeat center center; background-size: cover; height: 100vh;">
-    <div class="container" style="padding-top: 20vh;">
-        <h1 class="display-4 text-white">HotelNamo</h1>
-        <p class="lead text-white">Effortless hotel room reservation and management</p>
+<div class="jumbotron text-center">
+    <h1 class="display-4">Welcome to HotelNamo</h1>
+    <p class="lead">Experience comfort and luxury at an affordable price.</p>
+    <hr class="my-4" />
+    <p>Check out our rooms or log in to manage your bookings.</p>
+    <a class="btn btn-primary btn-lg" asp-controller="UserRoom" asp-action="Index">View Rooms</a>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <img src="~/img/hotel-lobby.jpg" class="img-fluid" alt="Hotel Lobby" />
+    </div>
+    <div class="col-md-6 d-flex flex-column justify-content-center">
+        <h2>About Us</h2>
         <p>
-            <a href="/Account/Login" class="btn btn-primary btn-lg">Login</a>
-            <a href="/Account/Register" class="btn btn-secondary btn-lg">Register</a>
+            HotelNamo is your home away from home. Enjoy our deluxe, suite,
+            and standard rooms for all types of travelers. Our friendly staff
+            and modern amenities ensure a wonderful stay.
         </p>
+        <a class="btn btn-outline-secondary" asp-controller="Home" asp-action="About">Learn More</a>
     </div>
 </div>

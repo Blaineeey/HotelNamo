@@ -49,22 +49,23 @@ public class AdminController : Controller
     }
 
 
+    [Authorize(Roles = "Admin")]
     [HttpGet]
     public IActionResult CreateStaff()
     {
-        Console.WriteLine("DEBUG: CreateStaff GET method called!");
-        var model = new CreateStaffViewModel
-        {
-            AvailableRoles = new List<string> { "FrontDesk", "Housekeeping" }
-        };
-        return View(model);
+        // No dynamic roles, just a text input for the role
+        return View();
     }
 
     [HttpPost]
     public async Task<IActionResult> CreateStaff(CreateStaffViewModel model)
     {
-        if (!ModelState.IsValid) return View(model);
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
 
+        // 1. Create the user
         var user = new ApplicationUser
         {
             FirstName = model.FirstName,
@@ -74,21 +75,43 @@ public class AdminController : Controller
         };
 
         var result = await _userManager.CreateAsync(user, model.Password);
-        if (result.Succeeded)
+        if (!result.Succeeded)
         {
-            if (!string.IsNullOrEmpty(model.SelectedRole))
+            // Show identity errors
+            foreach (var error in result.Errors)
             {
-                await _userManager.AddToRoleAsync(user, model.SelectedRole);
+                ModelState.AddModelError("", error.Description);
             }
-            return RedirectToAction("Index");
+            return View(model);
         }
 
-        // If we got here, something failed
-        foreach (var error in result.Errors)
+        // 2. Validate the typed role
+        if (!string.IsNullOrEmpty(model.SelectedRole))
         {
-            ModelState.AddModelError("", error.Description);
+            bool roleExists = await _roleManager.RoleExistsAsync(model.SelectedRole);
+            if (!roleExists)
+            {
+                // If the typed role doesn't exist, show an error
+                ModelState.AddModelError("SelectedRole", $"Role '{model.SelectedRole}' does not exist.");
+                // Optionally delete the newly created user or handle differently
+                // await _userManager.DeleteAsync(user);
+                return View(model);
+            }
+            else
+            {
+                // 3. Assign the typed role
+                await _userManager.AddToRoleAsync(user, model.SelectedRole);
+            }
         }
-        return View(model);
+        else
+        {
+            // If no role typed, you could default to "User" or show an error
+            ModelState.AddModelError("SelectedRole", "Please enter a role.");
+            // Optionally delete the user or handle differently
+            return View(model);
+        }
+
+        return RedirectToAction("ListUsers");
     }
 
 
@@ -113,6 +136,29 @@ public class AdminController : Controller
         _context.Rooms.Add(model);
         await _context.SaveChangesAsync();
         return RedirectToAction("RoomList");
+    }
+    [Authorize(Roles = "Admin,FrontDesk")]
+    public IActionResult AllBookings()
+    {
+        // Example: show all bookings, or only unconfirmed if you want
+        var allBookings = _context.Bookings
+            .Include(b => b.Room)
+            .Include(b => b.User)
+            .OrderByDescending(b => b.Id)
+            .ToList();
+
+        return View(allBookings);
+    }
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> ConfirmBooking(int bookingId)
+    {
+        var booking = await _context.Bookings.FindAsync(bookingId);
+        if (booking == null) return NotFound();
+
+        booking.IsConfirmed = true;
+        await _context.SaveChangesAsync();
+
+        return RedirectToAction("AllBookings");
     }
 
 }

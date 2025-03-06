@@ -33,18 +33,33 @@ namespace HotelNamo.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
+            var result = await _signInManager.PasswordSignInAsync(
+                model.Email,
+                model.Password,
+                model.RememberMe,
+                lockoutOnFailure: false
+            );
+
             if (result.Succeeded)
             {
                 // Retrieve user to check roles
                 var user = await _userManager.FindByEmailAsync(model.Email);
                 var roles = await _userManager.GetRolesAsync(user);
 
-                // Redirect based on role
                 if (roles.Contains("Admin"))
+                {
                     return RedirectToAction("AdminHome", "Home");
+                }
+                else if (roles.Contains("FrontDesk"))
+                {
+                    return RedirectToAction("Bookings", "FrontDesk");
+                }
                 else
+                {
+                    // normal user => user home
                     return RedirectToAction("UserHome", "Home");
+                }
+
             }
 
             ModelState.AddModelError("", "Invalid login attempt.");

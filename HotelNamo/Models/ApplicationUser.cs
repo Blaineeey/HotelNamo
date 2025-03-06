@@ -6,7 +6,7 @@ namespace HotelNamo.Models
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public string Preferences { get; set; } // e.g. "Non-smoking, near elevator"
+        public string Preferences { get; set; } = ""; // e.g. "Non-smoking, near elevator"
                                                 // etc.
     }
 

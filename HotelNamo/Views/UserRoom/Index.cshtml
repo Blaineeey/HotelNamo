@@ -1,0 +1,43 @@
+﻿@model List<HotelNamo.Models.Room>
+@{
+    Layout = "_UserLayout"; // or whichever user layout you have
+    ViewData["Title"] = "Available Rooms";
+}
+
+<h2>Available Rooms</h2>
+<p>Below are all rooms currently vacant.</p>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Room Number</th>
+            <th>Category</th>
+            <th>Price</th>
+            <th>Status</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var room in Model)
+        {
+            <tr>
+                <td>@room.RoomNumber</td>
+                <td>@room.Category</td>
+                <td>$@room.Price</td>
+                <td>@room.Status</td>
+                <td>
+                    <!-- If you want a details page -->
+                    <a asp-action="Details" asp-route-id="@room.Id" class="btn btn-sm btn-secondary">View</a>
+
+                    <!-- "Book Now" calls the BookingController's Create action -->
+                    <!-- If user isn't logged in, they'll be prompted to login. -->
+                    <a asp-action="Create" asp-controller="Booking"
+                       asp-route-roomId="@room.Id"
+                       class="btn btn-sm btn-primary">
+                        Book Now
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,17 @@
+﻿@model HotelNamo.Models.Room
+@{
+    Layout = "_UserLayout";
+    ViewData["Title"] = "Room Details";
+}
+
+<h2>Room @Model.RoomNumber</h2>
+<p><strong>Category:</strong> @Model.Category</p>
+<p><strong>Price:</strong> $@Model.Price</p>
+<p><strong>Status:</strong> @Model.Status</p>
+
+<!-- "Book Now" link to BookingController with the roomId -->
+<a asp-action="Create" asp-controller="Booking"
+   asp-route-roomId="@Model.Id"
+   class="btn btn-primary">
+    Book Now
+</a>

@@ -1,0 +1,30 @@
+﻿@model IEnumerable<HotelNamo.Models.MaintenanceRequest>
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Maintenance Requests";
+}
+
+<h2>Maintenance Requests</h2>
+<a asp-action="Create" class="btn btn-primary mb-3">New Request</a>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Room</th>
+            <th>Issue</th>
+            <th>Request Date</th>
+            <th>Resolved</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var req in Model)
+        {
+            <tr>
+                <td>@(req.Room != null ? req.Room.RoomNumber : "N/A")</td>
+                <td>@req.IssueDescription</td>
+                <td>@req.RequestDate</td>
+                <td>@(req.IsResolved ? "Yes" : "No")</td>
+            </tr>
+        }
+    </tbody>
+</table>

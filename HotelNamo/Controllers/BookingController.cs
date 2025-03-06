@@ -3,10 +3,14 @@ using HotelNamo.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace HotelNamo.Controllers
 {
-    [Authorize(Roles = "Guest,FrontDesk")]
+    // Allows normal users (role = "User") and front desk staff (role = "FrontDesk") to book rooms
+    [Authorize(Roles = "User,FrontDesk")]
     public class BookingController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -18,48 +22,43 @@ namespace HotelNamo.Controllers
             _userManager = userManager;
         }
 
+        // GET: /Booking/Create?roomId=5 (optional roomId)
         [HttpGet]
-        public IActionResult Create()
+        public IActionResult Create(int? roomId)
         {
-            // Maybe pass a list of vacant rooms or a date range
-            return View();
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Create(Booking model)
-        {
-            if (!ModelState.IsValid) return View(model);
-
-            // Check if room is available for the date range
-            bool isAvailable = CheckRoomAvailability(model.RoomId, model.CheckInDate, model.CheckOutDate);
-            if (!isAvailable)
+            // Pre-fill with a default date range
+            var model = new Booking
             {
-                ModelState.AddModelError("", "Room is not available for the selected dates.");
-                return View(model);
-            }
-
-            // Assign the user who is booking
-            var user = await _userManager.GetUserAsync(User);
-            model.UserId = user.Id;
-            model.IsConfirmed = false;
-
-            _context.Bookings.Add(model);
-            await _context.SaveChangesAsync();
-
-            // Optionally update room status to "Occupied" if immediate check-in
-            return RedirectToAction("Index", "Home");
+                RoomId = roomId ?? 0,
+                CheckInDate = DateTime.Today,
+                CheckOutDate = DateTime.Today.AddDays(1)
+            };
+            return View(model);
         }
 
-        private bool CheckRoomAvailability(int roomId, DateTime checkIn, DateTime checkOut)
+        // POST: /Booking/Create
+        [HttpPost]
+        public async Task<IActionResult> Create(BookingViewModel vm)
         {
-            // Query Bookings to see if there's an overlap
-            var overlappingBooking = _context.Bookings
-                .Where(b => b.RoomId == roomId && b.IsConfirmed == true)
-                .Where(b => checkIn < b.CheckOutDate && checkOut > b.CheckInDate)
-                .FirstOrDefault();
+            if (!ModelState.IsValid) return View(vm);
 
-            return overlappingBooking == null; // If null, means no overlap, so it's available
+            var user = await _userManager.GetUserAsync(User);
+            var booking = new Booking
+            {
+                RoomId = vm.RoomId,
+                CheckInDate = vm.CheckInDate,
+                CheckOutDate = vm.CheckOutDate,
+                UserId = user.Id,
+                IsConfirmed = false
+            };
+
+            _context.Bookings.Add(booking);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("MyBookings");
         }
+
+
+        // Only front desk staff can check in
         [Authorize(Roles = "FrontDesk")]
         public async Task<IActionResult> CheckIn(int bookingId)
         {
@@ -69,14 +68,16 @@ namespace HotelNamo.Controllers
             booking.IsConfirmed = true;
             booking.ActualCheckInTime = DateTime.Now;
 
-            // Update Room status
+            // Update the room status to "Occupied"
             var room = await _context.Rooms.FindAsync(booking.RoomId);
-            if (room != null) room.Status = "Occupied";
+            if (room != null)
+                room.Status = "Occupied";
 
             await _context.SaveChangesAsync();
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", "Home");
         }
 
+        // Only front desk staff can check out
         [Authorize(Roles = "FrontDesk")]
         public async Task<IActionResult> CheckOut(int bookingId)
         {
@@ -85,13 +86,41 @@ namespace HotelNamo.Controllers
 
             booking.ActualCheckOutTime = DateTime.Now;
 
-            // Update Room status
+            // Update the room status to "Vacant"
             var room = await _context.Rooms.FindAsync(booking.RoomId);
-            if (room != null) room.Status = "Vacant";
+            if (room != null)
+                room.Status = "Vacant";
 
             await _context.SaveChangesAsync();
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", "Home");
         }
 
+        // Normal users can see their own bookings
+        [Authorize(Roles = "User")]
+        public async Task<IActionResult> MyBookings()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var bookings = _context.Bookings
+                .Where(b => b.UserId == user.Id)
+                .OrderByDescending(b => b.Id)
+                .ToList();
+
+            return View(bookings);
+        }
+
+        // Helper to check if a room is free for the given date range
+        private bool CheckRoomAvailability(int roomId, DateTime checkIn, DateTime checkOut)
+        {
+            return !_context.Bookings
+                .Any(b => b.RoomId == roomId
+                       && b.IsConfirmed
+                       && checkIn < b.CheckOutDate
+                       && checkOut > b.CheckInDate);
+        }
     }
 }

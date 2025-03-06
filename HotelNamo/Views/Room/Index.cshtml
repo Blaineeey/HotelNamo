@@ -1,0 +1,22 @@
+﻿@{
+    Layout = "_AdminLayout"; // or whichever layout you use for staff
+    ViewData["Title"] = "Front Desk Dashboard";
+}
+
+<h2>Front Desk Dashboard</h2>
+<p>Welcome, front desk staff! Use the links below to manage bookings and check-in/out tasks.</p>
+
+<ul>
+    <li>
+        <a asp-controller="Booking" asp-action="AllBookings">View All Bookings</a>
+        <small class="text-muted">Review, confirm, or manage any upcoming reservations.</small>
+    </li>
+    <li>
+        <a asp-controller="Booking" asp-action="CheckIn" asp-route-bookingId="1">Check In a Guest</a>
+        <small class="text-muted">Example: pass the bookingId to check a guest in.</small>
+    </li>
+    <li>
+        <a asp-controller="Booking" asp-action="CheckOut" asp-route-bookingId="1">Check Out a Guest</a>
+        <small class="text-muted">Example: pass the bookingId to check a guest out.</small>
+    </li>
+</ul>
