@@ -1,8 +1,17 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@*
+    Views/Home/Index.cshtml
+*@
+@{
+    ViewData["Title"] = "Welcome to HotelNamo";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="jumbotron text-center" style="background: url('/images/landing-bg.jpg') no-repeat center center; background-size: cover; height: 100vh;">
+    <div class="container" style="padding-top: 20vh;">
+        <h1 class="display-4 text-white">HotelNamo</h1>
+        <p class="lead text-white">Effortless hotel room reservation and management</p>
+        <p>
+            <a href="/Account/Login" class="btn btn-primary btn-lg">Login</a>
+            <a href="/Account/Register" class="btn btn-secondary btn-lg">Register</a>
+        </p>
+    </div>
 </div>

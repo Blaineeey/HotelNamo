@@ -1,0 +1,32 @@
+﻿@model IEnumerable<HotelNamo.Models.Room>
+@{
+    ViewData["Title"] = "Room Inventory";
+}
+
+<h2>Room Inventory</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Room Number</th>
+            <th>Category</th>
+            <th>Status</th>
+            <th>Price</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var room in Model)
+        {
+            <tr>
+                <td>@room.RoomNumber</td>
+                <td>@room.Category</td>
+                <td>@room.Status</td>
+                <td>@room.Price</td>
+            </tr>
+        }
+    </tbody>
+</table>
+<a asp-action="CreateRoom" class="btn btn-primary">Create New Room</a>
+
+</table>
+
+<a asp-action="CreateRoom" class="btn btn-primary">Add New Room</a>
