@@ -4,14 +4,39 @@
     ViewData["Title"] = "Room Details";
 }
 
-<h2>Room @Model.RoomNumber</h2>
-<p><strong>Category:</strong> @Model.Category</p>
-<p><strong>Price:</strong> $@Model.Price</p>
-<p><strong>Status:</strong> @Model.Status</p>
+<div class="container my-5">
+    <div class="card shadow-lg">
+        <!-- Room Image -->
+        <img src="~/images/deluxe-room.jpg" class="card-img-top" alt="Room Image" style="height: 300px; object-fit: cover;">
 
-<!-- "Book Now" link to BookingController with the roomId -->
-<a asp-action="Create" asp-controller="Booking"
-   asp-route-roomId="@Model.Id"
-   class="btn btn-primary">
-    Book Now
-</a>
+        <div class="card-body">
+            <h2 class="card-title text-center">Room @Model.RoomNumber</h2>
+            <hr>
+            <p class="card-text"><strong>Category:</strong> @Model.Category</p>
+            <p class="card-text"><strong>Price:</strong> $@Model.Price</p>
+            <p class="card-text">
+                <strong>Status:</strong>
+                @if (Model.Status == "Vacant")
+                {
+                    <span class="badge bg-success">Vacant</span>
+                }
+                else
+                {
+                    <span class="badge bg-danger">Occupied</span>
+                }
+            </p>
+            <p class="card-text mt-3">
+                <strong>Description:</strong>
+                @Model.Description This luxurious room offers the perfect blend of comfort and elegance. Enjoy a spacious layout with modern amenities, plush bedding, and a stunning view. Ideal for both business and leisure travelers.
+            </p>
+            <div class="d-flex justify-content-center mt-4">
+                <!-- "Book Now" button -->
+                <a asp-action="Create" asp-controller="Booking"
+                   asp-route-roomId="@Model.Id"
+                   class="btn btn-primary btn-lg">
+                    Book Now
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

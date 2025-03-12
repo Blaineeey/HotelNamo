@@ -4,9 +4,11 @@
     {
         public int Id { get; set; }
         public string RoomNumber { get; set; }
-        public string Category { get; set; } // e.g., Deluxe, Suite, Standard
-        public string Status { get; set; }   // e.g., Occupied, Vacant, Maintenance
+        public string Category { get; set; }
         public decimal Price { get; set; }
-        // Additional fields as needed
+        public string Status { get; set; }
+
+        // New property for room description
+        public string Description { get; set; }
     }
 }

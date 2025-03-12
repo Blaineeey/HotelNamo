@@ -1,0 +1,26 @@
+﻿body {
+    background-color: #EBE8DB;
+}
+
+.card {
+    background-color: white;
+    transition: transform 0.2s ease-in-out;
+    border-radius: 1rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+    .card:hover {
+        transform: scale(1.03);
+    }
+
+.btn-outline-info, .btn-primary {
+    width: 100%;
+}
+
+.rounded-pill {
+    border-radius: 50px !important;
+}
+
+.card-title, .card-subtitle, .card-text {
+    text-align: center;
+}

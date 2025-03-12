@@ -1,43 +1,69 @@
 ﻿@model List<HotelNamo.Models.Room>
 @{
-    Layout = "_UserLayout"; // or whichever user layout you have
+    Layout = "_UserLayout";
     ViewData["Title"] = "Available Rooms";
 }
 
-<h2>Available Rooms</h2>
-<p>Below are all rooms currently vacant.</p>
+<div class="container my-4">
+    <h2 class="text-center mb-4">Available Rooms</h2>
+    <p class="text-muted text-center">Below are all rooms currently vacant.</p>
 
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Room Number</th>
-            <th>Category</th>
-            <th>Price</th>
-            <th>Status</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
+    <!-- Search and Category Filter -->
+    <div class="row mb-4 justify-content-center">
+        <div class="col-md-5">
+            <input type="text" id="searchInput" class="form-control shadow-sm rounded-pill" placeholder="Search by room number...">
+        </div>
+        <div class="col-md-4">
+            <select id="categoryFilter" class="form-select shadow-sm rounded-pill">
+                <option value="">All Categories</option>
+                @foreach (var category in Model.Select(r => r.Category).Distinct())
+                {
+                    <option value="@category">@category</option>
+                }
+            </select>
+        </div>
+    </div>
+
+    <!-- Room Cards -->
+    <div class="row g-4" id="roomContainer">
         @foreach (var room in Model)
         {
-            <tr>
-                <td>@room.RoomNumber</td>
-                <td>@room.Category</td>
-                <td>$@room.Price</td>
-                <td>@room.Status</td>
-                <td>
-                    <!-- If you want a details page -->
-                    <a asp-action="Details" asp-route-id="@room.Id" class="btn btn-sm btn-secondary">View</a>
-
-                    <!-- "Book Now" calls the BookingController's Create action -->
-                    <!-- If user isn't logged in, they'll be prompted to login. -->
-                    <a asp-action="Create" asp-controller="Booking"
-                       asp-route-roomId="@room.Id"
-                       class="btn btn-sm btn-primary">
-                        Book Now
-                    </a>
-                </td>
-            </tr>
+            <div class="col-md-4 room-card" data-roomnumber="@room.RoomNumber" data-category="@room.Category">
+                <div class="card shadow-sm h-100 border-0 rounded-3">
+                    <!-- Image section -->
+                    <img src="~/images/deluxe-room.jpg" class="card-img-top rounded-top" alt="Room Image" style="height: 200px; object-fit: cover;">
+                    <div class="card-body">
+                        <h5 class="card-title">Room Number: @room.RoomNumber</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">@room.Category</h6>
+                        <p class="card-text">Price: $@room.Price</p>
+                        <p class="card-text">
+                            Status:
+                            @if (room.Status == "Vacant")
+                            {
+                                <span class="badge bg-success">Vacant</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">Occupied</span>
+                            }
+                        </p>
+                        <div class="d-flex gap-2">
+                            <a asp-action="Details" asp-route-id="@room.Id" class="btn btn-outline-info btn-sm rounded-pill">
+                                View
+                            </a>
+                            <a asp-action="Create" asp-controller="Booking"
+                               asp-route-roomId="@room.Id"
+                               class="btn btn-primary btn-sm rounded-pill">
+                                Book Now
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         }
-    </tbody>
-</table>
+    </div>
+</div>
+
+<!-- Linking CSS and JS -->
+<link rel="stylesheet" href="~/css/styles.css">
+<script src="~/js/scripts.js"></script>
