@@ -31,7 +31,10 @@ namespace HotelNamo.Controllers
         public async Task<IActionResult> Login(LoginViewModel model)
         {
             if (!ModelState.IsValid)
+            {
+                TempData["ErrorMessage"] = "Please check your input and try again.";
                 return View(model);
+            }
 
             var result = await _signInManager.PasswordSignInAsync(
                 model.Email,
@@ -59,10 +62,14 @@ namespace HotelNamo.Controllers
                     // normal user => user home
                     return RedirectToAction("UserHome", "Home");
                 }
-
             }
 
-            ModelState.AddModelError("", "Invalid login attempt.");
+            // Explicitly set the error message in TempData
+            TempData["ErrorMessage"] = "Invalid login attempt. Please check your email and password.";
+
+            // For debugging - you can check if this is being reached
+            // System.Diagnostics.Debug.WriteLine("Setting error message: " + TempData["ErrorMessage"]);
+
             return View(model);
         }
 
@@ -89,6 +96,7 @@ namespace HotelNamo.Controllers
                 };
 
                 var result = await _userManager.CreateAsync(user, model.Password);
+
                 if (result.Succeeded)
                 {
                     // Assign the "User" role by default for all newly registered users
@@ -100,11 +108,13 @@ namespace HotelNamo.Controllers
                     // Redirect to the UserHome
                     return RedirectToAction("UserHome", "Home");
                 }
+
                 foreach (var error in result.Errors)
                 {
                     ModelState.AddModelError("", error.Description);
                 }
             }
+
             return View(model);
         }
 
