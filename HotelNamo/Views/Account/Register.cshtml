@@ -3,36 +3,78 @@
     ViewData["Title"] = "Register";
 }
 
-<h2>Register</h2>
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Register" method="post">
-            <div class="form-group">
-                <label asp-for="FirstName"></label>
-                <input asp-for="FirstName" class="form-control" />
-                <span asp-validation-for="FirstName" class="text-danger"></span>
+<div class="auth-container">
+    <div class="auth-content">
+        <!-- Logo on left side for register page -->
+        <div class="logo-container logo-left" id="logoContainer">
+            <div class="logo">
+                <img src="~/images/logo.png" alt="HotelNamo Logo" />
             </div>
-            <div class="form-group">
-                <label asp-for="LastName"></label>
-                <input asp-for="LastName" class="form-control" />
-                <span asp-validation-for="LastName" class="text-danger"></span>
+        </div>
+
+        <!-- Form on the right for register page -->
+        <div class="form-wrapper slide-in">
+            <div class="login-card register-card">
+                <div class="login-header">
+                    <h2>Create Account</h2>
+                    <p class="login-subtitle">Fill in your details to get started</p>
+                </div>
+
+                <div class="login-body">
+                    <form asp-action="Register" method="post">
+                        <div class="form-row">
+                            <div class="form-group half-width">
+                                <label asp-for="FirstName"></label>
+                                <input asp-for="FirstName" class="form-control" placeholder="Enter first name" />
+                                <span asp-validation-for="FirstName" class="validation-error"></span>
+                            </div>
+
+                            <div class="form-group half-width">
+                                <label asp-for="LastName"></label>
+                                <input asp-for="LastName" class="form-control" placeholder="Enter last name" />
+                                <span asp-validation-for="LastName" class="validation-error"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="Email"></label>
+                            <input asp-for="Email" class="form-control" placeholder="name@example.com" />
+                            <span asp-validation-for="Email" class="validation-error"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="Password"></label>
+                            <input asp-for="Password" class="form-control" type="password" placeholder="Create a password" />
+                            <span asp-validation-for="Password" class="validation-error"></span>
+                        </div>
+
+
+                        <div class="form-group">
+                            <label asp-for="ConfirmPassword"></label>
+                            <input asp-for="ConfirmPassword" class="form-control" type="password" placeholder="Confirm your password" />
+                            <span asp-validation-for="ConfirmPassword" class="validation-error"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <button type="submit" class="login-button">Register</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="login-footer">
+                    <p>Already have an account? <a href="@Url.Action("Login", "Account")" class="slide-link" data-direction="left">Login</a></p>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Email"></label>
-                <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Password"></label>
-                <input asp-for="Password" class="form-control" />
-                <span asp-validation-for="Password" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ConfirmPassword"></label>
-                <input asp-for="ConfirmPassword" class="form-control" />
-                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-            </div>
-            <button type="submit" class="btn btn-primary">Register</button>
-        </form>
+        </div>
     </div>
 </div>
+
+@section Scripts {
+    <link rel="stylesheet" href="~/css/login-styles.css" />
+    <script src="~/js/loading.js"></script>
+    <script src="~/js/slide-transition.js"></script>
+    <script src="~/js/password-strength.js"></script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
