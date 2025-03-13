@@ -1,0 +1,20 @@
+﻿@model List<HotelNamo.Models.ViewModels.OccupancyReportViewModel>
+
+<h2>Room Occupancy Report</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Room Number</th>
+            <th>Times Booked</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var room in Model)
+        {
+            <tr>
+                <td>@room.RoomNumber</td>
+                <td>@room.TimesBooked</td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,35 @@
+﻿@model HotelNamo.Models.Feedback
+
+<h2>Submit Feedback</h2>
+
+<!-- ✅ Show success message -->
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+<!-- ✅ Show error message -->
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+<!-- ✅ Show validation errors -->
+<div asp-validation-summary="All" class="alert alert-danger"></div>
+
+<form asp-action="Submit" method="post">
+
+    <label>Rating (1-5 Stars)</label>
+    <input asp-for="Rating" type="number" min="1" max="5" class="form-control" required />
+    <span asp-validation-for="Rating" class="text-danger"></span>
+
+    <label>Review</label>
+    <textarea asp-for="Review" class="form-control" required></textarea>
+    <span asp-validation-for="Review" class="text-danger"></span>
+
+    <button type="submit" class="btn btn-primary mt-3">Submit</button>
+</form>

@@ -1,21 +1,27 @@
-﻿@model IEnumerable<HotelNamo.Models.HousekeepingTask>
-@{
-    Layout = "_AdminLayout"; // Use your staff/admin layout
-    ViewData["Title"] = "Housekeeping Dashboard";
+﻿@{
+    ViewData["Title"] = "Housekeeping Tasks";
 }
 
-<h2>Housekeeping Tasks</h2>
-<p>Schedule and track room cleaning or maintenance requests here.</p>
+<h2>🏠 Housekeeping Tasks</h2>
 
-<a asp-action="Create" class="btn btn-primary mb-3">Add Housekeeping Task</a>
+<!-- ✅ Success Message Alert -->
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
 
-<table class="table table-bordered">
+<a asp-action="Create" class="btn btn-primary mb-3">➕ Add Task</a>
+
+<table class="table table-striped">
     <thead>
         <tr>
+            <th>Task</th>
             <th>Room</th>
-            <th>Description</th>
-            <th>Scheduled Time</th>
-            <th>Completed</th>
+            <th>Assigned To</th>
+            <th>Status</th>
+            <th>Due Date</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -23,17 +29,26 @@
         @foreach (var task in Model)
         {
             <tr>
-                <td>@(task.Room?.RoomNumber ?? "N/A")</td>
-                <td>@task.Description</td>
-                <td>@task.ScheduledTime.ToString("g")</td>
-                <td>@(task.IsCompleted ? "Yes" : "No")</td>
+                <td>@task.TaskDescription</td>
+                <td>@task.Room.RoomNumber</td>
+                <td>@(task.AssignedStaff != null ? task.AssignedStaff.FirstName + " " + task.AssignedStaff.LastName : "Not Assigned")</td>
                 <td>
-                    @if (!task.IsCompleted)
+                    @if (task.Status == "Pending")
                     {
-                        <a asp-action="Complete" asp-route-id="@task.Id" class="btn btn-sm btn-success">
-                            Mark Complete
-                        </a>
+                        <span class="badge bg-warning">Pending</span>
                     }
+                    else if (task.Status == "In Progress")
+                    {
+                        <span class="badge bg-primary">In Progress</span>
+                    }
+                    else if (task.Status == "Completed")
+                    {
+                        <span class="badge bg-success">Completed</span>
+                    }
+                </td>
+                <td>@task.DueDate.ToShortDateString()</td>
+                <td>
+                    <a asp-action="Delete" asp-route-id="@task.Id" class="btn btn-sm btn-danger">🗑 Delete</a>
                 </td>
             </tr>
         }

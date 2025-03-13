@@ -1,0 +1,57 @@
+﻿@model List<HotelNamo.Models.HousekeepingTask>
+
+@{
+    ViewData["Title"] = "🏠 Housekeeping Dashboard";
+}
+
+<h2>🏠 Housekeeping Dashboard</h2>
+<p>Welcome to your assigned housekeeping tasks.</p>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">No housekeeping tasks assigned to you yet.</div>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Task</th>
+                <th>Room</th>
+                <th>Due Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var task in Model)
+            {
+                <tr>
+                    <td>@task.TaskDescription</td>
+                    <td>@task.Room.RoomNumber</td>
+                    <td>@task.DueDate.ToShortDateString()</td>
+                    <td>
+                        @if (task.Status == "Pending")
+                        {
+                            <span class="badge bg-warning">Pending</span>
+                        }
+                        else if (task.Status == "In Progress")
+                        {
+                            <span class="badge bg-primary">In Progress</span>
+                        }
+                        else if (task.Status == "Completed")
+                        {
+                            <span class="badge bg-success">Completed</span>
+                        }
+                    </td>
+                    <td>
+                        @if (task.Status != "Completed")
+                        {
+                            <a asp-action="CompleteTask" asp-route-id="@task.Id" class="btn btn-success btn-sm">✅ Mark as Completed</a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

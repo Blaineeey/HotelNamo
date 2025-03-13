@@ -1,19 +1,15 @@
 ﻿@model List<HotelNamo.Models.Room>
-@{
-    Layout = "_UserLayout"; // or whichever user layout you have
-    ViewData["Title"] = "Available Rooms";
-}
 
 <h2>Available Rooms</h2>
-<p>Below are all rooms currently vacant.</p>
 
-<table class="table table-bordered">
+<table class="table">
     <thead>
         <tr>
             <th>Room Number</th>
             <th>Category</th>
             <th>Price</th>
             <th>Status</th>
+            <th>Image</th>
             <th></th>
         </tr>
     </thead>
@@ -23,19 +19,14 @@
             <tr>
                 <td>@room.RoomNumber</td>
                 <td>@room.Category</td>
-                <td>$@room.Price</td>
+                <td>@room.Price.ToString("C")</td>
                 <td>@room.Status</td>
                 <td>
-                    <!-- If you want a details page -->
-                    <a asp-action="Details" asp-route-id="@room.Id" class="btn btn-sm btn-secondary">View</a>
+                    <img src="~/images/rooms/@room.RoomImages.FirstOrDefault()?.ImagePath"
+                         alt="Room Image" width="120" height="80" />
 
-                    <!-- "Book Now" calls the BookingController's Create action -->
-                    <!-- If user isn't logged in, they'll be prompted to login. -->
-                    <a asp-action="Create" asp-controller="Booking"
-                       asp-route-roomId="@room.Id"
-                       class="btn btn-sm btn-primary">
-                        Book Now
-                    </a>
+                    <a asp-action="Details" asp-route-id="@room.Id" class="btn btn-secondary btn-sm">View Details</a>
+                    <a asp-action="Create" asp-controller="Booking" asp-route-roomId="@room.Id" class="btn btn-primary btn-sm">Book Now</a>
                 </td>
             </tr>
         }

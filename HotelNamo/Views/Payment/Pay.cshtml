@@ -1,0 +1,24 @@
+﻿@model HotelNamo.Models.Payment
+
+<h2>Complete Your Payment</h2>
+
+<div class="card">
+    <div class="card-body">
+        <h4>Booking ID: @Model.BookingId</h4>
+        <p><strong>Amount Due:</strong> @Model.Amount.ToString("C")</p>
+
+        <form asp-action="ProcessPayment" asp-controller="Payment" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="BookingId" />
+            <input type="hidden" asp-for="Amount" />
+
+            <label>Payment Method:</label>
+            <select asp-for="PaymentMethod" class="form-control" required>
+                <option value="Credit Card">Credit Card</option>
+                <option value="PayPal">PayPal</option>
+            </select>
+
+            <button type="submit" class="btn btn-primary mt-3">Pay Now</button>
+        </form>
+    </div>
+</div>

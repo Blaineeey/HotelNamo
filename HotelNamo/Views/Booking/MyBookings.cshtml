@@ -1,35 +1,42 @@
-﻿@model IEnumerable<HotelNamo.Models.Booking>
-@{
-    Layout = "_UserLayout";
-    ViewData["Title"] = "My Bookings";
-}
+﻿@model List<HotelNamo.Models.Booking>
 
 <h2>My Bookings</h2>
+
 @if (!Model.Any())
 {
-    <p>You have no bookings yet.</p>
+    <p>No bookings yet.</p>
 }
 else
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Room ID</th>
-                <th>Check-In</th>
-                <th>Check-Out</th>
-                <th>Confirmed</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var booking in Model)
-            {
-                <tr>
-                    <td>@booking.RoomId</td>
-                    <td>@booking.CheckInDate.ToShortDateString()</td>
-                    <td>@booking.CheckOutDate.ToShortDateString()</td>
-                    <td>@(booking.IsConfirmed ? "Yes" : "No")</td>
-                </tr>
-            }
-        </tbody>
-    </table>
+    @foreach (var booking in Model)
+    {
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5>@booking.Room.RoomNumber (@booking.Room.Category)</h5>
+                <p><strong>Dates:</strong> @booking.CheckInDate.ToShortDateString() to @booking.CheckOutDate.ToShortDateString()</p>
+                <p><strong>Total Price:</strong> @booking.TotalPrice.ToString("C")</p>
+                <p>
+                    <strong>Status:</strong>
+                    @if (booking.IsConfirmed)
+                    {
+                        <span class="badge bg-success">Confirmed</span>
+                        <a asp-action="Submit" asp-controller="Feedback" asp-route-bookingId="@booking.Id" class="btn btn-warning">Leave Feedback</a>
+                    }
+                    else
+                    {
+                        <span class="badge bg-warning">Pending</span>
+                    }
+                </p>
+
+                @if (!booking.IsConfirmed)
+                {
+                    <a asp-action="Pay" asp-controller="Payment" asp-route-bookingId="@booking.Id" class="btn btn-success">Pay Now</a>
+                    <form asp-action="Cancel" asp-route-bookingId="@booking.Id" method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <button class="btn btn-danger">Cancel</button>
+                    </form>
+                }
+            </div>
+        </div>
+    }
 }

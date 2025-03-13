@@ -6,6 +6,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using HotelNamo.Data; // Your data namespace
 using HotelNamo.Models; // Your models namespace
+using Microsoft.AspNetCore.Identity.UI.Services;
+
 
 [Authorize(Roles = "Admin")]
 public class AdminController : Controller
@@ -18,15 +20,17 @@ public class AdminController : Controller
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly ApplicationDbContext _context; // <-- Add this
-
+    private readonly IEmailSender _emailSender;
     public AdminController(
         UserManager<ApplicationUser> userManager,
         RoleManager<IdentityRole> roleManager,
-        ApplicationDbContext context) // <-- Inject the DbContext
+        ApplicationDbContext context,
+         IEmailSender emailSender)// <-- Inject the DbContext
     {
         _userManager = userManager;
         _roleManager = roleManager;
-        _context = context; // <-- Assign it
+        _context = context;
+        _emailSender = emailSender;// <-- Assign it
     }
 
     public async Task<IActionResult> ListUsers()
@@ -121,44 +125,53 @@ public class AdminController : Controller
         var rooms = _context.Rooms.ToList();
         return View(rooms);
     }
-
     [HttpGet]
     public IActionResult CreateRoom()
     {
+        ViewBag.Amenities = _context.Amenities.ToList();
+
+        // Explicitly add existing images to ViewBag
+        ViewBag.ExistingImages = new List<string>
+    {
+        "single-room.jpg",
+        "guest-room.jpg",
+        "deluxe-room.jpg",
+        "superior-room.jpg"
+    };
+
         return View();
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateRoom(Room model)
+    public async Task<IActionResult> CreateRoom(Room room, int[] selectedAmenities, string selectedImage)
     {
-        if (!ModelState.IsValid) return View(model);
+        // Explicitly remove ModelState validation for RoomImages as we're assigning it manually
+        ModelState.Remove("RoomImages");
 
-        _context.Rooms.Add(model);
+        if (!ModelState.IsValid)
+        {
+            ViewBag.Amenities = _context.Amenities.ToList();
+            ViewBag.ExistingImages = new List<string>
+        {
+            "single-room.jpg", "guest-room.jpg", "superior-room.jpg", "deluxe-room.jpg"
+        };
+            return View(room);
+        }
+
+        room.RoomAmenities = selectedAmenities.Select(a => new RoomAmenity { AmenityId = a }).ToList();
+
+        // Explicitly assign existing image clearly
+        room.RoomImages = new List<RoomImage>
+    {
+        new RoomImage { ImagePath = selectedImage }
+    };
+
+        _context.Rooms.Add(room);
         await _context.SaveChangesAsync();
+
         return RedirectToAction("RoomList");
     }
-    [Authorize(Roles = "Admin,FrontDesk")]
-    public IActionResult AllBookings()
-    {
-        // Example: show all bookings, or only unconfirmed if you want
-        var allBookings = _context.Bookings
-            .Include(b => b.Room)
-            .Include(b => b.User)
-            .OrderByDescending(b => b.Id)
-            .ToList();
 
-        return View(allBookings);
-    }
-    [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> ConfirmBooking(int bookingId)
-    {
-        var booking = await _context.Bookings.FindAsync(bookingId);
-        if (booking == null) return NotFound();
 
-        booking.IsConfirmed = true;
-        await _context.SaveChangesAsync();
-
-        return RedirectToAction("AllBookings");
-    }
 
 }

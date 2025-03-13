@@ -1,0 +1,17 @@
+﻿@model HotelNamo.Models.Booking
+
+<h2>Confirm Your Booking</h2>
+<div class="card">
+    <div class="card-body">
+        <h5>Room: @Model.Room.RoomNumber (@Model.Room.Category)</h5>
+        <p><strong>Check-in:</strong> @Model.CheckInDate.ToShortDateString()</p>
+        <p><strong>Check-out:</strong> @Model.CheckOutDate.ToShortDateString()</p>
+        <p><strong>Total Price:</strong> @Model.TotalPrice.ToString("C")</p>
+        <p><strong>Special Requests:</strong> @(Model.SpecialRequests ?? "None")</p>
+
+        <form asp-action="ConfirmBooking" method="post">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-primary">Confirm & Go to My Bookings</button>
+        </form>
+    </div>
+</div>
