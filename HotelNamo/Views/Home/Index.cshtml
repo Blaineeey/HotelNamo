@@ -1,27 +1,238 @@
-﻿@{
+﻿﻿@{
     Layout = "_UserLayout";
     ViewData["Title"] = "Welcome to HotelNamo";
 }
+<link rel="stylesheet" href="~/css/home-style.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
-<div class="jumbotron text-center">
+<div class="hero-section text-center text-white py-5">
     <h1 class="display-4">Welcome to HotelNamo</h1>
     <p class="lead">Experience comfort and luxury at an affordable price.</p>
-    <hr class="my-4" />
-    <p>Check out our rooms or log in to manage your bookings.</p>
-    <a class="btn btn-primary btn-lg" asp-controller="UserRoom" asp-action="Index">View Rooms</a>
+    <p>Discover an unforgettable stay with premium rooms and top-notch amenities.</p>
+    <div class="button-group d-inline-flex gap-2">
+        <a class="btn btn-primary btn-lg px-4" asp-controller="UserRoom" asp-action="Index">View Rooms</a>
+        <a class="btn btn-outline-dark btn-lg px-4" asp-controller="Home" asp-action="About">Learn More</a>
+    </div>
 </div>
 
-<div class="row">
-    <div class="col-md-6">
-        <img src="~/img/hotel-lobby.jpg" class="img-fluid" alt="Hotel Lobby" />
-    </div>
-    <div class="col-md-6 d-flex flex-column justify-content-center">
-        <h2>About Us</h2>
-        <p>
-            HotelNamo is your home away from home. Enjoy our deluxe, suite,
-            and standard rooms for all types of travelers. Our friendly staff
-            and modern amenities ensure a wonderful stay.
-        </p>
-        <a class="btn btn-outline-secondary" asp-controller="Home" asp-action="About">Learn More</a>
+<div class="container my-5">
+    <div class="row align-items-center">
+        <div class="col-md-6">
+            <h2 class="about-title">About Us</h2>
+            <h1 class="about-heading">Unwind A Hotel Booking Agency</h1>
+            <p class="about-description">
+                HotelNamo is your home away from home. Enjoy our deluxe, suite,
+                and standard rooms for all types of travelers. Our friendly staff
+                and modern amenities ensure a wonderful stay. Far far away, behind the word
+                mountains, far from the countries Vokalia and Consonantia, there live the blind texts.
+                Separated they live in Bookmarksgrove right at the coast of the Semantics,
+                a large language ocean.
+            </p>
+            <a class="btn btn-about px-4" asp-controller="Home" asp-action="About">Book Your Room Now</a>
+        </div>
+        <div class="col-md-6">
+            <img src="~/images/rooms/superior-room.jpg" class="img-fluid rounded shadow" alt="Hotel Lobby" />
+        </div>
     </div>
 </div>
+
+<div class="container my-5">
+    <h2 class="text-center mb-4">Explore Our Hotel Services</h2>
+    <div class="row justify-content-center">
+        <div class="col-auto service-icon">
+            <div class="icon-wrapper">
+                <i class="fas fa-wifi"></i>
+            </div>
+            <p>Free Wifi</p>
+        </div>
+        <div class="col-auto service-icon">
+            <div class="icon-wrapper">
+                <i class="fas fa-concierge-bell"></i>
+            </div>
+            <p>Easy Booking</p>
+        </div>
+        <div class="col-auto service-icon">
+            <div class="icon-wrapper">
+                <i class="fas fa-utensils"></i>
+            </div>
+            <p>Restaurant</p>
+        </div>
+        <div class="col-auto service-icon">
+            <div class="icon-wrapper active">
+                <i class="fas fa-spa"></i>
+            </div>
+            <p>Beauty & Health</p>
+        </div>
+        <div class="col-auto service-icon">
+            <div class="icon-wrapper">
+                <i class="fas fa-swimmer"></i>
+            </div>
+            <p>Swimming Pool</p>
+        </div>
+        <div class="col-auto service-icon">
+            <div class="icon-wrapper">
+                <i class="fas fa-hands-helping"></i>
+            </div>
+            <p>Help & Support</p>
+        </div>
+    </div>
+</div>
+
+
+<div class="offers-section text-center py-5">
+    <h2 class="display-5 mb-5">Ongoing Offers</h2>
+    <div class="container">
+        <div class="row justify-content-center gap-3">
+            <div class="col-md-3">
+                <div class="card h-100">
+                    <img src="~/images/rooms/superior-room.jpg" class="card-img-top" alt="Offer Image">
+                    <div class="card-body">
+                        <h4 class="card-title">Up to 35% savings on Club rooms and Suites</h4>
+                        <ul class="list-unstyled text-muted">
+                            <li>• Luxuries condition</li>
+                            <li>• 3 Adults & 2 Children size</li>
+                            <li>• Sea view side</li>
+                        </ul>
+                        <a href="#" class="btn btn-outline-primary">Book Now</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card h-100">
+                    <img src="~/images/rooms/single-room.jpg" class="card-img-top" alt="Offer Image">
+                    <div class="card-body">
+                        <h4 class="card-title">Up to 35% savings on Club rooms and Suites</h4>
+                        <ul class="list-unstyled text-muted">
+                            <li>• Luxuries condition</li>
+                            <li>• 3 Adults & 2 Children size</li>
+                            <li>• Sea view side</li>
+                        </ul>
+                        <a href="#" class="btn btn-outline-primary">Book Now</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card h-100">
+                    <img src="~/images/rooms/superior-room.jpg" class="card-img-top" alt="Offer Image">
+                    <div class="card-body">
+                        <h4 class="card-title">Up to 35% savings on Club rooms and Suites</h4>
+                        <ul class="list-unstyled text-muted">
+                            <li>• Luxuries condition</li>
+                            <li>• 3 Adults & 2 Children size</li>
+                            <li>• Sea view side</li>
+                        </ul>
+                        <a href="#" class="btn btn-outline-primary">Book Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="contact-section text-center py-5">
+    <div class="contact-overlay">
+        <h2 class="display-5 mb-4">Contact Us & Reservations</h2>
+        <p class="lead">Reach out to us for bookings, inquiries, or any assistance.</p>
+        <div class="container">
+            <div class="row justify-content-center gap-3">
+                <div class="col-md-4">
+                    <div class="contact-info">
+                        <i class="fas fa-phone-alt fa-2x mb-2"></i>
+                        <h4>Call Us</h4>
+                        <p>+1 (234) 567-8901</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="contact-info">
+                        <i class="fas fa-envelope fa-2x mb-2"></i>
+                        <h4>Email Us</h4>
+                        <p>info@hotelnamo.com</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="contact-info">
+                        <i class="fas fa-map-marker-alt fa-2x mb-2"></i>
+                        <h4>Visit Us</h4>
+                        <p>1234 Paradise Road, Beach City</p>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-4">
+                <a class="btn btn-primary btn-lg px-4" asp-controller="Reservation" asp-action="Index">Make a Reservation</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<section class="testimonial-section">
+    <h3 class="section-title">Testimonial</h3>
+    <h1 class="main-title">Happy Guests</h1>
+    <div class="testimonial-container">
+        <div class="testimonial-card">
+            <img src="~/images/lesterpic.jpg" alt="Roger Scott" class="profile-image">
+            <h3 class="name">Roger Scott</h3>
+            <p class="role">MARKETING MANAGER</p>
+            <p class="quote">
+                "Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts."
+            </p>
+        </div>
+        <div class="testimonial-card">
+            <img src="~/images/lesterpic.jpg" alt="Roger Scott" class="profile-image">
+            <h3 class="name">Roger Scott</h3>
+            <p class="role">MARKETING MANAGER</p>
+            <p class="quote">
+                "Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts."
+            </p>
+        </div>
+        <div class="testimonial-card">
+            <img src="~/images/lesterpic.jpg" alt="Roger Scott" class="profile-image">
+            <h3 class="name">Roger Scott</h3>
+            <p class="role">MARKETING MANAGER</p>
+            <p class="quote">
+                "Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts."
+            </p>
+        </div>
+    </div>
+</section>
+
+<section class="gallery-section py-5">
+    <div class="container-fluid">
+        <div class="row no-gutters">
+            <div class="col-md-3 gallery-item">
+                <div class="img-overlay">
+                    <img src="~/images/superior-room.jpg" alt="Gallery Image 1" class="img-fluid">
+                    <div class="overlay">
+                        <i class="fab fa-instagram"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 gallery-item">
+                <div class="img-overlay">
+                    <img src="~/images/single-room.jpg" alt="Gallery Image 2" class="img-fluid">
+                    <div class="overlay">
+                        <i class="fab fa-instagram"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 gallery-item">
+                <div class="img-overlay">
+                    <img src="~/images/superior-room.jpg" alt="Gallery Image 3" class="img-fluid">
+                    <div class="overlay">
+                        <i class="fab fa-instagram"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 gallery-item">
+                <div class="img-overlay">
+                    <img src="~/images/single-room.jpg" alt="Gallery Image 4" class="img-fluid">
+                    <div class="overlay">
+                        <i class="fab fa-instagram"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
