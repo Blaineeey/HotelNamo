@@ -16,6 +16,7 @@
             $('#registerButton .btn-text').hide();
             $('#loadingSpinner').show();
             $('#registerButton').prop('disabled', true);
+
         }
     });
 });
