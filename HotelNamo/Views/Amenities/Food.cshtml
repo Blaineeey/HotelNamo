@@ -1,0 +1,434 @@
+﻿@{
+    ViewData["Title"] = "HotelNamo Dining";
+    Layout = "_UserLayout";
+}
+
+<div class="container my-5">
+    <header class="text-center">
+        <h2 class="about-title">Dining</h2>
+        <h1 class="display-4">HotelNamo Dining</h1>
+        <p class="lead">Experience culinary excellence at HotelNamo. Our chefs combine local ingredients with international techniques to create memorable dining experiences for our guests. From hearty breakfasts to elegant dinners, each meal is crafted with care to satisfy your palate and complement your stay.</p>
+    </header>
+
+    <div class="menu-nav">
+        <button class="menu-btn active" data-menu="breakfast">Breakfast</button>
+        <button class="menu-btn" data-menu="lunch">Lunch</button>
+        <button class="menu-btn" data-menu="dinner">Dinner</button>
+    </div>
+
+    <!-- Breakfast Menu -->
+    <section id="breakfast" class="menu-section active">
+        <h2 class="display-5 mb-4">Breakfast</h2>
+        <p class="text-center mb-5">Served daily from 6:30 AM to 10:30 AM</p>
+
+        <div class="menu-category">
+            <h3>Morning Starters</h3>
+            <div class="row menu-items">
+                <div class="col-md-4 mb-4">
+                    <div class="menu-item h-100">
+                        <h4>Continental Breakfast <span class="price">$18</span></h4>
+                        <p>Selection of freshly baked pastries, seasonal fruits, yogurt, and granola</p>
+                        <span class="dietary">V</span>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="menu-item h-100">
+                        <h4>Seasonal Fruit Plate <span class="price">$14</span></h4>
+                        <p>Assortment of fresh seasonal fruits with honey yogurt dip</p>
+                        <span class="dietary">V</span><span class="dietary">GF</span>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="menu-item h-100">
+                        <h4>Steel-Cut Oatmeal <span class="price">$12</span></h4>
+                        <p>Served with brown sugar, dried fruits, and toasted nuts</p>
+                        <span class="dietary">V</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="menu-category">
+            <h3>Signature Breakfast</h3>
+            <div class="row menu-items">
+                <div class="col-md-6 col-lg-3 mb-4">
+                    <div class="menu-item h-100">
+                        <h4>Mountain Sunrise <span class="price">$22</span></h4>
+                        <p>Two eggs any style with crispy bacon, roasted potatoes, grilled tomato, and toast</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3 mb-4">
+                    <div class="menu-item h-100">
+                        <h4>Avocado Toast <span class="price">$16</span></h4>
+                        <p>Multigrain toast topped with smashed avocado, poached eggs, and microgreens</p>
+                        <span class="dietary">V</span>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3 mb-4">
+                    <div class="menu-item h-100">
+                        <h4>Brioche French Toast <span class="price">$19</span></h4>
+                        <p>Served with maple syrup, fresh berries, and whipped cream</p>
+                        <span class="dietary">V</span>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3 mb-4">
+                    <div class="menu-item h-100">
+                        <h4>Smoked Salmon Benedict <span class="price">$24</span></h4>
+                        <p>English muffin topped with smoked salmon, poached eggs, and hollandaise sauce</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="menu-category">
+            <h3>Beverages</h3>
+            <div class="row menu-items">
+                <div class="col-md-6 col-lg-3 mb-4">
+                    <div class="menu-item h-100">
+                        <h4>Freshly Brewed Coffee <span class="price">$5</span></h4>
+                        <p>Regular or decaffeinated</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3 mb-4">
+                    <div class="menu-item h-100">
+                        <h4>Selection of Teas <span class="price">$5</span></h4>
+                        <p>Black, green, or herbal</p>
+                        <span class="dietary">V</span>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3 mb-4">
+                    <div class="menu-item h-100">
+                        <h4>Fresh Juice <span class="price">$7</span></h4>
+                        <p>Orange, grapefruit, or apple</p>
+                        <span class="dietary">V</span><span class="dietary">GF</span>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3 mb-4">
+                    <div class="menu-item h-100">
+                        <h4>Smoothie of the Day <span class="price">$9</span></h4>
+                        <p>Made with seasonal fruits and yogurt</p>
+                        <span class="dietary">V</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Lunch Menu -->
+    <section id="lunch" class="menu-section">
+        <h2 class="display-5 mb-4">Lunch</h2>
+        <p class="text-center mb-5">Served daily from 11:30 AM to 2:30 PM</p>
+
+        <div class="menu-category">
+            <h3>Starters</h3>
+            <div class="row menu-items">
+                <div class="col-md-4 mb-4">
+                    <div class="menu-item h-100">
+                        <h4>Soup of the Day <span class="price">$12</span></h4>
+                        <p>Chef's daily creation served with artisanal bread</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="menu-item h-100">
+                        <h4>Caesar Salad <span class="price">$15</span></h4>
+                        <p>Romaine lettuce, parmesan crisp, garlic croutons, and house-made dressing</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="menu-item h-100">
+                        <h4>Caprese Salad <span class="price">$16</span></h4>
+                        <p>Heirloom tomatoes, fresh mozzarella, basil, and balsamic reduction</p>
+                        <span class="dietary">V</span><span class="dietary">GF</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="menu-category">
+            <h3>Main Courses</h3>
+            <div class="row menu-items">
+                <div class="col-md-6 col-lg-3 mb-4">
+                    <div class="menu-item h-100">
+                        <h4>Grilled Chicken Sandwich <span class="price">$18</span></h4>
+                        <p>Herb-marinated chicken breast, avocado, bacon, and aioli on ciabatta bread</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3 mb-4">
+                    <div class="menu-item h-100">
+                        <h4>Mediterranean Vegetable Wrap <span class="price">$16</span></h4>
+                        <p>Grilled vegetables, hummus, feta cheese in a spinach wrap</p>
+                        <span class="dietary">V</span>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3 mb-4">
+                    <div class="menu-item h-100">
+                        <h4>Seared Salmon <span class="price">$26</span></h4>
+                        <p>With quinoa, roasted vegetables, and lemon herb sauce</p>
+                        <span class="dietary">GF</span>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3 mb-4">
+                    <div class="menu-item h-100">
+                        <h4>Gourmet Burger <span class="price">$22</span></h4>
+                        <p>Angus beef patty, aged cheddar, caramelized onions, and truffle aioli</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="menu-category">
+            <h3>Desserts</h3>
+            <div class="row menu-items">
+                <div class="col-md-6 mb-4">
+                    <div class="menu-item h-100">
+                        <h4>Seasonal Fruit Tart <span class="price">$10</span></h4>
+                        <p>Buttery crust filled with pastry cream and topped with fresh seasonal fruits</p>
+                        <span class="dietary">V</span>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <div class="menu-item h-100">
+                        <h4>Chocolate Lava Cake <span class="price">$12</span></h4>
+                        <p>Warm chocolate cake with a molten center, served with vanilla ice cream</p>
+                        <span class="dietary">V</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dinner Menu -->
+    <section id="dinner" class="menu-section">
+        <h2 class="display-5 mb-4">Dinner</h2>
+        <p class="text-center mb-5">Served daily from 6:00 PM to 10:00 PM</p>
+
+        <div class="menu-category">
+            <h3>Appetizers</h3>
+            <div class="row menu-items">
+                <div class="col-md-4 mb-4">
+                    <div class="menu-item h-100">
+                        <h4>Seared Scallops <span class="price">$19</span></h4>
+                        <p>With cauliflower puree, crispy pancetta, and herb oil</p>
+                        <span class="dietary">GF</span>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="menu-item h-100">
+                        <h4>Charcuterie Board <span class="price">$24</span></h4>
+                        <p>Selection of cured meats, artisanal cheeses, pickles, and crostini</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="menu-item h-100">
+                        <h4>Wild Mushroom Arancini <span class="price">$16</span></h4>
+                        <p>Crispy risotto balls filled with wild mushrooms and truffle, served with parmesan aioli</p>
+                        <span class="dietary">V</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="menu-category">
+            <h3>Entrées</h3>
+            <div class="row menu-items">
+                <div class="col-md-6 col-lg-3 mb-4">
+                    <div class="menu-item h-100">
+                        <h4>Filet Mignon <span class="price">$42</span></h4>
+                        <p>8oz grass-fed beef, potato gratin, seasonal vegetables, and red wine reduction</p>
+                        <span class="dietary">GF</span>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3 mb-4">
+                    <div class="menu-item h-100">
+                        <h4>Pan-Seared Sea Bass <span class="price">$38</span></h4>
+                        <p>With saffron risotto, asparagus, and citrus beurre blanc</p>
+                        <span class="dietary">GF</span>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3 mb-4">
+                    <div class="menu-item h-100">
+                        <h4>Roasted Rack of Lamb <span class="price">$40</span></h4>
+                        <p>Herb-crusted lamb, sweet potato puree, broccolini, and mint jus</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3 mb-4">
+                    <div class="menu-item h-100">
+                        <h4>Wild Mushroom Risotto <span class="price">$28</span></h4>
+                        <p>Arborio rice, wild mushrooms, truffle oil, and parmesan</p>
+                        <span class="dietary">V</span><span class="dietary">GF</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="menu-category">
+            <h3>Signature Desserts</h3>
+            <div class="row menu-items">
+                <div class="col-md-4 mb-4">
+                    <div class="menu-item h-100">
+                        <h4>Crème Brûlée <span class="price">$12</span></h4>
+                        <p>Classic vanilla bean custard with caramelized sugar crust</p>
+                        <span class="dietary">V</span><span class="dietary">GF</span>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="menu-item h-100">
+                        <h4>Tiramisu <span class="price">$14</span></h4>
+                        <p>Coffee-soaked ladyfingers layered with mascarpone cream</p>
+                        <span class="dietary">V</span>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="menu-item h-100">
+                        <h4>Artisanal Cheese Plate <span class="price">$18</span></h4>
+                        <p>Selection of fine cheeses with honey, nuts, and fruit compote</p>
+                        <span class="dietary">V</span><span class="dietary">GF</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="text-center mt-5 mb-5">
+        <a href="@Url.Action("Reservation", "Dining")" class="btn btn-primary btn-lg px-4">RESERVE A TABLE NOW</a>
+    </div>
+
+    <div class="footer-notes text-center text-muted">
+        <p>V - Vegetarian | GF - Gluten Free</p>
+        <p>Please inform your server of any allergies or dietary restrictions.</p>
+        <p>A 18% service charge will be added to parties of 6 or more.</p>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        /* Header Styles */
+        .about-title {
+            color: #b59678;
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Menu Navigation */
+        .menu-nav {
+            display: flex;
+            justify-content: center;
+            margin: 2rem 0;
+        }
+
+            .menu-nav button {
+                background-color: transparent;
+                border: none;
+                color: #b59678;
+                font-size: 1.2rem;
+                padding: 0.5rem 1.5rem;
+                margin: 0 1rem;
+                cursor: pointer;
+                border-bottom: 2px solid transparent;
+                transition: all 0.3s ease;
+            }
+
+                .menu-nav button.active {
+                    border-bottom: 2px solid #b59678;
+                }
+
+                .menu-nav button:hover {
+                    color: #947a62;
+                }
+
+        /* Menu Sections */
+        .menu-section {
+            display: none;
+            margin-bottom: 3rem;
+        }
+
+            .menu-section.active {
+                display: block;
+            }
+
+        .menu-category {
+            margin-bottom: 3rem;
+        }
+
+        h3 {
+            color: #b59678;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            font-weight: normal;
+            text-align: center;
+        }
+
+        /* Menu Items */
+        .menu-item {
+            padding: 1.5rem;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            height: 100%;
+        }
+
+            .menu-item h4 {
+                font-size: 1.3rem;
+                color: #333;
+                margin-bottom: 0.5rem;
+                display: flex;
+                justify-content: space-between;
+            }
+
+            .menu-item p {
+                color: #666;
+                margin-bottom: 0.5rem;
+            }
+
+        .price {
+            color: #b59678;
+            font-size: 1.1rem;
+        }
+
+        .dietary {
+            display: inline-block;
+            font-size: 0.8rem;
+            padding: 0.2rem 0.5rem;
+            margin-right: 0.5rem;
+            border-radius: 3px;
+            background-color: #f0ebe5;
+            color: #947a62;
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background-color: #b59678;
+            border-color: #b59678;
+        }
+
+            .btn-primary:hover {
+                background-color: #947a62;
+                border-color: #947a62;
+            }
+
+        /* Footer Notes */
+        .footer-notes {
+            padding: 2rem 0;
+            font-size: 0.9rem;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('.menu-btn').on('click', function() {
+                const targetMenu = $(this).data('menu');
+
+                // Toggle active class on buttons
+                $('.menu-btn').removeClass('active');
+                $(this).addClass('active');
+
+                // Toggle active class on sections
+                $('.menu-section').removeClass('active');
+                $('#' + targetMenu).addClass('active');
+            });
+        });
+    </script>
+}
