@@ -40,7 +40,7 @@ namespace HotelNamo.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Amenities", (string)null);
+                    b.ToTable("Amenities");
                 });
 
             modelBuilder.Entity("HotelNamo.Models.ApplicationUser", b =>
@@ -165,7 +165,7 @@ namespace HotelNamo.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Bookings", (string)null);
+                    b.ToTable("Bookings");
                 });
 
             modelBuilder.Entity("HotelNamo.Models.Discount", b =>
@@ -194,7 +194,7 @@ namespace HotelNamo.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Discounts", (string)null);
+                    b.ToTable("Discounts");
                 });
 
             modelBuilder.Entity("HotelNamo.Models.Feedback", b =>
@@ -224,7 +224,7 @@ namespace HotelNamo.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Feedbacks", (string)null);
+                    b.ToTable("Feedbacks");
                 });
 
             modelBuilder.Entity("HotelNamo.Models.HousekeepingTask", b =>
@@ -261,7 +261,7 @@ namespace HotelNamo.Migrations
 
                     b.HasIndex("RoomId");
 
-                    b.ToTable("HousekeepingTasks", (string)null);
+                    b.ToTable("HousekeepingTasks");
                 });
 
             modelBuilder.Entity("HotelNamo.Models.MaintenanceRequest", b =>
@@ -293,7 +293,7 @@ namespace HotelNamo.Migrations
 
                     b.HasIndex("RoomId");
 
-                    b.ToTable("MaintenanceRequests", (string)null);
+                    b.ToTable("MaintenanceRequests");
                 });
 
             modelBuilder.Entity("HotelNamo.Models.Notification", b =>
@@ -320,7 +320,7 @@ namespace HotelNamo.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Notifications", (string)null);
+                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("HotelNamo.Models.Payment", b =>
@@ -354,7 +354,7 @@ namespace HotelNamo.Migrations
 
                     b.HasIndex("BookingId");
 
-                    b.ToTable("Payments", (string)null);
+                    b.ToTable("Payments");
                 });
 
             modelBuilder.Entity("HotelNamo.Models.Room", b =>
@@ -388,7 +388,7 @@ namespace HotelNamo.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Rooms", (string)null);
+                    b.ToTable("Rooms");
                 });
 
             modelBuilder.Entity("HotelNamo.Models.RoomAmenity", b =>
@@ -403,7 +403,7 @@ namespace HotelNamo.Migrations
 
                     b.HasIndex("AmenityId");
 
-                    b.ToTable("RoomAmenities", (string)null);
+                    b.ToTable("RoomAmenities");
                 });
 
             modelBuilder.Entity("HotelNamo.Models.RoomImage", b =>
@@ -425,7 +425,7 @@ namespace HotelNamo.Migrations
 
                     b.HasIndex("RoomId");
 
-                    b.ToTable("RoomImages", (string)null);
+                    b.ToTable("RoomImages");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -614,7 +614,7 @@ namespace HotelNamo.Migrations
                     b.HasOne("HotelNamo.Models.ApplicationUser", "AssignedStaff")
                         .WithMany()
                         .HasForeignKey("AssignedStaffId")
-                        .OnDelete(DeleteBehavior.SetNull)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("HotelNamo.Models.Room", "Room")

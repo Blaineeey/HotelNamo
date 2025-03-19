@@ -1,17 +1,441 @@
 ﻿@model HotelNamo.Models.Booking
+@{
+    ViewData["Title"] = "Booking Confirmation";
+    Layout = "_UserLayout";
 
-<h2>Confirm Your Booking</h2>
-<div class="card">
-    <div class="card-body">
-        <h5>Room: @Model.Room.RoomNumber (@Model.Room.Category)</h5>
-        <p><strong>Check-in:</strong> @Model.CheckInDate.ToShortDateString()</p>
-        <p><strong>Check-out:</strong> @Model.CheckOutDate.ToShortDateString()</p>
-        <p><strong>Total Price:</strong> @Model.TotalPrice.ToString("C")</p>
-        <p><strong>Special Requests:</strong> @(Model.SpecialRequests ?? "None")</p>
+    // Calculate number of nights
+    int nights = (int)(Model.CheckOutDate - Model.CheckInDate).TotalDays;
+}
 
-        <form asp-action="ConfirmBooking" method="post">
-            @Html.AntiForgeryToken()
-            <button type="submit" class="btn btn-primary">Confirm & Go to My Bookings</button>
-        </form>
+<div class="container my-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <!-- Booking Process Steps -->
+            <div class="booking-steps mb-4">
+                <div class="step completed">
+                    <div class="step-number">1</div>
+                    <div class="step-text">Booking Details</div>
+                </div>
+                <div class="step-connector completed"></div>
+                <div class="step completed">
+                    <div class="step-number">2</div>
+                    <div class="step-text">Payment</div>
+                </div>
+                <div class="step-connector completed"></div>
+                <div class="step active">
+                    <div class="step-number">3</div>
+                    <div class="step-text">Confirmation</div>
+                </div>
+            </div>
+
+            <!-- Success Message -->
+            <div class="text-center mb-4">
+                <div class="confirmation-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h2 class="about-title">Thank You For Your Booking</h2>
+                <h1 class="display-6">Booking Confirmed</h1>
+                <p class="lead text-muted">Booking #@Model.Id.ToString().PadLeft(8, '0')</p>
+            </div>
+
+            <!-- Confirmation Card -->
+            <div class="card shadow-sm border-0 mb-4" id="receipt-content">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-info-circle me-2 text-muted"></i>
+                        Booking Details
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="detail-group">
+                                <h6 class="detail-label">Room</h6>
+                                <p class="detail-value">@Model.Room.RoomNumber - @Model.Room.Category</p>
+                            </div>
+
+                            <div class="detail-group">
+                                <h6 class="detail-label">Check-in Date</h6>
+                                <p class="detail-value">@Model.CheckInDate.ToString("dddd, MMMM d, yyyy")</p>
+                                <small class="text-muted">After 3:00 PM</small>
+                            </div>
+
+                            <div class="detail-group">
+                                <h6 class="detail-label">Check-out Date</h6>
+                                <p class="detail-value">@Model.CheckOutDate.ToString("dddd, MMMM d, yyyy")</p>
+                                <small class="text-muted">Before 11:00 AM</small>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="detail-group">
+                                <h6 class="detail-label">Duration</h6>
+                                <p class="detail-value">@nights night@(nights != 1 ? "s" : "")</p>
+                            </div>
+
+                            <div class="detail-group">
+                                <h6 class="detail-label">Total Price</h6>
+                                <p class="detail-value booking-price">@Model.TotalPrice.ToString("C")</p>
+                                <small class="text-muted">Including all taxes and fees</small>
+                            </div>
+
+                            <div class="detail-group">
+                                <h6 class="detail-label">Payment Status</h6>
+                                <p class="detail-value">
+                                    <span class="badge bg-success">Paid</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.SpecialRequests))
+                    {
+                        <div class="special-requests mt-3 p-3 bg-light rounded">
+                            <h6 class="mb-2">
+                                <i class="fas fa-concierge-bell me-2"></i>
+                                Special Requests
+                            </h6>
+                            <p class="mb-0">@Model.SpecialRequests</p>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- What's Next Card -->
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-clipboard-list me-2 text-muted"></i>
+                        What's Next
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="next-steps">
+                        <div class="next-step">
+                            <div class="next-step-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="next-step-content">
+                                <h6>Confirmation Email</h6>
+                                <p>We've sent a confirmation email to your registered email address with all the details of your booking.</p>
+                            </div>
+                        </div>
+
+                        <div class="next-step">
+                            <div class="next-step-icon">
+                                <i class="fas fa-calendar-alt"></i>
+                            </div>
+                            <div class="next-step-content">
+                                <h6>Manage Your Booking</h6>
+                                <p>You can view, modify, or cancel your booking anytime through the "My Bookings" section of your account.</p>
+                            </div>
+                        </div>
+
+                        <div class="next-step">
+                            <div class="next-step-icon">
+                                <i class="fas fa-door-open"></i>
+                            </div>
+                            <div class="next-step-content">
+                                <h6>Check-in Process</h6>
+                                <p>On your arrival date, simply present your ID at the front desk for a seamless check-in experience.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="text-center">
+                <form asp-action="ConfirmBooking" method="post" class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-primary btn-lg px-4">Go to My Bookings</button>
+                </form>
+
+                <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary btn-lg px-4 ms-2">Return to Homepage</a>
+
+                <div class="mt-3">
+                    <button id="downloadPdf" class="btn btn-outline-primary">
+                        <i class="fas fa-file-pdf me-1"></i> Download Receipt
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+
+@section Styles {
+    <style>
+        /* About title styling to match home page */
+        .about-title {
+            color: #b59678;
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Booking steps styling */
+        .booking-steps {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
+        .step-number {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #f0f0f0;
+            color: #666;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-right: 10px;
+        }
+
+        .step.active .step-number {
+            background-color: #b59678;
+            color: white;
+        }
+
+        .step.completed .step-number {
+            background-color: #b59678;
+            color: white;
+        }
+
+        .step-connector {
+            flex-grow: 1;
+            height: 2px;
+            background-color: #f0f0f0;
+            margin: 0 10px;
+        }
+
+            .step-connector.completed {
+                background-color: #b59678;
+            }
+
+        .step-text {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Confirmation icon */
+        .confirmation-icon {
+            font-size: 5rem;
+            color: #28a745;
+            margin-bottom: 1rem;
+        }
+
+        /* Detail groups */
+        .detail-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.25rem;
+        }
+
+        .detail-value {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .booking-price {
+            color: #b59678;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        /* Next steps */
+        .next-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .next-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .next-step-icon {
+            width: 40px;
+            height: 40px;
+            background-color: rgba(181, 150, 120, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #b59678;
+            font-size: 1.2rem;
+        }
+
+        .next-step-content {
+            flex: 1;
+        }
+
+            .next-step-content h6 {
+                margin-bottom: 0.5rem;
+            }
+
+            .next-step-content p {
+                color: #6c757d;
+                margin-bottom: 0;
+            }
+
+        /* Button styling to match your site */
+        .btn-primary {
+            background-color: #b59678;
+            border-color: #b59678;
+        }
+
+            .btn-primary:hover {
+                background-color: #a08467;
+                border-color: #a08467;
+            }
+
+        .btn-outline-primary {
+            color: #b59678;
+            border-color: #b59678;
+        }
+
+            .btn-outline-primary:hover {
+                background-color: #b59678;
+                border-color: #b59678;
+                color: white;
+            }
+
+        .bg-success {
+            background-color: #5cb85c !important;
+        }
+
+        /* Loading indicator styles */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .loading-text {
+            background-color: white;
+            border: 1px solid #b59678;
+            color: #b59678;
+            padding: 15px 30px;
+            border-radius: 4px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            font-weight: 500;
+        }
+    </style>
+}
+
+@section Scripts {
+    <!-- Include jsPDF and html2canvas libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add click event listener to download button
+            document.getElementById('downloadPdf').addEventListener('click', function() {
+                generatePDF();
+            });
+
+            function generatePDF() {
+                // Create loading overlay
+                const loadingOverlay = document.createElement('div');
+                loadingOverlay.className = 'loading-overlay';
+                loadingOverlay.innerHTML = '<div class="loading-text">Generating PDF...</div>';
+                document.body.appendChild(loadingOverlay);
+
+                // Get the element to be converted
+                const element = document.getElementById('receipt-content');
+
+                // Generate receipt title with booking number
+                const bookingNumber = '@Model.Id.ToString().PadLeft(8, '0')';
+                const hotelName = 'Hotel Namo';
+
+                // Create PDF using html2canvas and jsPDF
+                html2canvas(element, {
+                    scale: 2, // Higher scale for better quality
+                    useCORS: true,
+                    logging: false
+                }).then(canvas => {
+                    // Initialize jsPDF
+                    const { jsPDF } = window.jspdf;
+                    const pdf = new jsPDF('p', 'mm', 'a4');
+
+                    // PDF dimensions
+                    const pdfWidth = pdf.internal.pageSize.getWidth();
+                    const pdfHeight = pdf.internal.pageSize.getHeight();
+
+                    // Calculate the ratio to fit the canvas to the PDF width
+                    const imgWidth = pdfWidth - 20; // 10mm margin on each side
+                    const imgHeight = canvas.height * imgWidth / canvas.width;
+
+                    // Add hotel logo/header (placeholder - you can replace with actual logo)
+                    pdf.setFillColor(181, 150, 120); // #b59678
+                    pdf.rect(0, 0, pdfWidth, 30, 'F');
+                    pdf.setTextColor(255, 255, 255);
+                    pdf.setFont('helvetica', 'bold');
+                    pdf.setFontSize(18);
+                    pdf.text(hotelName, 10, 15);
+
+                    // Add receipt title
+                    pdf.setTextColor(0, 0, 0);
+                    pdf.setFontSize(16);
+                    pdf.text('Booking Receipt', 10, 40);
+
+                    // Add booking number
+                    pdf.setFontSize(12);
+                    pdf.text(`Booking #${bookingNumber}`, 10, 48);
+
+                    // Add generation date
+                    const today = new Date();
+                    pdf.setFontSize(10);
+                    pdf.text(`Generated on: ${today.toLocaleDateString()} at ${today.toLocaleTimeString()}`, 10, 55);
+
+                    // Add booking details image from canvas
+                    pdf.addImage(
+                        canvas.toDataURL('image/png'),
+                        'PNG',
+                        10, // x position
+                        65, // y position
+                        imgWidth,
+                        imgHeight
+                    );
+
+                    // Add footer
+                    const footerY = Math.min(65 + imgHeight + 20, pdfHeight - 10);
+                    pdf.setFontSize(10);
+                    pdf.setTextColor(100, 100, 100);
+                    pdf.text('Thank you for choosing Hotel Namo. We look forward to your stay!', pdfWidth/2, footerY, { align: 'center' });
+
+                    // Save PDF
+                    pdf.save(`HotelNamo_Booking_${bookingNumber}.pdf`);
+
+                    // Remove loading overlay
+                    document.body.removeChild(loadingOverlay);
+                });
+            }
+        });
+    </script>
+}

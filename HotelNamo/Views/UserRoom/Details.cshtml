@@ -1,38 +1,175 @@
 ﻿@model HotelNamo.Models.Room
+@{
+    ViewData["Title"] = $"Room {Model.RoomNumber} Details";
+    Layout = "_UserLayout";
+
+    // Helper function to determine image path based on room category
+    string GetImagePath(string category)
+    {
+        return category switch
+        {
+            "Single" => "~/images/rooms/single-room.jpg",
+            "Double" => "~/images/rooms/guest-room.jpg",
+            "Suite" => "~/images/rooms/superior-room.jpg",
+            _ => "~/images/rooms/deluxe-room.jpg" // fallback image
+        };
+    }
+
+    // Sample amenities based on room category (you can replace with actual data from your model)
+    var amenities = Model.Category switch
+    {
+        "Single" => new[] { "Queen Bed", "32\" TV", "Work Desk", "Free Wi-Fi", "Air Conditioning" },
+        "Double" => new[] { "Two Queen Beds", "42\" Smart TV", "Work Desk", "Free Wi-Fi", "Air Conditioning", "Mini Bar" },
+        "Suite" => new[] { "King Bed", "55\" Smart TV", "Sitting Area", "Free Wi-Fi", "Air Conditioning", "Mini Bar", "Jacuzzi", "Premium View" },
+        _ => new[] { "Queen Bed", "32\" TV", "Work Desk", "Free Wi-Fi", "Air Conditioning" }
+    };
+}
 
 <div class="container my-5">
-    <div class="card shadow-lg">
-        <!-- Room Image -->
-        <img src="~/images/deluxe-room.jpg" class="card-img-top" alt="Room Image" style="height: 300px; object-fit: cover;">
+    <div class="card shadow-sm border-0 overflow-hidden">
+        <div class="row g-0">
+            <!-- Room Image Section -->
+            <div class="col-lg-6 position-relative">
+                <img src="@Url.Content(GetImagePath(Model.Category))"
+                     class="img-fluid h-100 w-100"
+                     alt="@Model.Category Room"
+                     style="object-fit: cover; min-height: 400px;"
+                     onerror="this.onerror=null; this.src='@Url.Content("~/images/deluxe-room.jpg")';">
 
-        <div class="card-body">
-            <h2 class="card-title text-center">Room @Model.RoomNumber</h2>
-            <hr>
-            <p class="card-text"><strong>Category:</strong> @Model.Category</p>
-            <p class="card-text"><strong>Price:</strong> $@Model.Price</p>
-            <p class="card-text">
-                <strong>Status:</strong>
-                @if (Model.Status == "Vacant")
-                {
-                    <span class="badge bg-success">Vacant</span>
-                }
-                else
-                {
-                    <span class="badge bg-danger">Occupied</span>
-                }
-            </p>
-            <p class="card-text mt-3">
-                <strong>Description:</strong>
-                @Model.Description This luxurious room offers the perfect blend of comfort and elegance. Enjoy a spacious layout with modern amenities, plush bedding, and a stunning view. Ideal for both business and leisure travelers.
-            </p>
-            <div class="d-flex justify-content-center mt-4">
-                <!-- "Book Now" button -->
-                <a asp-action="Create" asp-controller="Booking"
-                   asp-route-roomId="@Model.Id"
-                   class="btn btn-primary btn-lg">
-                    Book Now
-                </a>
+                <!-- Status Badge Overlay -->
+                <div class="position-absolute top-0 end-0 m-3">
+                    <span class="badge fs-6 px-3 py-2 @(Model.Status == "Vacant" ? "bg-success" : "bg-danger")">
+                        @Model.Status
+                    </span>
+                </div>
+
+                <!-- Category Badge Overlay -->
+                <div class="position-absolute bottom-0 start-0 m-3">
+                    <span class="badge bg-dark bg-opacity-75 fs-6 px-3 py-2">
+                        @Model.Category Room
+                    </span>
+                </div>
+            </div>
+
+            <!-- Room Details Section -->
+            <div class="col-lg-6">
+                <div class="card-body p-4 p-lg-5">
+                    <!-- Back to Rooms Link -->
+                    <div class="mb-3">
+                        <a href="javascript:history.back()" class="text-decoration-none text-muted">
+                            <i class="fas fa-arrow-left me-1"></i> Back to Rooms
+                        </a>
+                    </div>
+
+                    <!-- Room Title -->
+                    <h2 class="card-title display-6 mb-1">Room @Model.RoomNumber</h2>
+                    <p class="text-muted mb-4">@Model.Category Experience</p>
+
+                    <!-- Price and Book Now Button -->
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <span class="fs-2 fw-bold text-primary">@($"{Model.Price:C0}")</span>
+                            <span class="text-muted">/night</span>
+                        </div>
+
+                        <a asp-action="Create" asp-controller="Booking"
+                           asp-route-roomId="@Model.Id"
+                           class="btn btn-primary btn-lg px-4 rounded-pill">
+                            <i class="fas fa-calendar-check me-2"></i>Book Now
+                        </a>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <!-- Room Description -->
+                    <div class="mb-4">
+                        <h5 class="mb-3"><i class="fas fa-info-circle me-2"></i>Description</h5>
+                        <p class="card-text">
+                            @(string.IsNullOrEmpty(Model.Description) ?
+                                "This luxurious room offers the perfect blend of comfort and elegance. Enjoy a spacious layout with modern amenities, plush bedding, and a stunning view. Ideal for both business and leisure travelers." :
+                                Model.Description)
+                        </p>
+                    </div>
+
+                    <!-- Room Amenities -->
+                    <div class="mb-4">
+                        <h5 class="mb-3"><i class="fas fa-concierge-bell me-2"></i>Amenities</h5>
+                        <div class="row">
+                            @foreach (var amenity in amenities)
+                            {
+                                <div class="col-md-6 mb-2">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-check text-success me-2"></i>
+                                        <span>@amenity</span>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Room Policies -->
+                    <div>
+                        <h5 class="mb-3"><i class="fas fa-clipboard-list me-2"></i>Policies</h5>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-clock text-muted me-2"></i>
+                                    <div>
+                                        <div class="fw-bold">Check-in</div>
+                                        <div class="small text-muted">After 3:00 PM</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-sign-out-alt text-muted me-2"></i>
+                                    <div>
+                                        <div class="fw-bold">Check-out</div>
+                                        <div class="small text-muted">Before 11:00 AM</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-smoking-ban text-muted me-2"></i>
+                                    <div>
+                                        <div class="fw-bold">Smoking</div>
+                                        <div class="small text-muted">Not allowed</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-paw text-muted me-2"></i>
+                                    <div>
+                                        <div class="fw-bold">Pets</div>
+                                        <div class="small text-muted">Not allowed</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+@section Styles {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        .text-primary {
+            color: #b59678 !important;
+        }
+
+        .btn-primary {
+            background-color: #b59678;
+            border-color: #b59678;
+        }
+
+            .btn-primary:hover {
+                background-color: #a08467;
+                border-color: #a08467;
+            }
+    </style>
+}

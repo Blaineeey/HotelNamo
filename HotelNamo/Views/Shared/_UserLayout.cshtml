@@ -54,43 +54,50 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "Index" && ViewContext.RouteData.Values["Controller"].ToString() == "Home" ? "active" : "")"
+                        <a class="nav-link @(ViewContext.RouteData.Values["Action"]?.ToString() == "Index" && ViewContext.RouteData.Values["Controller"]?.ToString() == "Home" ? "active" : "")"
                            asp-controller="Home" asp-action="Index">Home</a>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle @(ViewContext.RouteData.Values["Controller"].ToString() == "UserRoom" ? "active" : "")"
+                        <a class="nav-link dropdown-toggle @(ViewContext.RouteData.Values["Controller"]?.ToString() == "UserRoom" ? "active" : "")"
                            href="#" id="roomsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Rooms & Suites
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="roomsDropdown">
                             <li><a class="dropdown-item" asp-controller="UserRoom" asp-action="Index">All Rooms</a></li>
-                            <li><a class="dropdown-item" asp-controller="UserRoom" asp-action="Deluxe">Deluxe Rooms</a></li>
-                            <li><a class="dropdown-item" asp-controller="UserRoom" asp-action="Suite">Luxury Suites</a></li>
+                            <li><a class="dropdown-item" asp-controller="UserRoom" asp-action="Single">Single Rooms</a></li>
+                            <li><a class="dropdown-item" asp-controller="UserRoom" asp-action="Double">Double Rooms</a></li>
                             <li><a class="dropdown-item" asp-controller="UserRoom" asp-action="Family">Family Rooms</a></li>
+                            <li><a class="dropdown-item" asp-controller="UserRoom" asp-action="Suite">Luxury Suites</a></li>
                         </ul>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Amenities" ? "active" : "")"
+                        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Amenities" ? "active" : "")"
                            href="~/Amenities">Amenities</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "About" ? "active" : "")"
+                        <a class="nav-link @(ViewContext.RouteData.Values["Action"]?.ToString() == "About" ? "active" : "")"
                            asp-controller="Home" asp-action="About">About</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "Contact" ? "active" : "")"
+                        <a class="nav-link @(ViewContext.RouteData.Values["Action"]?.ToString() == "Contact" ? "active" : "")"
                            asp-controller="Home" asp-action="Contact">Contact</a>
                     </li>
                 </ul>
                 <div class="navbar-nav ms-auto">
                     @if (SignInManager.IsSignedIn(User))
                     {
-                        var user = await UserManager.GetUserAsync(User);
+                        ApplicationUser user = null;
+                        try
+                        {
+                            user = await UserManager.GetUserAsync(User);
+                        }
+                        catch { }
+
                         <div class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                                data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="fas fa-user-circle me-1"></i>
-                                Hello, @user.FirstName!
+                                Hello, @(user?.FirstName ?? "Guest")!
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                                 <li>
@@ -157,11 +164,11 @@
                 <div class="col-md-4 mb-4 mb-md-0">
                     <h5>Quick Links</h5>
                     <ul class="list-unstyled">
-                        <li><a href="#" class="text-light text-decoration-none">Our Rooms</a></li>
-                        <li><a href="#" class="text-light text-decoration-none">Amenities</a></li>
+                        <li><a asp-controller="UserRoom" asp-action="Index" class="text-light text-decoration-none">Our Rooms</a></li>
+                        <li><a href="~/Amenities" class="text-light text-decoration-none">Amenities</a></li>
                         <li><a href="#" class="text-light text-decoration-none">Special Offers</a></li>
-                        <li><a href="#" class="text-light text-decoration-none">About Us</a></li>
-                        <li><a href="#" class="text-light text-decoration-none">Contact Us</a></li>
+                        <li><a asp-controller="Home" asp-action="About" class="text-light text-decoration-none">About Us</a></li>
+                        <li><a asp-controller="Home" asp-action="Contact" class="text-light text-decoration-none">Contact Us</a></li>
                     </ul>
                 </div>
                 <div class="col-md-4">

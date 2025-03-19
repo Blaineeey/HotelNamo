@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HotelNamo.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250313111503_AddConfirmationStep")]
-    partial class AddConfirmationStep
+    [Migration("20250319074406_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -239,7 +239,6 @@ namespace HotelNamo.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("AssignedStaffId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime?>("CompletedAt")
@@ -257,8 +256,7 @@ namespace HotelNamo.Migrations
 
                     b.Property<string>("TaskDescription")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -277,20 +275,24 @@ namespace HotelNamo.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<bool>("IsResolved")
-                        .HasColumnType("bit");
+                    b.Property<string>("AssignedStaffId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("IssueDescription")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("RequestDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<int>("RoomId")
                         .HasColumnType("int");
 
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("AssignedStaffId");
 
                     b.HasIndex("RoomId");
 
@@ -597,8 +599,7 @@ namespace HotelNamo.Migrations
                     b.HasOne("HotelNamo.Models.ApplicationUser", "AssignedStaff")
                         .WithMany()
                         .HasForeignKey("AssignedStaffId")
-                        .OnDelete(DeleteBehavior.SetNull)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("HotelNamo.Models.Room", "Room")
                         .WithMany("HousekeepingTasks")
@@ -613,11 +614,19 @@ namespace HotelNamo.Migrations
 
             modelBuilder.Entity("HotelNamo.Models.MaintenanceRequest", b =>
                 {
+                    b.HasOne("HotelNamo.Models.ApplicationUser", "AssignedStaff")
+                        .WithMany()
+                        .HasForeignKey("AssignedStaffId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("HotelNamo.Models.Room", "Room")
                         .WithMany()
                         .HasForeignKey("RoomId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("AssignedStaff");
 
                     b.Navigation("Room");
                 });
