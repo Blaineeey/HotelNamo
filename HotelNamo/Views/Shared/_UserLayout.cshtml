@@ -45,18 +45,28 @@
                 <ul class="navbar-nav ms-auto">
                     @if (SignInManager.IsSignedIn(User))
                     {
-                        var user = await UserManager.GetUserAsync(User);
-                        <li class="nav-item">
-                            <span class="nav-link disabled">Hello, @user.FirstName!</span>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Home" asp-action="UserHome">User Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <form asp-controller="Account" asp-action="Logout" method="post">
-                                <button type="submit" class="btn btn-link nav-link">Logout</button>
-                            </form>
-                        </li>
+                        var currentUser = await UserManager.GetUserAsync(User);
+                        if (currentUser != null)
+                        {
+                            <li class="nav-item">
+                                <span class="nav-link disabled">Hello, @currentUser.FirstName!</span>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Home" asp-action="UserHome">User Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <form asp-controller="Account" asp-action="Logout" method="post">
+                                    <button type="submit" class="btn btn-link nav-link">Logout</button>
+                                </form>
+                            </li>
+                        }
+                        else
+                        {
+                            <!-- If user is not found in DB, treat them like they're not fully logged in -->
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Account" asp-action="Login">Login</a>
+                            </li>
+                        }
                     }
                     else
                     {
@@ -67,6 +77,7 @@
                             <a class="nav-link" asp-controller="Account" asp-action="Register">Register</a>
                         </li>
                     }
+
                 </ul>
             </div>
         </div>

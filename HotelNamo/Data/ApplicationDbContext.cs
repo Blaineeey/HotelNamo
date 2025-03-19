@@ -33,7 +33,7 @@ namespace HotelNamo.Data
                 .HasOne(m => m.AssignedStaff)
                 .WithMany()
                 .HasForeignKey(m => m.AssignedStaffId)
-                .OnDelete(DeleteBehavior.SetNull);
+                .OnDelete(DeleteBehavior.Restrict);
 
             builder.Entity<HousekeepingTask>()
                 .HasOne(ht => ht.Room)

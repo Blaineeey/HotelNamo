@@ -27,6 +27,8 @@ namespace HotelNamo.Data
             // Seed Admin user explicitly
             string adminEmail = "admin@hotelnamo.com";
             string adminPassword = "Admin123!";
+            string adminFirstName = "Admin";
+            string adminLastName = "User";
 
             var adminUser = await userManager.FindByEmailAsync(adminEmail);
 
@@ -35,7 +37,9 @@ namespace HotelNamo.Data
                 adminUser = new ApplicationUser
                 {
                     UserName = adminEmail,
-                    Email = adminEmail
+                    Email = adminEmail,
+                    FirstName = adminFirstName,
+                    LastName = adminLastName
                 };
                 var result = await userManager.CreateAsync(adminUser, adminPassword);
 
