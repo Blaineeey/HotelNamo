@@ -134,6 +134,9 @@ namespace HotelNamo.Migrations
                     b.Property<DateTime?>("ActualCheckOutTime")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime>("BookingDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime>("CheckInDate")
                         .HasColumnType("datetime2");
 
@@ -205,6 +208,9 @@ namespace HotelNamo.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("BookingId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("DateSubmitted")
                         .HasColumnType("datetime2");
 
@@ -216,11 +222,19 @@ namespace HotelNamo.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
+                    b.Property<int>("RoomId")
+                        .HasColumnType("int");
+
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("BookingId")
+                        .IsUnique();
+
+                    b.HasIndex("RoomId");
 
                     b.HasIndex("UserId");
 
@@ -582,11 +596,27 @@ namespace HotelNamo.Migrations
 
             modelBuilder.Entity("HotelNamo.Models.Feedback", b =>
                 {
+                    b.HasOne("HotelNamo.Models.Booking", "Booking")
+                        .WithOne("Feedback")
+                        .HasForeignKey("HotelNamo.Models.Feedback", "BookingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HotelNamo.Models.Room", "Room")
+                        .WithMany("Feedbacks")
+                        .HasForeignKey("RoomId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("HotelNamo.Models.ApplicationUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Booking");
+
+                    b.Navigation("Room");
 
                     b.Navigation("User");
                 });
@@ -725,9 +755,16 @@ namespace HotelNamo.Migrations
                     b.Navigation("RoomAmenities");
                 });
 
+            modelBuilder.Entity("HotelNamo.Models.Booking", b =>
+                {
+                    b.Navigation("Feedback");
+                });
+
             modelBuilder.Entity("HotelNamo.Models.Room", b =>
                 {
                     b.Navigation("Bookings");
+
+                    b.Navigation("Feedbacks");
 
                     b.Navigation("HousekeepingTasks");
 

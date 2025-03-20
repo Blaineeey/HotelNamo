@@ -1,5 +1,5 @@
 ﻿@model HotelNamo.Models.Feedback
-﻿@{
+@{
     Layout = "_UserLayout";
     ViewData["Title"] = "Share Your Experience";
 }
@@ -40,14 +40,36 @@
                     @if (!ViewContext.ModelState.IsValid)
                     {
                         <div class="alert alert-danger">
-                            <div asp-validation-summary="All" class="mb-0"></div>
+                            <div asp-validation-summary="ModelOnly" class="mb-0"></div>
                         </div>
                     }
 
                     <p class="lead mb-4">Thank you for staying with us. Your feedback helps us improve our services.</p>
 
+                    @if (ViewBag.BookingDetails != null)
+                    {
+                        <div class="card bg-light mb-4">
+                            <div class="card-body">
+                                <h5 class="card-title">Stay Details</h5>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p class="mb-1"><strong>Room:</strong> @ViewBag.RoomNumber</p>
+                                        <p class="mb-1"><strong>Check-in:</strong> @ViewBag.BookingDetails.CheckInDate.ToString("MMM dd, yyyy")</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p class="mb-1"><strong>Check-out:</strong> @ViewBag.BookingDetails.CheckOutDate.ToString("MMM dd, yyyy")</p>
+                                        <p class="mb-1"><strong>Duration:</strong> @((ViewBag.BookingDetails.CheckOutDate - ViewBag.BookingDetails.CheckInDate).Days) night(s)</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
                     <form asp-action="Submit" method="post">
                         <input type="hidden" asp-for="Rating" id="ratingValue" />
+                        <!-- Ensure BookingId and RoomId are passed correctly -->
+                        <input type="hidden" asp-for="BookingId" />
+                        <input type="hidden" asp-for="RoomId" />
 
                         <div class="mb-4">
                             <label class="form-label fw-bold">Your Overall Rating</label>

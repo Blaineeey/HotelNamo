@@ -23,6 +23,7 @@ namespace HotelNamo.Controllers
             var rooms = _context.Rooms
                 .Include(r => r.RoomImages)
                 .Include(r => r.RoomAmenities).ThenInclude(ra => ra.Amenity)
+                .Include(r => r.Feedbacks)
                 .Where(r => r.Status == "Vacant")
                 .ToList();
 
@@ -35,8 +36,12 @@ namespace HotelNamo.Controllers
         {
             var room = _context.Rooms
                 .Include(r => r.RoomAmenities)
-                    .ThenInclude(ra => ra.Amenity)
+                .ThenInclude(ra => ra.Amenity)
                 .Include(r => r.RoomImages)
+                .Include(r => r.Feedbacks)
+                    .ThenInclude(f => f.User) 
+                .Include(r => r.Feedbacks)
+                    .ThenInclude(f => f.Booking)
                 .FirstOrDefault(r => r.Id == id);
 
             if (room == null)

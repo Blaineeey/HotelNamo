@@ -86,7 +86,6 @@
                             <option value="default">Default</option>
                             <option value="price-asc">Price: Low to High</option>
                             <option value="price-desc">Price: High to Low</option>
-                            <option value="category">Category</option>
                         </select>
                     </div>
 
@@ -174,6 +173,38 @@
                                             }
                                         </div>
                                     </div>
+                                </div>
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="star-rating me-2">
+                                        @{
+                                            decimal rating = room.AverageRating;
+                                            for (int i = 1; i <= 5; i++)
+                                            {
+                                                if (i <= Math.Floor(rating))
+                                                {
+                                                    <i class="fas fa-star text-warning"></i>
+                                                }
+                                                else if (i <= Math.Ceiling(rating) && rating % 1 != 0)
+                                                {
+                                                    <i class="fas fa-star-half-alt text-warning"></i>
+                                                }
+                                                else
+                                                {
+                                                    <i class="far fa-star text-warning"></i>
+                                                }
+                                            }
+                                        }
+                                    </div>
+                                    <span class="small text-muted">
+                                        @if (room.FeedbackCount > 0)
+                                        {
+                                            <text>@room.AverageRating.ToString("0.0") (@room.FeedbackCount @(room.FeedbackCount == 1 ? "review" : "reviews"))</text>
+                                        }
+                                        else
+                                        {
+                                            <text>No reviews yet</text>
+                                        }
+                                    </span>
                                 </div>
 
                                 <div class="d-flex gap-2">
