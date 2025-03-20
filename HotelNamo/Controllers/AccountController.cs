@@ -65,7 +65,7 @@ namespace HotelNamo.Controllers
                 }
                 else
                 {
-                    return RedirectToAction("UserHome", "Home");
+                    return RedirectToAction("", "Home");
                 }
             }
 
