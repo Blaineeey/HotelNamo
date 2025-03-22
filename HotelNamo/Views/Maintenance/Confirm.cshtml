@@ -1,0 +1,21 @@
+﻿@model HotelNamo.Models.MaintenanceRequest
+
+<h2>🔍 Confirm Maintenance Request</h2>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<form asp-action="Confirm" method="post">
+    <input type="hidden" asp-for="RoomId" />
+    <input type="hidden" asp-for="AssignedStaffId" />
+
+    <p><strong>Room:</strong> @(Model.Room != null ? $"{Model.Room.RoomNumber} - {Model.Room.Category}" : "N/A")</p>
+    <p><strong>Assigned Staff:</strong> @ViewBag.AssignedStaffName</p>
+
+    <label>Issue Description</label>
+    <textarea asp-for="IssueDescription" class="form-control" required>@Model.IssueDescription</textarea>
+
+    <button type="submit" class="btn btn-success mt-3">Confirm & Submit</button>
+</form>

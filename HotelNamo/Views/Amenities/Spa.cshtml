@@ -1,0 +1,685 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+@{
+    ViewData["Title"] = "Spa & Wellness";
+    ViewData["MetaDescription"] = "Indulge in relaxation and rejuvenation at HotelNamo's luxury spa with massage treatments, facials, and wellness experiences.";
+    Layout = "_UserLayout";
+}
+
+<!-- Hero Section -->
+<div class="position-relative">
+    <!-- Hero Image -->
+    <div class="hero-image">
+        <img src="~/images/amenities/spa-hero.jpg" class="w-100" alt="Luxury spa setting" style="height: 500px; object-fit: cover; filter: brightness(0.8);">
+    </div>
+
+    <!-- Overlay Text -->
+    <div class="position-absolute top-50 start-50 translate-middle text-center text-white">
+        <h1 class="display-4 fw-bold mb-3">Spa & Wellness</h1>
+        <p class="lead mb-4">Indulge in a world of relaxation and rejuvenation</p>
+        <a href="#spa-booking" class="btn btn-primary btn-lg px-4 rounded-pill">Book Treatment</a>
+    </div>
+</div>
+
+<!-- Spa Introduction -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <span class="subtitle text-primary">WELLNESS SANCTUARY</span>
+                <h2 class="mb-4">Your Journey to Wellness Begins Here</h2>
+                <p class="lead mb-4">Welcome to HotelNamo Spa, where tranquility meets luxury in a harmonious blend of ancient wellness traditions and modern techniques.</p>
+                <p class="mb-4">Our expert therapists are dedicated to providing personalized treatments that nurture mind, body, and spirit. Using only premium organic products, we ensure that each visit leaves you feeling renewed and revitalized.</p>
+                <div class="d-flex flex-wrap">
+                    <div class="me-4 mb-3">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-leaf text-primary me-2"></i>
+                            <span class="fw-bold">Organic Products</span>
+                        </div>
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-certificate text-primary me-2"></i>
+                            <span class="fw-bold">Certified Therapists</span>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-award text-primary me-2"></i>
+                            <span class="fw-bold">Award Winning</span>
+                        </div>
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-heart text-primary me-2"></i>
+                            <span class="fw-bold">Personalized Care</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="row g-3">
+                    <div class="col-6">
+                        <img src="~/images/amenities/spa-1.jpg" class="img-fluid rounded shadow" alt="Spa treatment">
+                    </div>
+                    <div class="col-6">
+                        <img src="~/images/amenities/spa-2.jpg" class="img-fluid rounded shadow" alt="Spa ambiance">
+                    </div>
+                    <div class="col-12 mt-3">
+                        <img src="~/images/amenities/spa-3.jpg" class="img-fluid rounded shadow" alt="Spa relaxation room">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Spa Facilities -->
+<section class="py-5 bg-white">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="subtitle text-primary">LUXURY AMENITIES</span>
+            <h2 class="mb-3">Our Spa Facilities</h2>
+            <p class="lead mx-auto" style="max-width: 700px;">Discover our range of premium facilities designed to elevate your spa experience</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm facility-card">
+                    <img src="~/images/amenities/sauna.jpg" class="card-img-top" alt="Sauna" style="height: 200px; object-fit: cover;">
+                    <div class="card-body">
+                        <h4 class="card-title">Finnish Sauna</h4>
+                        <p class="card-text">Experience the purifying heat of our traditional Finnish sauna, known for improving circulation and relieving stress.</p>
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-2"><i class="fas fa-temperature-high text-primary me-2"></i> Temperatures up to 90°C</li>
+                            <li><i class="fas fa-clock text-primary me-2"></i> Recommended 15-20 min sessions</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm facility-card">
+                    <img src="~/images/amenities/steam-room.jpg" class="card-img-top" alt="Steam Room" style="height: 200px; object-fit: cover;">
+                    <div class="card-body">
+                        <h4 class="card-title">Aromatherapy Steam Room</h4>
+                        <p class="card-text">Our steam room combines moist heat with essential oils to open pores, cleanse skin, and soothe respiratory systems.</p>
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-2"><i class="fas fa-spa text-primary me-2"></i> Rotating essential oil blends</li>
+                            <li><i class="fas fa-tint text-primary me-2"></i> 100% humidity for deep cleansing</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm facility-card">
+                    <img src="~/images/amenities/jacuzzi.jpg" class="card-img-top" alt="Jacuzzi" style="height: 200px; object-fit: cover;">
+                    <div class="card-body">
+                        <h4 class="card-title">Hydrotherapy Jacuzzi</h4>
+                        <p class="card-text">Immerse yourself in our therapeutic jacuzzi with strategically placed jets that massage tired muscles and joints.</p>
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-2"><i class="fas fa-water text-primary me-2"></i> Multi-jet massage system</li>
+                            <li><i class="fas fa-thermometer-half text-primary me-2"></i> Optimal 38°C water temperature</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Spa Treatments -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="subtitle text-primary">SIGNATURE TREATMENTS</span>
+            <h2 class="mb-3">Our Spa Experiences</h2>
+            <p class="lead mx-auto" style="max-width: 700px;">Curated treatments to restore balance and enhance wellbeing</p>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-6 mb-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="row g-0 h-100">
+                        <div class="col-md-4">
+                            <img src="~/images/amenities/massage.jpg" class="img-fluid h-100 rounded-start" alt="Massage" style="object-fit: cover;">
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body d-flex flex-column h-100">
+                                <div class="mb-3">
+                                    <h4 class="card-title">Signature Massage</h4>
+                                    <div class="d-flex justify-content-between">
+                                        <p class="text-muted mb-2">60 / 90 minutes</p>
+                                        <p class="fw-bold text-primary">$120 / $170</p>
+                                    </div>
+                                </div>
+                                <p class="card-text flex-grow-1">Our signature massage combines Swedish techniques with aromatherapy using our custom-blended oils to release tension, improve circulation, and restore energy balance.</p>
+                                <a href="#spa-booking" class="btn btn-outline-primary rounded-pill mt-auto">Book Now</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6 mb-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="row g-0 h-100">
+                        <div class="col-md-4">
+                            <img src="~/images/amenities/facial.jpg" class="img-fluid h-100 rounded-start" alt="Facial" style="object-fit: cover;">
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body d-flex flex-column h-100">
+                                <div class="mb-3">
+                                    <h4 class="card-title">Luxury Facial</h4>
+                                    <div class="d-flex justify-content-between">
+                                        <p class="text-muted mb-2">75 minutes</p>
+                                        <p class="fw-bold text-primary">$150</p>
+                                    </div>
+                                </div>
+                                <p class="card-text flex-grow-1">This advanced facial combines deep cleansing, exfoliation, and nourishing masks with specialized massage techniques to rejuvenate skin and restore a youthful glow.</p>
+                                <a href="#spa-booking" class="btn btn-outline-primary rounded-pill mt-auto">Book Now</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6 mb-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="row g-0 h-100">
+                        <div class="col-md-4">
+                            <img src="~/images/amenities/hot-stone.jpg" class="img-fluid h-100 rounded-start" alt="Hot Stone Massage" style="object-fit: cover;">
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body d-flex flex-column h-100">
+                                <div class="mb-3">
+                                    <h4 class="card-title">Hot Stone Therapy</h4>
+                                    <div class="d-flex justify-content-between">
+                                        <p class="text-muted mb-2">90 minutes</p>
+                                        <p class="fw-bold text-primary">$180</p>
+                                    </div>
+                                </div>
+                                <p class="card-text flex-grow-1">Smooth, heated basalt stones are placed on key points of the body and used as massage tools. The heat penetrates muscles, releasing tension and promoting deep relaxation.</p>
+                                <a href="#spa-booking" class="btn btn-outline-primary rounded-pill mt-auto">Book Now</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6 mb-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="row g-0 h-100">
+                        <div class="col-md-4">
+                            <img src="~/images/amenities/body-scrub.jpg" class="img-fluid h-100 rounded-start" alt="Body Scrub" style="object-fit: cover;">
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body d-flex flex-column h-100">
+                                <div class="mb-3">
+                                    <h4 class="card-title">Exotic Body Scrub</h4>
+                                    <div class="d-flex justify-content-between">
+                                        <p class="text-muted mb-2">60 minutes</p>
+                                        <p class="fw-bold text-primary">$130</p>
+                                    </div>
+                                </div>
+                                <p class="card-text flex-grow-1">This invigorating treatment uses a blend of sea salt, essential oils, and botanicals to exfoliate and polish the skin, followed by a hydrating application of luxury body cream.</p>
+                                <a href="#spa-booking" class="btn btn-outline-primary rounded-pill mt-auto">Book Now</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="#" class="btn btn-primary btn-lg rounded-pill px-4">View Full Treatment Menu</a>
+        </div>
+    </div>
+</section>
+
+<!-- Spa Packages -->
+<section class="py-5 bg-white">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="subtitle text-primary">PREMIUM PACKAGES</span>
+            <h2 class="mb-3">Spa Packages</h2>
+            <p class="lead mx-auto" style="max-width: 700px;">Complete spa experiences for ultimate relaxation</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm package-card">
+                    <div class="card-body text-center p-4">
+                        <div class="package-icon bg-light rounded-circle mx-auto mb-4 d-flex align-items-center justify-content-center">
+                            <i class="fas fa-spa text-primary"></i>
+                        </div>
+                        <h4 class="card-title">Relaxation Package</h4>
+                        <p class="text-primary fw-bold mb-3">$250 | 3 hours</p>
+                        <p class="card-text mb-4">The perfect introduction to our spa offerings.</p>
+                        <ul class="list-unstyled text-start mb-4">
+                            <li class="mb-2"><i class="fas fa-check text-primary me-2"></i> 60-min Signature Massage</li>
+                            <li class="mb-2"><i class="fas fa-check text-primary me-2"></i> 60-min Express Facial</li>
+                            <li class="mb-2"><i class="fas fa-check text-primary me-2"></i> 30-min Body Scrub</li>
+                            <li class="mb-2"><i class="fas fa-check text-primary me-2"></i> Access to All Facilities</li>
+                            <li><i class="fas fa-check text-primary me-2"></i> Herbal Tea & Fresh Fruit</li>
+                        </ul>
+                        <a href="#spa-booking" class="btn btn-outline-primary rounded-pill w-100">Book Package</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow package-card featured-package">
+                    <div class="card-body text-center p-4">
+                        <div class="package-icon bg-primary rounded-circle mx-auto mb-4 d-flex align-items-center justify-content-center">
+                            <i class="fas fa-gem text-white"></i>
+                        </div>
+                        <h4 class="card-title">Premium Wellness Journey</h4>
+                        <p class="text-primary fw-bold mb-3">$380 | 5 hours</p>
+                        <p class="card-text mb-4">Our most popular comprehensive spa experience.</p>
+                        <ul class="list-unstyled text-start mb-4">
+                            <li class="mb-2"><i class="fas fa-check text-primary me-2"></i> 90-min Hot Stone Massage</li>
+                            <li class="mb-2"><i class="fas fa-check text-primary me-2"></i> 75-min Luxury Facial</li>
+                            <li class="mb-2"><i class="fas fa-check text-primary me-2"></i> 45-min Body Scrub</li>
+                            <li class="mb-2"><i class="fas fa-check text-primary me-2"></i> 30-min Foot Reflexology</li>
+                            <li class="mb-2"><i class="fas fa-check text-primary me-2"></i> Access to All Facilities</li>
+                            <li><i class="fas fa-check text-primary me-2"></i> Spa Lunch with Champagne</li>
+                        </ul>
+                        <a href="#spa-booking" class="btn btn-primary rounded-pill w-100">Book Package</a>
+                        <div class="position-absolute top-0 end-0 mt-3 me-3">
+                            <span class="badge bg-primary px-3 py-2">MOST POPULAR</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm package-card">
+                    <div class="card-body text-center p-4">
+                        <div class="package-icon bg-light rounded-circle mx-auto mb-4 d-flex align-items-center justify-content-center">
+                            <i class="fas fa-heart text-primary"></i>
+                        </div>
+                        <h4 class="card-title">Couples Retreat</h4>
+                        <p class="text-primary fw-bold mb-3">$450 | 3.5 hours</p>
+                        <p class="card-text mb-4">Shared relaxation experience for two.</p>
+                        <ul class="list-unstyled text-start mb-4">
+                            <li class="mb-2"><i class="fas fa-check text-primary me-2"></i> 90-min Couples Massage</li>
+                            <li class="mb-2"><i class="fas fa-check text-primary me-2"></i> 60-min Facial for Two</li>
+                            <li class="mb-2"><i class="fas fa-check text-primary me-2"></i> Private Jacuzzi Session</li>
+                            <li class="mb-2"><i class="fas fa-check text-primary me-2"></i> Access to All Facilities</li>
+                            <li><i class="fas fa-check text-primary me-2"></i> Champagne & Chocolate</li>
+                        </ul>
+                        <a href="#spa-booking" class="btn btn-outline-primary rounded-pill w-100">Book Package</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Booking Section -->
+<section id="spa-booking" class="py-5 bg-light">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <span class="subtitle text-primary">MAKE A RESERVATION</span>
+                <h2 class="mb-4">Book Your Spa Experience</h2>
+                <p class="lead mb-4">Indulge in the ultimate relaxation experience at our luxury spa. Reserve your treatment today.</p>
+
+                <div class="card border-0 shadow-sm p-4 mb-4">
+                    <h5 class="mb-3">Opening Hours</h5>
+                    <ul class="list-unstyled mb-0">
+                        <li class="d-flex justify-content-between mb-2">
+                            <span>Monday - Friday</span>
+                            <span class="fw-bold">10:00 AM - 9:00 PM</span>
+                        </li>
+                        <li class="d-flex justify-content-between mb-2">
+                            <span>Saturday</span>
+                            <span class="fw-bold">9:00 AM - 10:00 PM</span>
+                        </li>
+                        <li class="d-flex justify-content-between">
+                            <span>Sunday</span>
+                            <span class="fw-bold">9:00 AM - 8:00 PM</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="d-flex align-items-center mb-4">
+                    <i class="fas fa-phone-alt text-primary me-3 fa-2x"></i>
+                    <div>
+                        <p class="mb-0 text-muted">For reservations or inquiries</p>
+                        <a href="tel:+15551234567" class="text-dark fw-bold text-decoration-none fs-4">+1 (555) 123-4567</a>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-envelope text-primary me-3 fa-2x"></i>
+                    <div>
+                        <p class="mb-0 text-muted">Email us</p>
+                        <a href="mailto:spa@hotelnamo.com" class="text-dark fw-bold text-decoration-none fs-4">spa@hotelnamo.com</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card border-0 shadow">
+                    <div class="card-body p-4">
+                        <h4 class="card-title mb-4">Book an Appointment</h4>
+                        <form>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="name" class="form-label">Full Name</label>
+                                    <input type="text" class="form-control" id="name" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="email" class="form-label">Email Address</label>
+                                    <input type="email" class="form-control" id="email" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="phone" class="form-label">Phone Number</label>
+                                    <input type="tel" class="form-control" id="phone" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="guests" class="form-label">Number of Guests</label>
+                                    <select class="form-select" id="guests" required>
+                                        <option value="1">1 Person</option>
+                                        <option value="2">2 People</option>
+                                        <option value="3">3 People</option>
+                                        <option value="4">4+ People</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="date" class="form-label">Preferred Date</label>
+                                    <input type="date" class="form-control" id="date" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="time" class="form-label">Preferred Time</label>
+                                    <select class="form-select" id="time" required>
+                                        <option value="">Select Time</option>
+                                        <option>10:00 AM</option>
+                                        <option>11:00 AM</option>
+                                        <option>12:00 PM</option>
+                                        <option>1:00 PM</option>
+                                        <option>2:00 PM</option>
+                                        <option>3:00 PM</option>
+                                        <option>4:00 PM</option>
+                                        <option>5:00 PM</option>
+                                        <option>6:00 PM</option>
+                                        <option>7:00 PM</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label for="treatment" class="form-label">Select Treatment</label>
+                                    <select class="form-select" id="treatment" required>
+                                        <option value="">Select a treatment or package</option>
+                                        <optgroup label="Massages">
+                                            <option>Signature Massage (60 min)</option>
+                                            <option>Signature Massage (90 min)</option>
+                                            <option>Hot Stone Therapy (90 min)</option>
+                                            <option>Deep Tissue Massage (60 min)</option>
+                                            <option>Aromatherapy Massage (60 min)</option>
+                                        </optgroup>
+                                        <optgroup label="Facials">
+                                            <option>Luxury Facial (75 min)</option>
+                                            <option>Express Facial (30 min)</option>
+                                            <option>Anti-Aging Facial (90 min)</option>
+                                        </optgroup>
+                                        <optgroup label="Body Treatments">
+                                            <option>Exotic Body Scrub (60 min)</option>
+                                            <option>Detox Body Wrap (75 min)</option>
+                                        </optgroup>
+                                        <optgroup label="Packages">
+                                            <option>Relaxation Package (3 hours)</option>
+                                            <option>Premium Wellness Journey (5 hours)</option>
+                                            <option>Couples Retreat (3.5 hours)</option>
+                                        </optgroup>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label for="notes" class="form-label">Special Requests</label>
+                                    <textarea class="form-control" id="notes" rows="3" placeholder="Any special requests or health concerns..."></textarea>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="terms" required>
+                                        <label class="form-check-label" for="terms">
+                                            I agree to the <a href="#" class="text-primary">terms and conditions</a>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-12 mt-4">
+                                    <button type="submit" class="btn btn-primary w-100 rounded-pill btn-lg">Confirm Booking</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials -->
+<section class="py-5 bg-white">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="subtitle text-primary">GUEST EXPERIENCES</span>
+            <h2 class="mb-3">What Our Guests Say</h2>
+            <p class="lead mx-auto" style="max-width: 700px;">The experiences of our valued guests</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm p-4">
+                    <div class="text-primary mb-3">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p class="card-text mb-4">"The Premium Wellness Journey was absolutely divine. The hot stone massage melted away all my stress, and the facial left my skin glowing for days. Worth every penny!"</p>
+                    <div class="d-flex align-items-center mt-auto">
+                        <img src="~/images/testimonials/person-1.jpg" class="rounded-circle me-3" width="50" height="50" alt="Customer">
+                        <div>
+                            <h6 class="mb-0">Jennifer L.</h6>
+                            <p class="text-muted mb-0 small">New York, USA</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm p-4">
+                    <div class="text-primary mb-3">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p class="card-text mb-4">"My wife and I enjoyed the Couples Retreat during our anniversary stay. The private jacuzzi session and champagne made it extra special. The therapists were incredibly skilled and professional."</p>
+                    <div class="d-flex align-items-center mt-auto">
+                        <img src="~/images/testimonials/person-2.jpg" class="rounded-circle me-3" width="50" height="50" alt="Customer">
+                        <div>
+                            <h6 class="mb-0">Michael T.</h6>
+                            <p class="text-muted mb-0 small">Toronto, Canada</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm p-4">
+                    <div class="text-primary mb-3">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                    </div>
+                    <p class="card-text mb-4">"I visit HotelNamo Spa every time I'm in town. The signature massage is my go-to treatment. The therapists remember my preferences and the ambiance is so peaceful. It's like a second home for relaxation."</p>
+                    <div class="d-flex align-items-center mt-auto">
+                        <img src="~/images/testimonials/person-3.jpg" class="rounded-circle me-3" width="50" height="50" alt="Customer">
+                        <div>
+                            <h6 class="mb-0">Sophia W.</h6>
+                            <p class="text-muted mb-0 small">London, UK</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="subtitle text-primary">INFORMATION</span>
+            <h2 class="mb-3">Frequently Asked Questions</h2>
+            <p class="lead mx-auto" style="max-width: 700px;">Find answers to common questions about our spa services</p>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="accordion" id="spaFAQ">
+                    <div class="accordion-item border-0 mb-3 shadow-sm">
+                        <h3 class="accordion-header" id="headingOne">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                How early should I arrive for my spa treatment?
+                            </button>
+                        </h3>
+                        <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#spaFAQ">
+                            <div class="accordion-body">
+                                We recommend arriving 30 minutes before your scheduled appointment. This allows time to complete any necessary forms, change into a robe, and begin relaxing in our lounge area. This extra time helps you transition from the outside world to the peaceful spa environment.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item border-0 mb-3 shadow-sm">
+                        <h3 class="accordion-header" id="headingTwo">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                What should I wear during my treatment?
+                            </button>
+                        </h3>
+                        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#spaFAQ">
+                            <div class="accordion-body">
+                                We provide robes, slippers, and disposable undergarments for your convenience. During treatments, you'll be professionally draped to ensure your comfort and privacy at all times. You may choose to wear your own undergarments if preferred. For facials, we recommend arriving without makeup.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item border-0 mb-3 shadow-sm">
+                        <h3 class="accordion-header" id="headingThree">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                What is your cancellation policy?
+                            </button>
+                        </h3>
+                        <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#spaFAQ">
+                            <div class="accordion-body">
+                                We require 24-hour notice for cancellations or rescheduling to avoid a 50% charge. Cancellations with less than 12 hours notice or no-shows will be charged the full treatment price. We understand emergencies happen, so please contact us as soon as possible if you need to make changes.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item border-0 mb-3 shadow-sm">
+                        <h3 class="accordion-header" id="headingFour">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                                Should I avoid certain activities before or after treatments?
+                            </button>
+                        </h3>
+                        <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#spaFAQ">
+                            <div class="accordion-body">
+                                Before your treatment, avoid heavy meals, alcohol, and excessive sun exposure. After your treatment, we recommend drinking plenty of water, avoiding alcohol for at least 24 hours, and allowing yourself time to enjoy the benefits of your treatment before returning to strenuous activities.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item border-0 shadow-sm">
+                        <h3 class="accordion-header" id="headingFive">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+                                Do you offer gift certificates?
+                            </button>
+                        </h3>
+                        <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive" data-bs-parent="#spaFAQ">
+                            <div class="accordion-body">
+                                Yes, we offer gift certificates for all our treatments and packages. They can be purchased at the spa reception, through our hotel concierge, or online through our website. Gift certificates are valid for one year from the date of purchase and can be personalized with a special message.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Styles {
+    <style>
+        /* Custom styles */
+        .subtitle {
+            font-size: 0.9rem;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .text-primary {
+            color: #b59678 !important;
+        }
+
+        .bg-primary {
+            background-color: #b59678 !important;
+        }
+
+        .btn-primary {
+            background-color: #b59678;
+            border-color: #b59678;
+        }
+
+            .btn-primary:hover,
+            .btn-primary:focus {
+                background-color: #a08467;
+                border-color: #a08467;
+            }
+
+        .btn-outline-primary {
+            color: #b59678;
+            border-color: #b59678;
+        }
+
+            .btn-outline-primary:hover,
+            .btn-outline-primary:focus {
+                background-color: #b59678;
+                border-color: #b59678;
+                color: white;
+            }
+
+        .facility-card:hover {
+            transform: translateY(-5px);
+            transition: transform 0.3s ease;
+        }
+
+        .package-icon {
+            width: 80px;
+            height: 80px;
+            font-size: 2rem;
+        }
+
+        .featured-package {
+            transform: translateY(-10px);
+        }
+
+        .accordion-button:not(.collapsed) {
+            background-color: rgba(181, 150, 120, 0.1);
+            color: #b59678;
+        }
+
+        .accordion-button:focus {
+            box-shadow: 0 0 0 0.25rem rgba(181, 150, 120, 0.25);
+        }
+    </style>
+}

@@ -1,0 +1,203 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+@{
+    Layout = "_UserLayout";
+    ViewData["Title"] = "My Feedback";
+}
+
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h2 class="fw-bold d-flex align-items-center">
+                <i class="fas fa-star me-2 text-warning"></i>
+                My Feedback
+            </h2>
+            <hr class="my-3">
+        </div>
+    </div>
+
+    <!-- Success/Error messages -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i>
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Eligible for Feedback section -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-white">
+            <h4 class="mb-0">
+                <i class="fas fa-edit me-2 text-primary"></i>
+                Stays Eligible for Feedback
+            </h4>
+        </div>
+        <div class="card-body p-4">
+            @if (ViewBag.EligibleBookings == null || !ViewBag.EligibleBookings.Any())
+            {
+                <div class="text-center py-4">
+                    <i class="fas fa-check-circle text-muted mb-3" style="font-size: 2.5rem;"></i>
+                    <p class="lead mb-0">You've provided feedback for all your completed stays.</p>
+                </div>
+            }
+            else
+            {
+                <div class="row">
+                    @foreach (var booking in ViewBag.EligibleBookings)
+                    {
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card h-100 shadow-sm border hover-elevate">
+                                <div class="card-header bg-light">
+                                    <h5 class="card-title mb-0">Room @booking.Room.RoomNumber</h5>
+                                    <div class="small text-muted">@booking.Room.Category</div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="d-flex mb-3">
+                                        <div class="flex-shrink-0">
+                                            <i class="fas fa-calendar-alt text-primary" style="font-size: 1.25rem;"></i>
+                                        </div>
+                                        <div class="ms-3">
+                                            <div class="small text-muted">Stay Period</div>
+                                            <div>@booking.CheckInDate.ToString("MMM dd") - @booking.CheckOutDate.ToString("MMM dd, yyyy")</div>
+                                            <div class="small">(@((booking.CheckOutDate - booking.CheckInDate).Days) night@((booking.CheckOutDate - booking.CheckInDate).Days != 1 ? "s" : ""))</div>
+                                        </div>
+                                    </div>
+                                    <a asp-action="Submit" asp-route-bookingId="@booking.Id" class="btn btn-primary w-100 mt-2">
+                                        <i class="fas fa-star me-2"></i>Leave Feedback
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Previously Submitted Feedback section -->
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white">
+            <h4 class="mb-0">
+                <i class="fas fa-comment-dots me-2 text-success"></i>
+                My Submitted Feedback
+            </h4>
+        </div>
+        <div class="card-body p-4">
+            @if (ViewBag.SubmittedFeedbacks == null || !ViewBag.SubmittedFeedbacks.Any())
+            {
+                <div class="text-center py-4">
+                    <i class="fas fa-comment-slash text-muted mb-3" style="font-size: 2.5rem;"></i>
+                    <p class="lead mb-0">You haven't submitted any feedback yet.</p>
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Room</th>
+                                <th>Stay Date</th>
+                                <th>Rating</th>
+                                <th>Submitted</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var feedback in ViewBag.SubmittedFeedbacks)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="fw-semibold">Room @feedback.Room.RoomNumber</div>
+                                        <div class="small text-muted">@feedback.Room.Category</div>
+                                    </td>
+                                    <td>
+                                        @if (feedback.Booking != null)
+                                        {
+                                            <div>@feedback.Booking.CheckInDate.ToString("MMM dd") - @feedback.Booking.CheckOutDate.ToString("MMM dd")</div>
+                                            <div class="small text-muted">@feedback.Booking.CheckOutDate.Year</div>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">N/A</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="stars">
+                                            @for (int i = 1; i <= 5; i++)
+                                            {
+                                                <i class="fas fa-star @(i <= feedback.Rating ? "text-warning" : "text-muted")"></i>
+                                            }
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>@feedback.DateSubmitted.ToString("MMM dd, yyyy")</div>
+                                        <div class="small text-muted">@feedback.DateSubmitted.ToString("h:mm tt")</div>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <a asp-action="Details" asp-route-id="@feedback.Id" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a asp-action="Edit" asp-route-id="@feedback.Id" class="btn btn-sm btn-outline-secondary">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a asp-action="Delete" asp-route-id="@feedback.Id" class="btn btn-sm btn-outline-danger">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .hover-elevate {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+            .hover-elevate:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+            }
+
+        .stars {
+            font-size: 0.9rem;
+            letter-spacing: -2px;
+        }
+
+        /* Match hotel theme */
+        .btn-primary {
+            background-color: #b59678;
+            border-color: #b59678;
+        }
+
+            .btn-primary:hover, .btn-primary:focus {
+                background-color: #a08467;
+                border-color: #a08467;
+            }
+    </style>
+}

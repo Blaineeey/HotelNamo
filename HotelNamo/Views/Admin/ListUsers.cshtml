@@ -1,0 +1,31 @@
+﻿@model IEnumerable<UserWithRolesViewModel>
+@{
+    ViewData["Title"] = "Manage Users";
+}
+
+<h2>Manage Users</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Email</th>
+            <th>Roles</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Email</td>
+                <td>@string.Join(", ", item.Roles)</td>
+                <td>
+                    <a asp-action="EditUser" asp-route-id="@item.UserId">Edit</a> |
+                    <a asp-action="DeleteUser" asp-route-id="@item.UserId">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-action="CreateStaff" class="btn btn-primary">Create Staff User</a>

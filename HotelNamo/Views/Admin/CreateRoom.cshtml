@@ -1,0 +1,52 @@
+﻿@model HotelNamo.Models.Room
+
+<div asp-validation-summary="All" class="text-danger"></div>
+
+<form asp-action="CreateRoom" method="post">
+    <label>Room Number:</label>
+    <input asp-for="RoomNumber" required class="form-control" />
+
+    <label>Floor Number:</label>
+    <input asp-for="FloorNumber" type="number" required class="form-control" />
+
+    <label>Category:</label>
+    <select asp-for="Category" class="form-control" required>
+        <option value="">-- Select Category --</option>
+        <option>Single</option>
+        <option>Double</option>
+        <option>Suite</option>
+        <option>Family</option>
+    </select>
+
+    <label>Price:</label>
+    <input asp-for="Price" required class="form-control" />
+
+    <label>Status:</label>
+    <select asp-for="Status" class="form-control">
+        <option>Vacant</option>
+        <option>Occupied</option>
+        <option>Maintenance</option>
+    </select>
+
+    <label>Description:</label>
+    <textarea asp-for="Description" class="form-control"></textarea>
+
+    <label>Select an Existing Image:</label>
+    <select name="selectedImage" required class="form-control">
+        <option value="">Select image</option>
+        @foreach (var image in ViewBag.ExistingImages)
+        {
+            <option value="@image">@image</option>
+        }
+    </select>
+
+    <label>Amenities:</label>
+    @foreach (var amenity in ViewBag.Amenities)
+    {
+        <input type="checkbox" name="selectedAmenities" value="@amenity.Id" /> @amenity.Name
+
+        <br />
+    }
+
+    <button type="submit">Create Room</button>
+</form>

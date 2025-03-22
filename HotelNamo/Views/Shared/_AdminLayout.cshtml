@@ -1,0 +1,98 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using HotelNamo.Models
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>@ViewData["Title"] - HotelNamo Admin</title>
+    <meta name="description" content="HotelNamo admin layout" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Example: link to Bootstrap & admin CSS -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/admin.css" />
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand ms-3" asp-controller="Admin" asp-action="Index">HotelNamo Admin</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNavbar"
+                aria-controls="adminNavbar" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="adminNavbar">
+            <ul class="navbar-nav ms-auto">
+                @if (SignInManager.IsSignedIn(User))
+                {
+                    var user = await UserManager.GetUserAsync(User);
+                    <li class="nav-item">
+                        <span class="nav-link disabled">Hello, @user.FirstName @user.LastName</span>
+                    </li>
+                    <li class="nav-item">
+                        <form asp-controller="Account" asp-action="Logout" method="post">
+                            <button type="submit" class="btn btn-link nav-link">Logout</button>
+                        </form>
+                    </li>
+                }
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-md-2 bg-light sidebar py-4">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Admin" asp-action="Index">Admin Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Admin" asp-action="ListUsers">User/Staff Management</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Admin" asp-action="RoomList">Room Management</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Housekeeping" asp-action="Index">Housekeeping</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Maintenance" asp-action="Index">Maintenance</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Admin" asp-action="AllBookings">All Bookings</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="FrontDesk" asp-action="Rooms">Front Desk</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Reports" asp-action="BookingsReport">📋 Booking Report</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Reports" asp-action="RevenueReport">💰 Revenue Report</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Reports" asp-action="OccupancyReport">🏠 Room Occupancy</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Housekeeping" asp-action="Index">🧹 Housekeeping</a>
+                    </li>
+                    <!-- Add more admin links (Reports, Payments, etc.) -->
+                </ul>
+            </nav>
+
+            <!-- Main content area -->
+            <main class="col-md-10 ms-sm-auto px-4 py-4">
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

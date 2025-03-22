@@ -1,0 +1,160 @@
+﻿@model List<HotelNamo.Models.Booking>
+
+@{
+    ViewData["Title"] = "My Bookings";
+    Layout = "_UserLayout";
+}
+
+
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h2 class="fw-bold d-flex align-items-center">
+                <i class="fas fa-calendar-check me-2"></i>
+                My Bookings
+            </h2>
+            <hr class="my-3">
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="row">
+            <div class="col-md-8 mx-auto text-center py-5">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body p-5">
+                        <i class="fas fa-calendar-x text-muted" style="font-size: 3rem;"></i>
+                        <h5 class="mt-3 mb-3">No bookings yet</h5>
+                        <p class="text-muted">Your bookings will appear here once you reserve a room.</p>
+                        <a asp-controller="UserRoom" asp-action="Index" class="btn btn-primary mt-2">
+                            <i class="fas fa-search me-2"></i>Browse Rooms
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var booking in Model)
+            {
+                <div class="col-lg-6 mb-4">
+                    <div class="card h-100 shadow-sm border-0 booking-card">
+                        <div class="card-header bg-light d-flex justify-content-between align-items-center py-3">
+                            <h5 class="m-0 fw-bold">
+                                <i class="fas fa-door-open me-2"></i>
+                                Room @booking.Room.RoomNumber
+                            </h5>
+                            <span class="badge rounded-pill @(booking.IsConfirmed ? "bg-success" : "bg-warning text-dark")">
+                                @(booking.IsConfirmed ? "Confirmed" : "Pending")
+                            </span>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <div class="small text-muted mb-1">Room Type</div>
+                                    <div class="fw-semibold">@booking.Room.Category</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="small text-muted mb-1">Total Price</div>
+                                    <div class="fw-semibold text-primary">@booking.TotalPrice.ToString("C")</div>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <div class="small text-muted mb-1">Stay Period</div>
+                                <div class="d-flex align-items-center">
+                                    <div class="date-box text-center me-2">
+                                        <div class="small bg-primary text-white rounded-top px-2">Check-in</div>
+                                        <div class="border rounded-bottom px-2 py-1 fw-semibold">
+                                            @booking.CheckInDate.ToString("MMM dd")
+                                        </div>
+                                    </div>
+                                    <i class="fas fa-arrow-right mx-2"></i>
+                                    <div class="date-box text-center">
+                                        <div class="small bg-primary text-white rounded-top px-2">Check-out</div>
+                                        <div class="border rounded-bottom px-2 py-1 fw-semibold">
+                                            @booking.CheckOutDate.ToString("MMM dd")
+                                        </div>
+                                    </div>
+                                    <div class="ms-auto small text-muted">
+                                        @((booking.CheckOutDate - booking.CheckInDate).Days) night@((booking.CheckOutDate - booking.CheckInDate).Days != 1 ? "s" : "")
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex flex-wrap gap-2 mt-3">
+                                @if (booking.IsConfirmed)
+                                {
+                                    @if (booking.ActualCheckOutTime != null && booking.Feedback == null)
+                                    {
+                                        <a asp-action="Submit" asp-controller="Feedback" asp-route-bookingId="@booking.Id"
+                                           class="btn btn-outline-warning">
+                                            <i class="fas fa-star me-1"></i>Leave Feedback
+                                        </a>
+                                    }
+                                    else if (booking.Feedback != null)
+                                    {
+                                        <a asp-action="RoomReviews" asp-controller="Feedback" asp-route-roomId="@booking.RoomId"
+                                           class="btn btn-outline-info">
+                                            <i class="fas fa-comment me-1"></i>View Room Reviews
+                                        </a>
+                                    }
+                                }
+                                else
+                                {
+                                    <a asp-action="Pay" asp-controller="Payment" asp-route-bookingId="@booking.Id"
+                                       class="btn btn-success">
+                                        <i class="fas fa-credit-card me-1"></i>Pay Now
+                                    </a>
+                                    <form asp-action="Cancel" asp-route-bookingId="@booking.Id" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-outline-danger">
+                                            <i class="fas fa-times-circle me-1"></i>Cancel
+                                        </button>
+                                    </form>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@section Styles {
+    <style>
+        .booking-card {
+            transition: transform 0.2s;
+        }
+
+        .booking-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .date-box {
+            min-width: 85px;
+        }
+        
+        .text-primary {
+            color: #b59678 !important;
+        }
+        
+        .bg-primary {
+            background-color: #b59678 !important;
+            border-color: #b59678 !important;
+        }
+        
+        .btn-primary {
+            background-color: #b59678;
+            border-color: #b59678;
+        }
+        
+        .btn-primary:hover {
+            background-color: #a08467;
+            border-color: #a08467;
+        }
+    </style>
+}

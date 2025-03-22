@@ -1,0 +1,32 @@
+﻿@model HotelNamo.Models.HousekeepingTask
+
+@{
+    ViewData["Title"] = "Confirm Housekeeping Task";
+}
+
+<h2>✅ Confirm Housekeeping Task</h2>
+
+<form asp-action="CreateConfirmed" method="post">
+    <div class="mb-3">
+        <label class="form-label"><strong>Room:</strong></label>
+        <input type="text" class="form-control" value="@ViewBag.SelectedRoom" readonly />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label"><strong>Assigned Staff:</strong></label>
+        <input type="text" class="form-control" value="@ViewBag.SelectedStaff" readonly />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label"><strong>Task Description:</strong></label>
+        <textarea asp-for="TaskDescription" class="form-control" required></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label"><strong>Due Date:</strong></label>
+        <input asp-for="DueDate" type="date" class="form-control" required />
+    </div>
+
+    <button type="submit" class="btn btn-success">✅ Confirm & Create Task</button>
+    <a asp-action="Create" class="btn btn-secondary">🔙 Back</a>
+</form>

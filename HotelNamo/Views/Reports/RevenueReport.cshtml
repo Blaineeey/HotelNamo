@@ -1,0 +1,22 @@
+﻿@model List<HotelNamo.Models.ViewModels.RevenueReportViewModel>
+
+<h2>Revenue Report</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Year</th>
+            <th>Month</th>
+            <th>Total Revenue</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var entry in Model)
+        {
+            <tr>
+                <td>@entry.Year</td>
+                <td>@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(entry.Month)</td>
+                <td>@entry.TotalRevenue.ToString("C")</td>
+            </tr>
+        }
+    </tbody>
+</table>

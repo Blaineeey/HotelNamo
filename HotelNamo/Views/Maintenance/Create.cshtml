@@ -1,0 +1,30 @@
+﻿@model HotelNamo.Models.MaintenanceRequest
+
+<h2>🛠 Create Maintenance Request</h2>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<form asp-action="CreateConfirmation" method="post">
+    <label>Room</label>
+    <select name="RoomId" class="form-control" required>
+        <option value="">-- Select Room --</option>
+        @foreach (var room in ViewBag.Rooms as List<SelectListItem>)
+        {
+            <option value="@room.Value">@room.Text</option>
+        }
+    </select>
+
+    <label>Assign To</label>
+    <select name="AssignedStaffId" class="form-control" required>
+        <option value="">-- Assign to Staff --</option>
+        @foreach (var staff in ViewBag.AssignedStaff as List<SelectListItem>)
+        {
+            <option value="@staff.Value">@staff.Text</option>
+        }
+    </select>
+
+    <button type="submit" class="btn btn-primary mt-3">Next: Confirm</button>
+</form>

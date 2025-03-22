@@ -1,0 +1,41 @@
+﻿@model IEnumerable<HotelNamo.Models.Room>
+@{
+    Layout = "_FrontDeskLayout";
+    ViewData["Title"] = "All Rooms";
+}
+
+<h2>All Rooms</h2>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Room Number</th>
+            <th>Category</th>
+            <th>Status</th>
+            <th>Price</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var room in Model)
+        {
+            <tr>
+                <td>@room.RoomNumber</td>
+                <td>@room.Category</td>
+                <td>@room.Status</td>
+                <td>@room.Price</td>
+                <td>
+                    <form asp-action="UpdateRoomStatus" asp-controller="FrontDesk" method="post" class="d-inline">
+                        <input type="hidden" name="roomId" value="@room.Id" />
+                        <select name="newStatus" class="form-select form-select-sm d-inline-block" style="width:auto">
+                            <option value="Vacant">Vacant</option>
+                            <option value="Occupied">Occupied</option>
+                            <option value="Maintenance">Maintenance</option>
+                        </select>
+                        <button type="submit" class="btn btn-sm btn-secondary">Update</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

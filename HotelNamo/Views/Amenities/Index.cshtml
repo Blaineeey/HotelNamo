@@ -1,0 +1,231 @@
+﻿@{
+    ViewData["Title"] = "Hotel Amenities";
+    Layout = "_UserLayout";
+}
+
+<div class="container my-5">
+    <header class="amenities-header text-center">
+        <h2 class="about-title">Amenities</h2>
+        <h1 class="display-4">Experience Luxury Amenities</h1>
+        <p class="lead">HotelNamo offers a range of world-class amenities to ensure your stay is filled with comfort, relaxation, and enjoyment. From our refreshing swimming pools to our exquisite dining options, we've crafted every experience with your satisfaction in mind.</p>
+    </header>
+
+    <div class="row amenities-grid mt-5">
+        <!-- Swimming Pool -->
+        <div class="col-md-6 mb-4">
+            <div class="amenity-card h-100">
+                <div class="amenity-icon-wrapper">
+                    <span class="amenity-icon">≈</span>
+                </div>
+                <div class="amenity-content">
+                    <h2>Swimming Pools</h2>
+                    <p>Immerse yourself in our pristine waters and enjoy the ultimate relaxation. Our hotel features both indoor and outdoor swimming pools, designed for your comfort in any season.</p>
+                    <ul class="list-unstyled text-muted">
+                        <li>• Heated outdoor infinity pool with panoramic views</li>
+                        <li>• Indoor pool with jacuzzi and hydrotherapy zones</li>
+                        <li>• Children's splash area with safety features</li>
+                        <li>• Luxury poolside service with refreshments</li>
+                    </ul>
+                    <div class="amenity-hours">
+                        <p><strong>Hours:</strong> 6:00 AM - 10:00 PM daily</p>
+                    </div>
+                    <a href="@Url.Action("Pool", "Amenities")" class="btn btn-primary btn-lg px-4">Learn More</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fitness Center -->
+        <div class="col-md-6 mb-4">
+            <div class="amenity-card h-100">
+                <div class="amenity-icon-wrapper">
+                    <span class="amenity-icon">†</span>
+                </div>
+                <div class="amenity-content">
+                    <h2>Fitness Center</h2>
+                    <p>Maintain your wellness routine in our state-of-the-art fitness center. Our facility offers the latest equipment and personal training options to keep you energized during your stay.</p>
+                    <ul class="list-unstyled text-muted">
+                        <li>• Modern cardio and strength training equipment</li>
+                        <li>• Dedicated yoga and stretching area</li>
+                        <li>• Personal training sessions available</li>
+                        <li>• Complimentary fitness classes</li>
+                    </ul>
+                    <div class="amenity-hours">
+                        <p><strong>Hours:</strong> 24/7 access for hotel guests</p>
+                    </div>
+                    <a href="@Url.Action("Fitness", "Amenities")" class="btn btn-primary btn-lg px-4">Learn More</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Spa -->
+        <div class="col-md-6 mb-4">
+            <div class="amenity-card h-100">
+                <div class="amenity-icon-wrapper">
+                    <span class="amenity-icon">♨</span>
+                </div>
+                <div class="amenity-content">
+                    <h2>Luxury Spa</h2>
+                    <p>Indulge in tranquility at our premium spa retreat. Our expert therapists offer a range of treatments designed to rejuvenate your body and mind.</p>
+                    <ul class="list-unstyled text-muted">
+                        <li>• Signature massage and facial treatments</li>
+                        <li>• Aromatherapy and holistic wellness services</li>
+                        <li>• Steam room, sauna, and relaxation lounges</li>
+                        <li>• Couples treatment packages available</li>
+                    </ul>
+                    <div class="amenity-hours">
+                        <p><strong>Hours:</strong> 9:00 AM - 8:00 PM daily</p>
+                    </div>
+                    <a href="@Url.Action("Spa", "Amenities")" class="btn btn-primary btn-lg px-4">Book Treatment</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dining -->
+        <div class="col-12 mb-4">
+            <div class="amenity-card">
+                <div class="amenity-icon-wrapper">
+                    <span class="amenity-icon">♦</span>
+                </div>
+                <div class="amenity-content">
+                    <h2>Exceptional Dining</h2>
+                    <p>Experience culinary excellence at our diverse dining venues. From gourmet cuisine to casual fare, our chefs create memorable dining experiences using the finest ingredients.</p>
+
+                    <div class="row dining-options">
+                        <div class="col-md-4">
+                            <div class="dining-option">
+                                <h3>The Grand Restaurant</h3>
+                                <p>Our signature restaurant offers an elegant atmosphere with international and local specialties.</p>
+                                <p><strong>Hours:</strong> Breakfast 6:30 AM - 10:30 AM | Lunch 11:30 AM - 2:30 PM | Dinner 6:00 PM - 10:00 PM</p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="dining-option">
+                                <h3>Lounge & Bar</h3>
+                                <p>Unwind with craft cocktails, premium spirits, and light appetizers in our sophisticated lounge setting.</p>
+                                <p><strong>Hours:</strong> 12:00 PM - 12:00 AM daily</p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="dining-option">
+                                <h3>Room Service</h3>
+                                <p>Enjoy the convenience of dining in the comfort of your room with our extensive in-room dining menu.</p>
+                                <p><strong>Hours:</strong> 24 hours daily</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <a href="~/Amenities/Food" class="btn btn-primary btn-lg px-4">View Menus</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        /* Base Styles */
+        .amenities-header {
+            margin-bottom: 3rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #e0d5c8;
+        }
+
+        .about-title {
+            color: #b59678;
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Amenity Cards */
+        .amenity-card {
+            background-color: white;
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-direction: column;
+            border-top: 4px solid #b59678;
+            width: 100%;
+        }
+
+        .amenity-icon-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem 0;
+            background-color: rgba(181, 150, 120, 0.1);
+        }
+
+        .amenity-icon {
+            font-size: 4rem;
+            color: #b59678;
+        }
+
+        .amenity-content {
+            padding: 2rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+            .amenity-content h2 {
+                color: #333;
+                font-size: 1.8rem;
+                margin-bottom: 1rem;
+                font-weight: normal;
+                text-align: center;
+            }
+
+            .amenity-content p {
+                margin-bottom: 1.5rem;
+                color: #666;
+            }
+
+            .amenity-content ul li {
+                margin-bottom: 0.5rem;
+            }
+
+        .amenity-hours {
+            margin-bottom: 1.5rem;
+            padding: 0.75rem;
+            background-color: #f8f6f3;
+            border-radius: 4px;
+            border-left: 3px solid #b59678;
+        }
+
+        .btn-primary {
+            background-color: #b59678;
+            border-color: #b59678;
+            margin-top: auto;
+            align-self: flex-start;
+        }
+
+            .btn-primary:hover {
+                background-color: #947a62;
+                border-color: #947a62;
+            }
+
+        /* Dining Options */
+        .dining-options {
+            margin-bottom: 2rem;
+        }
+
+        .dining-option {
+            padding: 1.5rem;
+            background-color: #f8f6f3;
+            border-radius: 4px;
+            border-left: 3px solid #b59678;
+            height: 100%;
+        }
+
+            .dining-option h3 {
+                color: #b59678;
+                font-size: 1.3rem;
+                margin-bottom: 0.5rem;
+                font-weight: normal;
+            }
+    </style>
+}

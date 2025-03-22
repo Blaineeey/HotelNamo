@@ -1,6 +1,367 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@{
+    Layout = "_UserLayout";
     ViewData["Title"] = "About";
+}
+
+<!-- About Intro Section -->
+<section class="about-intro py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-10 mx-auto text-center">
+                <h2 class="about-title">About Us</h2>
+                <h1 class="display-4">Welcome to HotelNamo</h1>
+                <div class="divider mx-auto"></div>
+                <p class="lead mt-4">Your luxurious home away from home in the heart of the city</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- About Content Section -->
+<section class="container my-5">
+    <div class="row">
+        <div class="col-lg-6">
+            <h2>Our Story</h2>
+            <div class="divider"></div>
+            <p>Founded in 2010, HotelNamo began with a simple vision: to create a sanctuary where travelers could experience the perfect balance of luxury, comfort, and authentic hospitality.</p>
+            <p>What started as a boutique hotel with just 15 rooms has now grown into a premier destination featuring 120 elegantly appointed rooms and suites, award-winning dining experiences, and world-class amenities.</p>
+            <p>Through our journey, we've remained true to our founding principles of personalized service, attention to detail, and creating memorable experiences for every guest who walks through our doors.</p>
+        </div>
+        <div class="col-lg-6">
+            <img src="~/images/hotel-building.jpg" alt="HotelNamo Building" class="img-fluid rounded shadow" />
+        </div>
+    </div>
+
+    <div class="highlight-box mt-5">
+        <div class="row">
+            <div class="col-md-10 mx-auto">
+                <h3 class="text-center mb-4">Our Mission</h3>
+                <p class="text-center lead">To provide exceptional hospitality experiences that exceed expectations, creating lasting memories for our guests while setting new standards in comfort, service, and sustainability.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Core Values Section -->
+<section class="values-section py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 mx-auto text-center mb-5">
+                <h2>Our Core Values</h2>
+                <div class="divider mx-auto"></div>
+                <p class="lead">The principles that guide everything we do</p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card value-card h-100">
+                    <div class="card-body">
+                        <i class="fas fa-star"></i>
+                        <h3>Excellence</h3>
+                        <p>We strive for excellence in every aspect of our service, continuously improving to exceed guest expectations.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-4">
+                <div class="card value-card h-100">
+                    <div class="card-body">
+                        <i class="fas fa-hands-helping"></i>
+                        <h3>Hospitality</h3>
+                        <p>We believe in genuine care and personalized attention for every guest, making them feel truly welcome and valued.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-4">
+                <div class="card value-card h-100">
+                    <div class="card-body">
+                        <i class="fas fa-leaf"></i>
+                        <h3>Sustainability</h3>
+                        <p>We are committed to environmentally responsible practices that preserve natural resources for future generations.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-4">
+                <div class="card value-card h-100">
+                    <div class="card-body">
+                        <i class="fas fa-users"></i>
+                        <h3>Community</h3>
+                        <p>We actively engage with and contribute to our local community, fostering positive relationships and shared growth.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-4">
+                <div class="card value-card h-100">
+                    <div class="card-body">
+                        <i class="fas fa-heart"></i>
+                        <h3>Passion</h3>
+                        <p>We bring enthusiasm and dedication to our work every day, creating experiences that inspire and delight.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-4">
+                <div class="card value-card h-100">
+                    <div class="card-body">
+                        <i class="fas fa-balance-scale"></i>
+                        <h3>Integrity</h3>
+                        <p>We uphold the highest standards of honesty, transparency, and ethical conduct in all our dealings.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- What We Offer Section -->
+<section class="container my-5">
+    <div class="row">
+        <div class="col-md-8 mx-auto text-center mb-5">
+            <h2>What We Offer</h2>
+            <div class="divider mx-auto"></div>
+            <p class="lead">Experience luxury and comfort tailored to your needs</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="d-flex">
+                <div class="me-4">
+                    <i class="fas fa-bed fa-2x" style="color: #B59678;"></i>
+                </div>
+                <div>
+                    <h4>Luxurious Accommodations</h4>
+                    <p>Choose from our range of deluxe rooms, elegant suites, and spacious family rooms, each designed with your comfort in mind and equipped with modern amenities.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="d-flex">
+                <div class="me-4">
+                    <i class="fas fa-utensils fa-2x" style="color: #B59678;"></i>
+                </div>
+                <div>
+                    <h4>Fine Dining</h4>
+                    <p>Indulge in exquisite culinary experiences at our award-winning restaurants, featuring local specialties and international favorites prepared by our skilled chefs.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="d-flex">
+                <div class="me-4">
+                    <i class="fas fa-spa fa-2x" style="color: #B59678;"></i>
+                </div>
+                <div>
+                    <h4>Wellness Center</h4>
+                    <p>Rejuvenate your body and mind at our state-of-the-art spa and fitness center, offering a range of treatments, therapies, and exercise options.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="d-flex">
+                <div class="me-4">
+                    <i class="fas fa-swimmer fa-2x" style="color: #B59678;"></i>
+                </div>
+                <div>
+                    <h4>Recreation</h4>
+                    <p>Enjoy our premium recreational facilities including swimming pools, tennis courts, and beautifully landscaped gardens perfect for relaxation.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="d-flex">
+                <div class="me-4">
+                    <i class="fas fa-handshake fa-2x" style="color: #B59678;"></i>
+                </div>
+                <div>
+                    <h4>Event Spaces</h4>
+                    <p>Host memorable events in our versatile venues, ideal for weddings, conferences, and special celebrations, supported by our expert event planning team.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="d-flex">
+                <div class="me-4">
+                    <i class="fas fa-concierge-bell fa-2x" style="color: #B59678;"></i>
+                </div>
+                <div>
+                    <h4>Personalized Service</h4>
+                    <p>Experience exceptional service from our dedicated staff who are committed to anticipating your needs and ensuring your stay exceeds all expectations.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Leadership Section -->
+<section class="team-section py-5" style="background-color: #f8f9fa;">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 mx-auto text-center mb-5">
+                <h2>Our Leadership Team</h2>
+                <div class="divider mx-auto"></div>
+                <p class="lead">Meet the dedicated professionals behind HotelNamo's success</p>
+            </div>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-3 mb-5">
+                <div class="team-member">
+                    <img src="~/images/team/kevin.jpg" alt="Kevin Tamayo" class="team-img" />
+                    <h3>Kevin Tamayo</h3>
+                    <p class="role">General Manager</p>
+                    <p class="text-muted">With over 15 years in luxury hospitality, Kevin leads our team with passion and vision, ensuring exceptional experiences for every guest.</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3 mb-5">
+                <div class="team-member">
+                    <img src="~/images/team/blaine.jpg" alt="Blaine Panares" class="team-img" />
+                    <h3>Blaine Panares</h3>
+                    <p class="role">Executive Chef</p>
+                    <p class="text-muted">An acclaimed culinary artist, Blaine brings creativity and excellence to our dining experiences, showcasing both local and global cuisines.</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3 mb-5">
+                <div class="team-member">
+                    <img src="~/images/team/ryan.jpg" alt="Ryan Camado" class="team-img" />
+                    <h3>Ryan Camado</h3>
+                    <p class="role">Director of Guest Services</p>
+                    <p class="text-muted">Ryan's dedication to personalized service ensures that every guest interaction at HotelNamo exceeds expectations and creates lasting memories.</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3 mb-5">
+                <div class="team-member">
+                    <img src="~/images/team/lester.jpg" alt="Lester Sanchez" class="team-img" />
+                    <h3>Lester Sanchez</h3>
+                    <p class="role">Director of Operations</p>
+                    <p class="text-muted">Lester oversees the day-to-day operations with meticulous attention to detail, ensuring our hotel maintains its reputation for excellence and efficiency.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action Section -->
+<section class="text-center py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 mx-auto">
+                <h2 class="display-5 mb-4">Experience HotelNamo</h2>
+                <p class="lead mb-4">We invite you to discover the perfect blend of luxury, comfort, and personalized service that makes HotelNamo truly special.</p>
+                <div class="button-group d-inline-flex gap-2">
+                    <a href="/UserRoom/Index" class="btn btn-primary btn-lg px-4">Explore Our Rooms</a>
+                    <a href="/Booking/Create" class="btn btn-outline-dark btn-lg px-4">Book Your Stay</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Styles {
+        <style>
+            /* Custom styling for About page */
+            .about-title {
+                color: #b59678;
+                font-size: 1.2rem;
+                letter-spacing: 1px;
+                margin-bottom: 0.5rem;
+            }
+
+            .about-intro {
+                background-color: #f8f9fa;
+            }
+
+            .divider {
+                height: 3px;
+                width: 60px;
+                background-color: #B59678;
+                margin: 20px 0;
+            }
+
+            .highlight-box {
+                padding: 40px;
+                background-color: #f8f9fa;
+                border-left: 4px solid #B59678;
+                margin: 30px 0;
+            }
+
+            /* Values cards */
+            .value-card {
+                text-align: center;
+                padding: 30px;
+                transition: all 0.3s ease;
+                border: none;
+                border-radius: 5px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            }
+
+            .value-card:hover {
+                box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+                transform: translateY(-5px);
+            }
+
+            .value-card i {
+                font-size: 3rem;
+                color: #B59678;
+                margin-bottom: 20px;
+            }
+
+            .value-card h3 {
+                margin-bottom: 15px;
+                font-size: 1.5rem;
+                color: #333;
+            }
+
+            /* Team section */
+            .team-member {
+                text-align: center;
+                margin-bottom: 30px;
+            }
+
+            .team-img {
+                width: 200px;
+                height: 200px;
+                object-fit: cover;
+                border-radius: 50%;
+                margin-bottom: 20px;
+            }
+
+            .team-member h3 {
+                margin-bottom: 5px;
+                color: #333;
+            }
+
+            .role {
+                color: #B59678;
+                margin-bottom: 15px;
+                font-weight: 600;
+            }
+
+            /* Button styling to match home page */
+            .btn-primary {
+                background-color: #B59678;
+                border-color: #B59678;
+            }
+
+            .btn-primary:hover {
+                background-color: #a08467;
+                border-color: #a08467;
+            }
+
+            .btn-outline-dark:hover {
+                background-color: #343a40;
+                color: white;
+            }
+        </style>
 }

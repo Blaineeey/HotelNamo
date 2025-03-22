@@ -1,0 +1,54 @@
+﻿@model IEnumerable<HotelNamo.Models.MaintenanceRequest>
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Maintenance Requests";
+}
+
+<h2>🔧 Maintenance Requests</h2>
+
+<a asp-action="Create" class="btn btn-primary mb-3">➕ Add Maintenance Request</a>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Room</th>
+            <th>Issue</th>
+            <th>Status</th>
+            <th>Assigned To</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var request in Model)
+        {
+            <tr>
+                <td>@request.Room.RoomNumber</td>
+                <td>@request.IssueDescription</td>
+                <td>
+                    @if (request.Status == "Pending")
+                    {
+                        <span class="badge bg-warning">Pending</span>
+                    }
+                    else if (request.Status == "In Progress")
+                    {
+                        <span class="badge bg-primary">In Progress</span>
+                    }
+                    else if (request.Status == "Completed")
+                    {
+                        <span class="badge bg-success">Completed</span>
+                    }
+                </td>
+                <td>@(request.AssignedStaff != null ? request.AssignedStaff.FirstName + " " + request.AssignedStaff.LastName : "Not Assigned")</td>
+                <td>
+                    @if (request.Status != "Completed")
+                    {
+                        <form asp-action="CompleteRequest" asp-route-id="@request.Id" method="post" class="d-inline">
+                            <button class="btn btn-sm btn-success">✔ Mark as Completed</button>
+                        </form>
+                    }
+                    <a asp-action="Delete" asp-route-id="@request.Id" class="btn btn-sm btn-danger">🗑 Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

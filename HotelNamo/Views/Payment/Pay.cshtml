@@ -1,0 +1,342 @@
+﻿@{
+    Layout = "_UserLayout";
+    ViewData["Title"] = "Complete Payment";
+}
+@model HotelNamo.Models.Payment
+
+<div class="container my-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <!-- Payment Process Steps -->
+            <div class="payment-steps mb-4">
+                <div class="step completed">
+                    <div class="step-number">1</div>
+                    <div class="step-text">Booking Details</div>
+                </div>
+                <div class="step-connector completed"></div>
+                <div class="step active">
+                    <div class="step-number">2</div>
+                    <div class="step-text">Payment</div>
+                </div>
+                <div class="step-connector"></div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-text">Confirmation</div>
+                </div>
+            </div>
+
+            <!-- Payment Card -->
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white">
+                    <h2 class="about-title mb-0">Payment Details</h2>
+                    <h1 class="display-6">Complete Your Payment</h1>
+                </div>
+                <div class="card-body p-4">
+                    <div class="booking-summary mb-4">
+                        <div class="row align-items-center">
+                            <div class="col-md-6">
+                                <h5 class="mb-3">Booking Summary</h5>
+                                <p class="mb-1"><strong>Booking ID:</strong> <span class="text-muted">@Model.BookingId</span></p>
+                                <p class="mb-1"><strong>Amount Due:</strong> <span class="payment-amount">@Model.Amount.ToString("C")</span></p>
+                            </div>
+                            <div class="col-md-6 text-md-end">
+                                <div class="secure-payment">
+                                    <i class="fas fa-lock me-2"></i> Secure Payment
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="my-4" />
+
+                    <form asp-action="ProcessPayment" asp-controller="Payment" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="BookingId" />
+                        <input type="hidden" asp-for="Amount" />
+
+                        <div class="mb-4">
+                            <label class="form-label">Select Payment Method</label>
+                            <div class="payment-methods">
+                                <div class="payment-method-option">
+                                    <input type="radio" id="creditCard" name="PaymentMethod" value="Credit Card" checked class="visually-hidden" />
+                                    <label for="creditCard" class="payment-method-label">
+                                        <div class="payment-method-icon">
+                                            <i class="fas fa-credit-card"></i>
+                                        </div>
+                                        <div class="payment-method-info">
+                                            <span>Credit Card</span>
+                                            <small class="text-muted">Visa, MasterCard, American Express</small>
+                                        </div>
+                                    </label>
+                                </div>
+
+                                <div class="payment-method-option">
+                                    <input type="radio" id="paypal" name="PaymentMethod" value="PayPal" class="visually-hidden" />
+                                    <label for="paypal" class="payment-method-label">
+                                        <div class="payment-method-icon">
+                                            <i class="fab fa-paypal"></i>
+                                        </div>
+                                        <div class="payment-method-info">
+                                            <span>PayPal</span>
+                                            <small class="text-muted">Pay securely via PayPal</small>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="creditCardForm">
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <label class="form-label">Card Number</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" placeholder="1234 5678 9012 3456" maxlength="19" />
+                                        <span class="input-group-text">
+                                            <i class="fab fa-cc-visa me-1"></i>
+                                            <i class="fab fa-cc-mastercard me-1"></i>
+                                            <i class="fab fa-cc-amex"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6 mb-3 mb-md-0">
+                                    <label class="form-label">Expiration Date</label>
+                                    <input type="text" class="form-control" placeholder="MM/YY" maxlength="5" />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Security Code (CVV)</label>
+                                    <input type="text" class="form-control" placeholder="123" maxlength="4" />
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Cardholder Name</label>
+                                <input type="text" class="form-control" placeholder="Name as it appears on card" />
+                            </div>
+                        </div>
+
+                        <div class="mb-3 billing-address">
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="sameAsShipping" checked />
+                                <label class="form-check-label" for="sameAsShipping">
+                                    Billing address is the same as contact address
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">Complete Payment - @Model.Amount.ToString("C")</button>
+                            <p class="text-center text-muted mt-2 small">By clicking the button, you agree to our <a href="#">Terms and Conditions</a> and <a href="#">Privacy Policy</a></p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Additional Information -->
+            <div class="card mt-4 border-0">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 text-center mb-3 mb-md-0">
+                            <i class="fas fa-lock text-muted mb-2" style="font-size: 24px;"></i>
+                            <h6>Secure Payment</h6>
+                            <p class="text-muted small">Your payment information is encrypted</p>
+                        </div>
+                        <div class="col-md-4 text-center mb-3 mb-md-0">
+                            <i class="fas fa-shield-alt text-muted mb-2" style="font-size: 24px;"></i>
+                            <h6>Booking Protection</h6>
+                            <p class="text-muted small">Safe and guaranteed booking</p>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <i class="fas fa-headset text-muted mb-2" style="font-size: 24px;"></i>
+                            <h6>24/7 Support</h6>
+                            <p class="text-muted small">Help is always available</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        /* About title styling to match home page */
+        .about-title {
+            color: #b59678;
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+        }
+
+        /* Payment amount styling */
+        .payment-amount {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #b59678;
+        }
+
+        /* Payment steps styling */
+        .payment-steps {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
+        .step-number {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #f0f0f0;
+            color: #666;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-right: 10px;
+        }
+
+        .step.active .step-number {
+            background-color: #b59678;
+            color: white;
+        }
+
+        .step.completed .step-number {
+            background-color: #b59678;
+            color: white;
+        }
+
+        .step-connector {
+            flex-grow: 1;
+            height: 2px;
+            background-color: #f0f0f0;
+            margin: 0 10px;
+        }
+
+            .step-connector.completed {
+                background-color: #b59678;
+            }
+
+        .step-text {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Payment methods styling */
+        .payment-methods {
+            margin-bottom: 1.5rem;
+        }
+
+        .payment-method-option {
+            margin-bottom: 1rem;
+        }
+
+        .payment-method-label {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+            .payment-method-label:hover {
+                border-color: #b59678;
+            }
+
+        input[type="radio"]:checked + .payment-method-label {
+            border-color: #b59678;
+            background-color: rgba(181, 150, 120, 0.05);
+        }
+
+        .payment-method-icon {
+            font-size: 1.5rem;
+            margin-right: 1rem;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #b59678;
+        }
+
+        .payment-method-info {
+            flex-grow: 1;
+        }
+
+            .payment-method-info span {
+                display: block;
+                font-weight: 500;
+            }
+
+        /* Secure payment indicator */
+        .secure-payment {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background-color: #f8f9fa;
+            border-radius: 3px;
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+
+        /* Button styling to match your site */
+        .btn-primary {
+            background-color: #b59678;
+            border-color: #b59678;
+        }
+
+            .btn-primary:hover {
+                background-color: #a08467;
+                border-color: #a08467;
+            }
+
+        /* Visually hidden but accessible */
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Toggle between payment methods
+            $('input[name="PaymentMethod"]').change(function() {
+                if ($("#creditCard").is(":checked")) {
+                    $("#creditCardForm").slideDown();
+                } else {
+                    $("#creditCardForm").slideUp();
+                }
+            });
+
+            // Format credit card number with spaces
+            $('input[placeholder="1234 5678 9012 3456"]').on('input', function() {
+                $(this).val(function(index, value) {
+                    return value.replace(/\W/gi, '').replace(/(.{4})/g, '$1 ').trim();
+                });
+            });
+
+            // Format expiration date with slash
+            $('input[placeholder="MM/YY"]').on('input', function() {
+                $(this).val(function(index, value) {
+                    return value.replace(/\W/gi, '')
+                                .replace(/(.{2})/, '$1/');
+                });
+            });
+        });
+    </script>
+}

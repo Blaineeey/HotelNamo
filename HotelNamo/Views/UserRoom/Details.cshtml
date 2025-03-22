@@ -1,0 +1,395 @@
+﻿@model HotelNamo.Models.Room
+@{
+    ViewData["Title"] = $"Room {Model.RoomNumber} Details";
+    Layout = "_UserLayout";
+
+    // Helper function to determine image path based on room category
+    string GetImagePath(string category)
+    {
+        return category switch
+        {
+            "Single" => "~/images/rooms/single-room.jpg",
+            "Double" => "~/images/rooms/guest-room.jpg",
+            "Suite" => "~/images/rooms/superior-room.jpg",
+            _ => "~/images/rooms/deluxe-room.jpg" // fallback image
+        };
+    }
+
+    // Sample amenities based on room category (you can replace with actual data from your model)
+    var amenities = Model.Category switch
+    {
+        "Single" => new[] { "Queen Bed", "32\" TV", "Work Desk", "Free Wi-Fi", "Air Conditioning" },
+        "Double" => new[] { "Two Queen Beds", "42\" Smart TV", "Work Desk", "Free Wi-Fi", "Air Conditioning", "Mini Bar" },
+        "Suite" => new[] { "King Bed", "55\" Smart TV", "Sitting Area", "Free Wi-Fi", "Air Conditioning", "Mini Bar", "Jacuzzi", "Premium View" },
+        _ => new[] { "Queen Bed", "32\" TV", "Work Desk", "Free Wi-Fi", "Air Conditioning" }
+    };
+}
+
+<div class="container my-5">
+    <!-- Main Room Details Card -->
+    <div class="card shadow-sm border-0 overflow-hidden mb-5">
+        <div class="row g-0">
+            <!-- Room Image Section -->
+            <div class="col-lg-6 position-relative">
+                <img src="@Url.Content(GetImagePath(Model.Category))"
+                     class="img-fluid h-100 w-100"
+                     alt="@Model.Category Room"
+                     style="object-fit: cover; min-height: 400px;"
+                     onerror="this.onerror=null; this.src='@Url.Content("~/images/deluxe-room.jpg")';">
+
+                <!-- Status Badge Overlay -->
+                <div class="position-absolute top-0 end-0 m-3">
+                    <span class="badge fs-6 px-3 py-2 @(Model.Status == "Vacant" ? "bg-success" : "bg-danger")">
+                        @Model.Status
+                    </span>
+                </div>
+
+                <!-- Category Badge Overlay -->
+                <div class="position-absolute bottom-0 start-0 m-3">
+                    <span class="badge bg-dark bg-opacity-75 fs-6 px-3 py-2">
+                        @Model.Category Room
+                    </span>
+                </div>
+            </div>
+
+            <!-- Room Details Section -->
+            <div class="col-lg-6">
+                <div class="card-body p-4 p-lg-5">
+                    <!-- Back to Rooms Link -->
+                    <div class="mb-3">
+                        <a href="javascript:history.back()" class="text-decoration-none text-muted">
+                            <i class="fas fa-arrow-left me-1"></i> Back to Rooms
+                        </a>
+                    </div>
+
+                    <!-- Room Title -->
+                    <h2 class="card-title display-6 mb-1">Room @Model.RoomNumber</h2>
+                    <p class="text-muted mb-2">@Model.Category Experience</p>
+
+                    <!-- Rating Summary -->
+                    <div class="mb-4">
+                        <div class="d-flex align-items-center">
+                            <div class="star-rating me-2">
+                                @{
+                                    decimal rating = Model.AverageRating;
+                                    for (int i = 1; i <= 5; i++)
+                                    {
+                                        if (i <= Math.Floor(rating))
+                                        {
+                                            <i class="fas fa-star text-warning"></i>
+                                        }
+                                        else if (i <= Math.Ceiling(rating) && rating % 1 != 0)
+                                        {
+                                            <i class="fas fa-star-half-alt text-warning"></i>
+                                        }
+                                        else
+                                        {
+                                            <i class="far fa-star text-warning"></i>
+                                        }
+                                    }
+                                }
+                            </div>
+                            <span class="text-muted">
+                                @if (Model.FeedbackCount > 0)
+                                {
+                                    <text>@Model.AverageRating.ToString("0.0") | @Model.FeedbackCount @(Model.FeedbackCount == 1 ? "review" : "reviews")</text>
+                                }
+                                else
+                                {
+                                    <text>No reviews yet</text>
+                                }
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Price and Book Now Button -->
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <span class="fs-2 fw-bold text-primary">@($"{Model.Price:C0}")</span>
+                            <span class="text-muted">/night</span>
+                        </div>
+
+                        <a asp-action="Create" asp-controller="Booking"
+                           asp-route-roomId="@Model.Id"
+                           class="btn btn-primary btn-lg px-4 rounded-pill">
+                            <i class="fas fa-calendar-check me-2"></i>Book Now
+                        </a>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <!-- Room Description -->
+                    <div class="mb-4">
+                        <h5 class="mb-3"><i class="fas fa-info-circle me-2"></i>Description</h5>
+                        <p class="card-text">
+                            @(string.IsNullOrEmpty(Model.Description) ?
+                                "This luxurious room offers the perfect blend of comfort and elegance. Enjoy a spacious layout with modern amenities, plush bedding, and a stunning view. Ideal for both business and leisure travelers." :
+                                Model.Description)
+                        </p>
+                    </div>
+
+                    <!-- Room Amenities -->
+                    <div class="mb-4">
+                        <h5 class="mb-3"><i class="fas fa-concierge-bell me-2"></i>Amenities</h5>
+                        <div class="row">
+                            @foreach (var amenity in amenities)
+                            {
+                                <div class="col-md-6 mb-2">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-check text-success me-2"></i>
+                                        <span>@amenity</span>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Room Policies -->
+                    <div>
+                        <h5 class="mb-3"><i class="fas fa-clipboard-list me-2"></i>Policies</h5>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-clock text-muted me-2"></i>
+                                    <div>
+                                        <div class="fw-bold">Check-in</div>
+                                        <div class="small text-muted">After 3:00 PM</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-sign-out-alt text-muted me-2"></i>
+                                    <div>
+                                        <div class="fw-bold">Check-out</div>
+                                        <div class="small text-muted">Before 11:00 AM</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-smoking-ban text-muted me-2"></i>
+                                    <div>
+                                        <div class="fw-bold">Smoking</div>
+                                        <div class="small text-muted">Not allowed</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-paw text-muted me-2"></i>
+                                    <div>
+                                        <div class="fw-bold">Pets</div>
+                                        <div class="small text-muted">Not allowed</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Guest Reviews Section -->
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white py-4 border-0">
+            <div class="d-flex justify-content-between align-items-center">
+                <h3 class="mb-0">
+                    <i class="fas fa-comment-dots me-2 text-primary"></i>
+                    Guest Reviews
+                </h3>
+                <div class="rating-summary d-flex align-items-center">
+                    @if (Model.FeedbackCount > 0)
+                    {
+                        <div class="bg-light rounded-pill px-3 py-2 me-2 d-inline-flex align-items-center">
+                            <span class="fs-4 fw-bold text-primary me-2">@Model.AverageRating.ToString("0.0")</span>
+                            <div class="d-flex flex-column">
+                                <div class="star-rating">
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        if (i <= Math.Floor(Model.AverageRating))
+                                        {
+                                            <i class="fas fa-star text-warning"></i>
+                                        }
+                                        else if (i <= Math.Ceiling(Model.AverageRating) && Model.AverageRating % 1 != 0)
+                                        {
+                                            <i class="fas fa-star-half-alt text-warning"></i>
+                                        }
+                                        else
+                                        {
+                                            <i class="far fa-star text-warning"></i>
+                                        }
+                                    }
+                                </div>
+                                <span class="small text-muted">@Model.FeedbackCount @(Model.FeedbackCount == 1 ? "review" : "reviews")</span>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body p-4">
+            @if (!Model.Feedbacks.Any())
+            {
+                <div class="text-center py-5">
+                    <div class="mb-3">
+                        <i class="far fa-comment-dots text-muted" style="font-size: 3rem;"></i>
+                    </div>
+                    <h5>No Reviews Yet</h5>
+                    <p class="text-muted">Be the first to share your experience with this room.</p>
+                </div>
+            }
+            else
+            {
+                <div class="row">
+                    <div class="col-lg-4 mb-4 mb-lg-0">
+                        <!-- Rating Distribution -->
+                        <div class="card border-0 bg-light">
+                            <div class="card-body">
+                                <h5 class="mb-3">Rating Breakdown</h5>
+                                @{
+                                    var ratings = new int[5];
+                                    foreach (var feedback in Model.Feedbacks)
+                                    {
+                                        ratings[feedback.Rating - 1]++;
+                                    }
+
+                                    for (int i = 5; i >= 1; i--)
+                                    {
+                                        var count = ratings[i - 1];
+                                        var percent = Model.FeedbackCount > 0 ? (count * 100 / Model.FeedbackCount) : 0;
+                                        <div class="d-flex align-items-center mb-2">
+                                            <div class="me-2" style="width: 60px; text-align: right;">
+                                                <div class="d-flex align-items-center justify-content-end">
+                                                    <span class="me-1">@i</span>
+                                                    <i class="fas fa-star text-warning small"></i>
+                                                </div>
+                                            </div>
+                                            <div class="progress flex-grow-1" style="height: 8px;">
+                                                <div class="progress-bar bg-primary" role="progressbar"
+                                                     style="width: @percent%;" aria-valuenow="@percent"
+                                                     aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                            <div class="ms-2" style="width: 40px;">
+                                                <span class="small text-muted">@count</span>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-8">
+                        <!-- Reviews List -->
+                        <div class="reviews-list">
+                            @foreach (var feedback in Model.Feedbacks.OrderByDescending(f => f.DateSubmitted))
+                            {
+                                <div class="review-item mb-4 pb-4 border-bottom">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <div class="d-flex flex-column">
+                                            <span class="fw-bold">@(feedback.User?.FirstName) @(feedback.User?.LastName)</span>
+                                            <span class="small text-muted">Stayed on @(feedback.Booking?.CheckInDate.ToString("MMM dd, yyyy") ?? "N/A")</span>
+                                        </div>
+                                        <div class="text-end">
+                                            <div class="star-rating mb-1">
+                                                @for (int i = 1; i <= 5; i++)
+                                                {
+                                                    <i class="fas fa-star @(i <= feedback.Rating ? "text-warning" : "text-muted")"></i>
+                                                }
+                                            </div>
+                                            <span class="small text-muted">@feedback.DateSubmitted.ToString("MMM dd, yyyy")</span>
+                                        </div>
+                                    </div>
+                                    <p class="mb-0">@feedback.Review</p>
+                                </div>
+                            }
+                        </div>
+
+                        <!-- Pagination for many reviews (optional) -->
+                        @if (Model.Feedbacks.Count > 5)
+                        {
+                            <div class="d-flex justify-content-center mt-4">
+                                <nav aria-label="Page navigation">
+                                    <ul class="pagination">
+                                        <li class="page-item disabled">
+                                            <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+                                        </li>
+                                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                        <li class="page-item">
+                                            <a class="page-link" href="#">Next</a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        .text-primary {
+            color: #b59678 !important;
+        }
+
+        .btn-primary, .bg-primary {
+            background-color: #b59678 !important;
+            border-color: #b59678 !important;
+        }
+
+            .btn-primary:hover {
+                background-color: #a08467 !important;
+                border-color: #a08467 !important;
+            }
+
+        /* Star rating styles */
+        .star-rating .fas.fa-star,
+        .star-rating .far.fa-star,
+        .star-rating .fas.fa-star-half-alt {
+            font-size: 0.9rem;
+            letter-spacing: -1px;
+        }
+
+        /* Review item hover effect */
+        .review-item {
+            transition: background-color 0.2s ease;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-left: -1rem;
+            margin-right: -1rem;
+        }
+
+            .review-item:hover {
+                background-color: rgba(181, 150, 120, 0.05);
+            }
+
+        /* Progress bar styling */
+        .progress {
+            background-color: #e9ecef;
+            border-radius: 1rem;
+        }
+
+        /* Pagination styling */
+        .page-item.active .page-link {
+            background-color: #b59678;
+            border-color: #b59678;
+        }
+
+        .page-link {
+            color: #b59678;
+        }
+
+            .page-link:hover {
+                color: #a08467;
+            }
+    </style>
+}

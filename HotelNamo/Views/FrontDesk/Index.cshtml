@@ -1,0 +1,49 @@
+﻿@model IEnumerable<HotelNamo.Models.Booking>
+@{
+    Layout = "_FrontDeskLayout"; // reference the new front desk layout
+    ViewData["Title"] = "All Bookings";
+}
+
+<h2>All Bookings (Front Desk)</h2>
+<p>Manage all bookings here. You can check in/out, confirm, etc.</p>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Booking ID</th>
+            <th>Room</th>
+            <th>Check-In Date</th>
+            <th>Check-Out Date</th>
+            <th>Confirmed</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var booking in Model)
+        {
+            <tr>
+                <td>@booking.Id</td>
+                <td>@(booking.Room?.RoomNumber ?? "N/A")</td>
+                <td>@booking.CheckInDate.ToShortDateString()</td>
+                <td>@booking.CheckOutDate.ToShortDateString()</td>
+                <td>@(booking.IsConfirmed ? "Yes" : "No")</td>
+                <td>
+                    @if (!booking.IsConfirmed)
+                    {
+                            <a asp-controller="Booking" asp-action="CheckIn" asp-route-bookingId="@booking.Id" 
+                               class="btn btn-sm btn-success">
+                               Check In
+                            </a>
+                    }
+                    else if (booking.ActualCheckInTime != null && booking.ActualCheckOutTime == null)
+                    {
+                            <a asp-controller="Booking" asp-action="CheckOut" asp-route-bookingId="@booking.Id" 
+                               class="btn btn-sm btn-danger">
+                               Check Out
+                            </a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

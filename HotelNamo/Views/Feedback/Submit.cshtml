@@ -1,0 +1,230 @@
+﻿@model HotelNamo.Models.Feedback
+@{
+    Layout = "_UserLayout";
+    ViewData["Title"] = "Share Your Experience";
+}
+
+<div class="container my-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-star me-2 text-warning"></i>
+                        Share Your Experience
+                    </h4>
+                </div>
+
+                <div class="card-body p-4">
+                    <!-- Success message -->
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="fas fa-check-circle me-2"></i>
+                            @TempData["SuccessMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+
+                    <!-- Error message -->
+                    @if (TempData["ErrorMessage"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            @TempData["ErrorMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+
+                    <!-- Validation summary -->
+                    @if (!ViewContext.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger">
+                            <div asp-validation-summary="ModelOnly" class="mb-0"></div>
+                        </div>
+                    }
+
+                    <p class="lead mb-4">Thank you for staying with us. Your feedback helps us improve our services.</p>
+
+                    @if (ViewBag.BookingDetails != null)
+                    {
+                        <div class="card bg-light mb-4">
+                            <div class="card-body">
+                                <h5 class="card-title">Stay Details</h5>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p class="mb-1"><strong>Room:</strong> @ViewBag.RoomNumber</p>
+                                        <p class="mb-1"><strong>Check-in:</strong> @ViewBag.BookingDetails.CheckInDate.ToString("MMM dd, yyyy")</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p class="mb-1"><strong>Check-out:</strong> @ViewBag.BookingDetails.CheckOutDate.ToString("MMM dd, yyyy")</p>
+                                        <p class="mb-1"><strong>Duration:</strong> @((ViewBag.BookingDetails.CheckOutDate - ViewBag.BookingDetails.CheckInDate).Days) night(s)</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    <form asp-action="Submit" method="post">
+                        <input type="hidden" asp-for="Rating" id="ratingValue" />
+                        <!-- Ensure BookingId and RoomId are passed correctly -->
+                        <input type="hidden" asp-for="BookingId" />
+                        <input type="hidden" asp-for="RoomId" />
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Your Overall Rating</label>
+                            <div class="star-rating mb-2">
+                                <div class="stars">
+                                    <i class="star far fa-star" data-value="1"></i>
+                                    <i class="star far fa-star" data-value="2"></i>
+                                    <i class="star far fa-star" data-value="3"></i>
+                                    <i class="star far fa-star" data-value="4"></i>
+                                    <i class="star far fa-star" data-value="5"></i>
+                                </div>
+                                <div class="rating-text mt-2 text-muted">Click to rate</div>
+                            </div>
+                            <span asp-validation-for="Rating" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Review" class="form-label fw-bold">Share Your Experience</label>
+                            <p class="text-muted small mb-2">Please tell us about your stay. What did you enjoy? What could we improve?</p>
+                            <textarea asp-for="Review" class="form-control" rows="5" placeholder="Your feedback is valuable to us..."></textarea>
+                            <span asp-validation-for="Review" class="text-danger"></span>
+                        </div>
+
+                        <div class="text-end">
+                            <a href="javascript:history.back()" class="btn btn-outline-secondary me-2">
+                                <i class="fas fa-arrow-left me-1"></i> Back
+                            </a>
+                            <button type="submit" class="btn btn-primary px-4">
+                                <i class="fas fa-paper-plane me-1"></i> Submit Feedback
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        /* Stars styling */
+        .star-rating .stars {
+            font-size: 2rem;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .star {
+            cursor: pointer;
+            color: #e0e0e0;
+            transition: color 0.2s;
+        }
+
+            .star:hover, .star.active {
+                color: #ffb700;
+            }
+
+        /* Match hotel theme */
+        .btn-primary {
+            background-color: #b59678;
+            border-color: #b59678;
+        }
+
+            .btn-primary:hover, .btn-primary:focus {
+                background-color: #a08467;
+                border-color: #a08467;
+            }
+
+        .btn-outline-secondary:hover {
+            background-color: #f8f9fa;
+            color: #495057;
+        }
+
+        /* Enhance textarea */
+        textarea.form-control {
+            border-color: #ced4da;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+            textarea.form-control:focus {
+                border-color: #b59678;
+                box-shadow: 0 0 0 0.25rem rgba(181, 150, 120, 0.25);
+            }
+
+        /* Rating value text */
+        .rating-text {
+            font-size: 0.9rem;
+            min-height: 1.5rem;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const stars = document.querySelectorAll('.star');
+            const ratingInput = document.getElementById('ratingValue');
+            const ratingText = document.querySelector('.rating-text');
+
+            // Rating descriptions
+            const ratingDescriptions = {
+                1: 'Poor - Below expectations',
+                2: 'Fair - Meeting minimal expectations',
+                3: 'Good - Meeting expectations',
+                4: 'Very Good - Exceeding expectations',
+                5: 'Excellent - Outstanding experience'
+            };
+
+            // Set initial value if it exists
+            if (ratingInput.value) {
+                setRating(parseInt(ratingInput.value));
+            }
+
+            // Add event listeners to stars
+            stars.forEach(star => {
+                star.addEventListener('click', function() {
+                    const value = parseInt(this.getAttribute('data-value'));
+                    setRating(value);
+                    ratingInput.value = value;
+                });
+
+                star.addEventListener('mouseover', function() {
+                    const value = parseInt(this.getAttribute('data-value'));
+                    highlightStars(value);
+                    ratingText.textContent = ratingDescriptions[value];
+                });
+
+                star.addEventListener('mouseout', function() {
+                    const currentRating = parseInt(ratingInput.value) || 0;
+                    highlightStars(currentRating);
+                    ratingText.textContent = currentRating ?
+                        ratingDescriptions[currentRating] :
+                        'Click to rate';
+                });
+            });
+
+            // Helper functions
+            function setRating(value) {
+                ratingInput.value = value;
+                highlightStars(value);
+                ratingText.textContent = ratingDescriptions[value];
+            }
+
+            function highlightStars(count) {
+                stars.forEach(star => {
+                    const starValue = parseInt(star.getAttribute('data-value'));
+                    if (starValue <= count) {
+                        star.classList.remove('far');
+                        star.classList.add('fas', 'active');
+                    } else {
+                        star.classList.remove('fas', 'active');
+                        star.classList.add('far');
+                    }
+                });
+            }
+        });
+    </script>
+}

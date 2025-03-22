@@ -1,0 +1,56 @@
+﻿@model IEnumerable<HotelNamo.Models.Booking>
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "All Bookings";
+}
+
+<h2>All Bookings</h2>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Room</th>
+            <th>User</th>
+            <th>Check-In</th>
+            <th>Check-Out</th>
+            <th>Confirmed</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var b in Model)
+        {
+            <tr>
+                <td>@b.Id</td>
+                <td>@(b.Room?.RoomNumber ?? "N/A")</td>
+                <td>@(b.UserId ?? "N/A")</td>
+                <td>@b.CheckInDate.ToShortDateString()</td>
+                <td>@b.CheckOutDate.ToShortDateString()</td>
+                <td>@(b.IsConfirmed ? "Yes" : "No")</td>
+                <td>
+                    @if (!b.IsConfirmed)
+                    {
+                        <!-- Confirm booking button -->
+                        <a asp-action="ConfirmBooking" asp-route-bookingId="@b.Id" class="btn btn-sm btn-success">
+                            Confirm
+                        </a>
+                    }
+                    @if (b.IsConfirmed && b.ActualCheckInTime == null)
+                    {
+                        <!-- Admin check-in (if you added AdminCheckIn) -->
+                        <a asp-action="AdminCheckIn" asp-route-bookingId="@b.Id" class="btn btn-sm btn-primary">
+                            Check In
+                        </a>
+                    }
+                    @if (b.ActualCheckInTime != null && b.ActualCheckOutTime == null)
+                    {
+                        <!-- Admin check-out (if you added AdminCheckOut) -->
+                        <a asp-action="AdminCheckOut" asp-route-bookingId="@b.Id" class="btn btn-sm btn-danger">
+                            Check Out
+                        </a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

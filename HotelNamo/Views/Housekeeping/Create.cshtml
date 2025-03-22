@@ -1,0 +1,42 @@
+﻿@model HotelNamo.Models.HousekeepingTask
+
+@{
+    ViewData["Title"] = "Create Housekeeping Task";
+}
+
+<h2>🧹 Create Housekeeping Task</h2>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+
+<form asp-action="SelectDetails" method="post">
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <div class="mb-3">
+        <label for="RoomId" class="form-label">Select Room</label>
+        <select name="RoomId" id="RoomId" class="form-control" required>
+            <option value="">-- Select Room --</option>
+            @foreach (var room in ViewBag.Rooms)
+            {
+                <option value="@room.Value">@room.Text</option>
+            }
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label for="AssignedStaffId" class="form-label">Assign to Staff</label>
+        <select name="AssignedStaffId" id="AssignedStaffId" class="form-control" required>
+            <option value="">-- Select Housekeeping Staff --</option>
+            @foreach (var staff in ViewBag.Staff)
+            {
+                <option value="@staff.Value">@staff.Text</option>
+            }
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Next: Confirm</button>
+</form>
+
+<a asp-action="Index" class="btn btn-secondary mt-3">Cancel</a>

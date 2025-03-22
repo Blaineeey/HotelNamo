@@ -1,0 +1,23 @@
+﻿@{
+    Layout = "_AdminLayout"; // or whichever layout you use for staff
+    ViewData["Title"] = "Front Desk Dashboard";
+}
+
+<table>
+    @foreach (var room in Model)
+    {
+        <tr>
+            <td>@room.RoomNumber</td>
+            <td>@room.FloorNumber</td>
+            <td>@room.Price</td>
+            <td>@room.Status</td>
+            <td>
+                @foreach (var img in room.RoomImages)
+                {
+                    <img src="~/images/rooms/@img.ImagePath" width="100" height="70" />
+                }
+            </td>
+        </tr>
+    }
+</table>
+

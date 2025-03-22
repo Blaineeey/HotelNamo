@@ -1,0 +1,24 @@
+﻿@model List<HotelNamo.Models.Feedback>
+
+<h2>Guest Feedback</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>User</th>
+            <th>Rating</th>
+            <th>Review</th>
+            <th>Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var feedback in Model)
+        {
+            <tr>
+                <td>@feedback.User?.Email</td>
+                <td>@feedback.Rating ⭐</td>
+                <td>@feedback.Review</td>
+                <td>@feedback.DateSubmitted.ToShortDateString()</td>
+            </tr>
+        }
+    </tbody>
+</table>
