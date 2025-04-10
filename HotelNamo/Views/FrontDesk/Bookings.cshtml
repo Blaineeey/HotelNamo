@@ -6,9 +6,10 @@
 
 <h2>All Bookings</h2>
 
-<table class="table table-bordered">
+<table class="table-bordered table">
     <thead>
         <tr>
+            <th>Guest Name</th>
             <th>Booking ID</th>
             <th>Room</th>
             <th>Check-In Date</th>
@@ -21,6 +22,7 @@
         @foreach (var b in Model)
         {
             <tr>
+                <td>@b.GuestName</td>
                 <td>@b.Id</td>
                 <td>@(b.Room?.RoomNumber ?? "N/A")</td>
                 <td>@b.CheckInDate.ToShortDateString()</td>
