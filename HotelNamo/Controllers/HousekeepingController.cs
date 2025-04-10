@@ -12,7 +12,7 @@ using System.Collections.Generic;
 
 namespace HotelNamo.Controllers
 {
-    [Authorize(Roles = "Admin,Housekeeping")]
+    [Authorize(Roles = "Admin,HouseKeeping")]
     public class HousekeepingController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -24,7 +24,7 @@ namespace HotelNamo.Controllers
             _userManager = userManager;
         }
         // ✅ Housekeeping Dashboard - Only Show Tasks Assigned to the Logged-in Housekeeping Staff
-        [Authorize(Roles = "Housekeeping")]
+        [Authorize(Roles = "HouseKeeping")]
         public async Task<IActionResult> Dashboard()
         {
             var userId = _userManager.GetUserId(User);
@@ -40,7 +40,7 @@ namespace HotelNamo.Controllers
         public async Task<IActionResult> Index()
         {
             var user = await _userManager.GetUserAsync(User);
-            var isHousekeeping = await _userManager.IsInRoleAsync(user, "Housekeeping");
+            var isHousekeeping = await _userManager.IsInRoleAsync(user, "HouseKeeping");
 
             var tasks = await _context.HousekeepingTasks
                 .Include(ht => ht.Room)
@@ -68,7 +68,7 @@ namespace HotelNamo.Controllers
 
             foreach (var user in housekeepingUsers)
             {
-                if (await _userManager.IsInRoleAsync(user, "Housekeeping"))
+                if (await _userManager.IsInRoleAsync(user, "HouseKeeping"))
                 {
                     housekeepingStaff.Add(new SelectListItem
                     {
@@ -129,7 +129,7 @@ namespace HotelNamo.Controllers
         }
 
         // ✅ Housekeeping Staff Can Mark Task As Completed
-        [Authorize(Roles = "Housekeeping")]
+        [Authorize(Roles = "HouseKeeping")]
         public async Task<IActionResult> CompleteTask(int id)
         {
             var task = await _context.HousekeepingTasks.FindAsync(id);

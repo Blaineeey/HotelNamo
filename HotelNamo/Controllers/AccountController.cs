@@ -50,7 +50,7 @@ namespace HotelNamo.Controllers
             if (result.Succeeded)
             {
                 var roles = await _userManager.GetRolesAsync(user);
-
+                    
                 if (roles.Contains("Admin"))
                 {
                     return RedirectToAction("AdminHome", "Home");
@@ -59,9 +59,13 @@ namespace HotelNamo.Controllers
                 {
                     return RedirectToAction("Bookings", "FrontDesk");
                 }
-                else if (roles.Contains("Housekeeping"))  // ✅ Redirect housekeeping staff
+                else if (roles.Contains("HouseKeeping"))  // ✅ Redirect housekeeping staff
                 {
                     return RedirectToAction("Dashboard", "Housekeeping");
+                }
+                else if (roles.Contains("Maintenance"))  // ✅ Redirect housekeeping staff
+                {
+                    return RedirectToAction("Dashboard", "Maintenance");
                 }
                 else
                 {

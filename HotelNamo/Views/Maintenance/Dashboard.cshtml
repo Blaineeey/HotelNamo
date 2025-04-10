@@ -1,0 +1,50 @@
+﻿@model List<HotelNamo.Models.MaintenanceRequest>
+
+@{
+    Layout = "_MaintenanceLayout"; 
+    ViewData["Title"] = "Maintenance Dashboard";
+}
+
+<h2>🔧 Maintenance Tasks</h2>
+
+@if (Model.Any())
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Room</th>
+                <th>Issue Description</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var task in Model)
+            {
+                <tr>
+                    <td>@task.Room.RoomNumber</td>
+                    <td>@task.IssueDescription</td>
+                    <td>
+                        @if (task.Status == "Pending")
+                        {
+                            <span class="badge bg-warning">Pending</span>
+                        }
+                        else if (task.Status == "In Progress")
+                        {
+                            <span class="badge bg-primary">In Progress</span>
+                        }
+                    </td>
+                    <td>
+                        <form asp-action="Complete" asp-route-id="@task.Id" method="post">
+                            <button type="submit" class="btn btn-success btn-sm">✔ Mark Complete</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No maintenance tasks assigned.</p>
+}

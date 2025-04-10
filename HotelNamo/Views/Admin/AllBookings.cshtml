@@ -4,9 +4,10 @@
     ViewData["Title"] = "All Bookings";
 }
 
-<h2>All Bookings</h2>
-<table class="table table-bordered">
-    <thead>
+<h2 class="mt-3">📅 All Bookings</h2>
+
+<table class="table table-bordered table-hover mt-4">
+    <thead class="table-dark text-center">
         <tr>
             <th>ID</th>
             <th>Room</th>
@@ -17,38 +18,47 @@
             <th>Actions</th>
         </tr>
     </thead>
-    <tbody>
+    <tbody class="text-center">
         @foreach (var b in Model)
         {
             <tr>
                 <td>@b.Id</td>
                 <td>@(b.Room?.RoomNumber ?? "N/A")</td>
-                <td>@(b.UserId ?? "N/A")</td>
-                <td>@b.CheckInDate.ToShortDateString()</td>
-                <td>@b.CheckOutDate.ToShortDateString()</td>
-                <td>@(b.IsConfirmed ? "Yes" : "No")</td>
+                <td>@(b.User?.FirstName + " " + b.User?.LastName ?? "N/A")</td>
+                <td>@b.CheckInDate.ToString("MMM dd, yyyy")</td>
+                <td>@b.CheckOutDate.ToString("MMM dd, yyyy")</td>
                 <td>
-                    @if (!b.IsConfirmed)
-                    {
-                        <!-- Confirm booking button -->
-                        <a asp-action="ConfirmBooking" asp-route-bookingId="@b.Id" class="btn btn-sm btn-success">
-                            Confirm
-                        </a>
-                    }
-                    @if (b.IsConfirmed && b.ActualCheckInTime == null)
-                    {
-                        <!-- Admin check-in (if you added AdminCheckIn) -->
-                        <a asp-action="AdminCheckIn" asp-route-bookingId="@b.Id" class="btn btn-sm btn-primary">
-                            Check In
-                        </a>
-                    }
-                    @if (b.ActualCheckInTime != null && b.ActualCheckOutTime == null)
-                    {
-                        <!-- Admin check-out (if you added AdminCheckOut) -->
-                        <a asp-action="AdminCheckOut" asp-route-bookingId="@b.Id" class="btn btn-sm btn-danger">
-                            Check Out
-                        </a>
-                    }
+                    <span class="badge @(b.IsConfirmed ? "bg-success" : "bg-danger")">
+                        @(b.IsConfirmed ? "Yes" : "No")
+                    </span>
+                </td>
+                <td class="text-center">
+                    <div class="btn-group" role="group">
+                        @if (!b.IsConfirmed)
+                        {
+                            <!-- Confirm Booking Button -->
+                            <a asp-action="ConfirmBooking" asp-route-bookingId="@b.Id"
+                               class="btn btn-sm btn-success">
+                                ✅ Confirm
+                            </a>
+                        }
+                        @if (b.IsConfirmed && b.ActualCheckInTime == null)
+                        {
+                            <!-- Admin Check-In Button -->
+                            <a asp-action="AdminCheckIn" asp-route-bookingId="@b.Id"
+                               class="btn btn-sm btn-primary">
+                                🏨 Check In
+                            </a>
+                        }
+                        @if (b.ActualCheckInTime != null && b.ActualCheckOutTime == null)
+                        {
+                            <!-- Admin Check-Out Button -->
+                            <a asp-action="AdminCheckOut" asp-route-bookingId="@b.Id"
+                               class="btn btn-sm btn-danger">
+                                🚪 Check Out
+                            </a>
+                        }
+                    </div>
                 </td>
             </tr>
         }

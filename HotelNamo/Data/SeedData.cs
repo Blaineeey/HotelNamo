@@ -16,7 +16,7 @@ namespace HotelNamo.Data
             var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
             // Ensure roles exist
-            string[] roles = { "Admin", "User", "FrontDesk", "HouseKeeping", "Maintenance" };
+            string[] roles = { "Admin", "User", "FrontDesk", "HouseKeeping", "Maintenance", "Guest" };
 
             foreach (var role in roles)
             {
