@@ -4,6 +4,8 @@
 @{
 }
 
+@model HotelNamo.Models.SpaBookingViewModel
+
 @{
     ViewData["Title"] = "Spa & Wellness";
     ViewData["MetaDescription"] = "Indulge in relaxation and rejuvenation at HotelNamo's luxury spa with massage treatments, facials, and wellness experiences.";
@@ -14,7 +16,7 @@
 <div class="position-relative">
     <!-- Hero Image -->
     <div class="hero-image">
-        <img src="~/images/amenities/spa-hero.jpg" class="w-100" alt="Luxury spa setting" style="height: 500px; object-fit: cover; filter: brightness(0.8);">
+        <img src="~/images/spa/luxury-spa.jpg" class="w-100" alt="Luxury spa setting" style="height: 500px; object-fit: cover; filter: brightness(0.8);">
     </div>
 
     <!-- Overlay Text -->
@@ -60,13 +62,13 @@
             <div class="col-lg-6">
                 <div class="row g-3">
                     <div class="col-6">
-                        <img src="~/images/amenities/spa-1.jpg" class="img-fluid rounded shadow" alt="Spa treatment">
+                        <img src="~/images/spa/spa-treatment.jpg" class="img-fluid rounded shadow" alt="Spa treatment">
                     </div>
                     <div class="col-6">
-                        <img src="~/images/amenities/spa-2.jpg" class="img-fluid rounded shadow" alt="Spa ambiance">
+                        <img src="~/images/spa/spa-ambiance.jpg" class="img-fluid rounded shadow" alt="Spa ambiance">
                     </div>
                     <div class="col-12 mt-3">
-                        <img src="~/images/amenities/spa-3.jpg" class="img-fluid rounded shadow" alt="Spa relaxation room">
+                        <img src="~/images/spa/spa-room.jpg" class="img-fluid rounded shadow" alt="Spa relaxation room">
                     </div>
                 </div>
             </div>
@@ -86,7 +88,7 @@
         <div class="row g-4">
             <div class="col-md-4">
                 <div class="card h-100 border-0 shadow-sm facility-card">
-                    <img src="~/images/amenities/sauna.jpg" class="card-img-top" alt="Sauna" style="height: 200px; object-fit: cover;">
+                    <img src="~/images/spa/spa-sauna.jpg" class="card-img-top" alt="Sauna" style="height: 200px; object-fit: cover;">
                     <div class="card-body">
                         <h4 class="card-title">Finnish Sauna</h4>
                         <p class="card-text">Experience the purifying heat of our traditional Finnish sauna, known for improving circulation and relieving stress.</p>
@@ -100,7 +102,7 @@
 
             <div class="col-md-4">
                 <div class="card h-100 border-0 shadow-sm facility-card">
-                    <img src="~/images/amenities/steam-room.jpg" class="card-img-top" alt="Steam Room" style="height: 200px; object-fit: cover;">
+                    <img src="~/images/spa/spa-steam-room.jpg" class="card-img-top" alt="Steam Room" style="height: 200px; object-fit: cover;">
                     <div class="card-body">
                         <h4 class="card-title">Aromatherapy Steam Room</h4>
                         <p class="card-text">Our steam room combines moist heat with essential oils to open pores, cleanse skin, and soothe respiratory systems.</p>
@@ -114,7 +116,7 @@
 
             <div class="col-md-4">
                 <div class="card h-100 border-0 shadow-sm facility-card">
-                    <img src="~/images/amenities/jacuzzi.jpg" class="card-img-top" alt="Jacuzzi" style="height: 200px; object-fit: cover;">
+                    <img src="~/images/spa/spa-jacuzzi.jpg" class="card-img-top" alt="Jacuzzi" style="height: 200px; object-fit: cover;">
                     <div class="card-body">
                         <h4 class="card-title">Hydrotherapy Jacuzzi</h4>
                         <p class="card-text">Immerse yourself in our therapeutic jacuzzi with strategically placed jets that massage tired muscles and joints.</p>
@@ -143,7 +145,7 @@
                 <div class="card border-0 shadow-sm h-100">
                     <div class="row g-0 h-100">
                         <div class="col-md-4">
-                            <img src="~/images/amenities/massage.jpg" class="img-fluid h-100 rounded-start" alt="Massage" style="object-fit: cover;">
+                            <img src="~/images/spa/spa-massage.jpg" class="img-fluid h-100 rounded-start" alt="Massage" style="object-fit: cover;">
                         </div>
                         <div class="col-md-8">
                             <div class="card-body d-flex flex-column h-100">
@@ -166,7 +168,7 @@
                 <div class="card border-0 shadow-sm h-100">
                     <div class="row g-0 h-100">
                         <div class="col-md-4">
-                            <img src="~/images/amenities/facial.jpg" class="img-fluid h-100 rounded-start" alt="Facial" style="object-fit: cover;">
+                            <img src="~/images/spa/spa-facial.jpg" class="img-fluid h-100 rounded-start" alt="Facial" style="object-fit: cover;">
                         </div>
                         <div class="col-md-8">
                             <div class="card-body d-flex flex-column h-100">
@@ -189,7 +191,7 @@
                 <div class="card border-0 shadow-sm h-100">
                     <div class="row g-0 h-100">
                         <div class="col-md-4">
-                            <img src="~/images/amenities/hot-stone.jpg" class="img-fluid h-100 rounded-start" alt="Hot Stone Massage" style="object-fit: cover;">
+                            <img src="~/images/spa/hot-stone-therapy.jpg" class="img-fluid h-100 rounded-start" alt="Hot Stone Massage" style="object-fit: cover;">
                         </div>
                         <div class="col-md-8">
                             <div class="card-body d-flex flex-column h-100">
@@ -212,7 +214,7 @@
                 <div class="card border-0 shadow-sm h-100">
                     <div class="row g-0 h-100">
                         <div class="col-md-4">
-                            <img src="~/images/amenities/body-scrub.jpg" class="img-fluid h-100 rounded-start" alt="Body Scrub" style="object-fit: cover;">
+                            <img src="~/images/spa/exotic-body-scrub.jpg" class="img-fluid h-100 rounded-start" alt="Body Scrub" style="object-fit: cover;">
                         </div>
                         <div class="col-md-8">
                             <div class="card-body d-flex flex-column h-100">
@@ -366,36 +368,43 @@
                 <div class="card border-0 shadow">
                     <div class="card-body p-4">
                         <h4 class="card-title mb-4">Book an Appointment</h4>
-                        <form>
+                        <form asp-controller="Amenities" asp-action="Spa" method="post">
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
                             <div class="row g-3">
                                 <div class="col-md-6">
-                                    <label for="name" class="form-label">Full Name</label>
-                                    <input type="text" class="form-control" id="name" required>
+                                    <label asp-for="FullName" class="form-label"></label>
+                                    <input asp-for="FullName" class="form-control" />
+                                    <span asp-validation-for="FullName" class="text-danger"></span>
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="email" class="form-label">Email Address</label>
-                                    <input type="email" class="form-control" id="email" required>
+                                    <label asp-for="Email" class="form-label"></label>
+                                    <input asp-for="Email" class="form-control" />
+                                    <span asp-validation-for="Email" class="text-danger"></span>
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="phone" class="form-label">Phone Number</label>
-                                    <input type="tel" class="form-control" id="phone" required>
+                                    <label asp-for="Phone" class="form-label"></label>
+                                    <input asp-for="Phone" class="form-control" />
+                                    <span asp-validation-for="Phone" class="text-danger"></span>
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="guests" class="form-label">Number of Guests</label>
-                                    <select class="form-select" id="guests" required>
+                                    <label asp-for="NumberOfGuests" class="form-label"></label>
+                                    <select asp-for="NumberOfGuests" class="form-select">
                                         <option value="1">1 Person</option>
                                         <option value="2">2 People</option>
                                         <option value="3">3 People</option>
                                         <option value="4">4+ People</option>
                                     </select>
+                                    <span asp-validation-for="NumberOfGuests" class="text-danger"></span>
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="date" class="form-label">Preferred Date</label>
-                                    <input type="date" class="form-control" id="date" required>
+                                    <label asp-for="PreferredDate" class="form-label"></label>
+                                    <input asp-for="PreferredDate" class="form-control" />
+                                    <span asp-validation-for="PreferredDate" class="text-danger"></span>
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="time" class="form-label">Preferred Time</label>
-                                    <select class="form-select" id="time" required>
+                                    <label asp-for="PreferredTime" class="form-label"></label>
+                                    <select asp-for="PreferredTime" class="form-select">
                                         <option value="">Select Time</option>
                                         <option>10:00 AM</option>
                                         <option>11:00 AM</option>
@@ -408,10 +417,11 @@
                                         <option>6:00 PM</option>
                                         <option>7:00 PM</option>
                                     </select>
+                                    <span asp-validation-for="PreferredTime" class="text-danger"></span>
                                 </div>
                                 <div class="col-12">
-                                    <label for="treatment" class="form-label">Select Treatment</label>
-                                    <select class="form-select" id="treatment" required>
+                                    <label asp-for="Treatment" class="form-label"></label>
+                                    <select asp-for="Treatment" class="form-select">
                                         <option value="">Select a treatment or package</option>
                                         <optgroup label="Massages">
                                             <option>Signature Massage (60 min)</option>
@@ -435,17 +445,20 @@
                                             <option>Couples Retreat (3.5 hours)</option>
                                         </optgroup>
                                     </select>
+                                    <span asp-validation-for="Treatment" class="text-danger"></span>
                                 </div>
                                 <div class="col-12">
-                                    <label for="notes" class="form-label">Special Requests</label>
-                                    <textarea class="form-control" id="notes" rows="3" placeholder="Any special requests or health concerns..."></textarea>
+                                    <label asp-for="SpecialRequests" class="form-label"></label>
+                                    <textarea asp-for="SpecialRequests" class="form-control" rows="3" placeholder="Any special requests or health concerns..."></textarea>
+                                    <span asp-validation-for="SpecialRequests" class="text-danger"></span>
                                 </div>
                                 <div class="col-12">
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="terms" required>
-                                        <label class="form-check-label" for="terms">
-                                            I agree to the <a href="#" class="text-primary">terms and conditions</a>
+                                        <input asp-for="AgreeToTerms" class="form-check-input" />
+                                        <label asp-for="AgreeToTerms" class="form-check-label">
+                                            I agree to the <a href="#" class="text-primary" data-bs-toggle="modal" data-bs-target="#termsModal">terms and conditions</a>
                                         </label>
+                                        <span asp-validation-for="AgreeToTerms" class="text-danger d-block"></span>
                                     </div>
                                 </div>
                                 <div class="col-12 mt-4">
@@ -460,78 +473,45 @@
     </div>
 </section>
 
-<!-- Testimonials -->
-<section class="py-5 bg-white">
-    <div class="container">
-        <div class="text-center mb-5">
-            <span class="subtitle text-primary">GUEST EXPERIENCES</span>
-            <h2 class="mb-3">What Our Guests Say</h2>
-            <p class="lead mx-auto" style="max-width: 700px;">The experiences of our valued guests</p>
-        </div>
-
-        <div class="row g-4">
-            <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm p-4">
-                    <div class="text-primary mb-3">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <p class="card-text mb-4">"The Premium Wellness Journey was absolutely divine. The hot stone massage melted away all my stress, and the facial left my skin glowing for days. Worth every penny!"</p>
-                    <div class="d-flex align-items-center mt-auto">
-                        <img src="~/images/testimonials/person-1.jpg" class="rounded-circle me-3" width="50" height="50" alt="Customer">
-                        <div>
-                            <h6 class="mb-0">Jennifer L.</h6>
-                            <p class="text-muted mb-0 small">New York, USA</p>
-                        </div>
-                    </div>
-                </div>
+<!-- Terms and Conditions Modal -->
+<div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="termsModalLabel">Spa Terms and Conditions</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-
-            <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm p-4">
-                    <div class="text-primary mb-3">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <p class="card-text mb-4">"My wife and I enjoyed the Couples Retreat during our anniversary stay. The private jacuzzi session and champagne made it extra special. The therapists were incredibly skilled and professional."</p>
-                    <div class="d-flex align-items-center mt-auto">
-                        <img src="~/images/testimonials/person-2.jpg" class="rounded-circle me-3" width="50" height="50" alt="Customer">
-                        <div>
-                            <h6 class="mb-0">Michael T.</h6>
-                            <p class="text-muted mb-0 small">Toronto, Canada</p>
-                        </div>
-                    </div>
-                </div>
+            <div class="modal-body">
+                <h6>Booking Terms</h6>
+                <p>By making a spa booking, you agree to the following terms and conditions:</p>
+                <ul>
+                    <li>All spa treatments must be booked at least 24 hours in advance to ensure availability.</li>
+                    <li>We require a valid credit card to guarantee your reservation.</li>
+                    <li>Please arrive 15 minutes before your scheduled appointment to complete any necessary forms.</li>
+                    <li>Late arrivals may result in a shortened treatment time to accommodate other guests.</li>
+                    <li>All rates are subject to applicable taxes and service charges.</li>
+                </ul>
+                <h6>Cancellation Policy</h6>
+                <p>We understand that plans change. Please respect our cancellation policy:</p>
+                <ul>
+                    <li>Cancellations or changes must be made at least 24 hours prior to your scheduled appointment to avoid charges.</li>
+                    <li>Cancellations made less than 24 hours in advance will incur a 50% charge.</li>
+                    <li>No-shows will be charged the full treatment price.</li>
+                </ul>
+                <h6>Health Considerations</h6>
+                <p>Your health and safety are our priority:</p>
+                <ul>
+                    <li>Please inform us of any health conditions, injuries, allergies, or special needs before your treatment.</li>
+                    <li>If you are pregnant or have specific medical conditions, certain treatments may not be recommended.</li>
+                    <li>Our therapists reserve the right to refuse service if they determine a treatment may not be suitable for your current health condition.</li>
+                </ul>
             </div>
-
-            <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm p-4">
-                    <div class="text-primary mb-3">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star-half-alt"></i>
-                    </div>
-                    <p class="card-text mb-4">"I visit HotelNamo Spa every time I'm in town. The signature massage is my go-to treatment. The therapists remember my preferences and the ambiance is so peaceful. It's like a second home for relaxation."</p>
-                    <div class="d-flex align-items-center mt-auto">
-                        <img src="~/images/testimonials/person-3.jpg" class="rounded-circle me-3" width="50" height="50" alt="Customer">
-                        <div>
-                            <h6 class="mb-0">Sophia W.</h6>
-                            <p class="text-muted mb-0 small">London, UK</p>
-                        </div>
-                    </div>
-                </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">I Understand</button>
             </div>
         </div>
     </div>
-</section>
+</div>
 
 <!-- FAQ Section -->
 <section class="py-5 bg-light">
@@ -682,4 +662,16 @@
             box-shadow: 0 0 0 0.25rem rgba(181, 150, 120, 0.25);
         }
     </style>
+}
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Set minimum date to today
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date().toISOString().split('T')[0];
+            document.querySelector('#PreferredDate').setAttribute('min', today);
+        });
+    </script>
 }

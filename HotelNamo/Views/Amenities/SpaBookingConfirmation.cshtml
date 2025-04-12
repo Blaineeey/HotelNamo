@@ -1,0 +1,108 @@
+﻿@{
+    ViewData["Title"] = "Spa Booking Confirmation";
+    Layout = "_UserLayout";
+}
+
+<div class="container my-5">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card border-0 shadow">
+                <div class="card-body text-center p-5">
+                    <div class="confirmation-icon mb-4">
+                        <i class="fas fa-check-circle text-success fa-5x"></i>
+                    </div>
+                    <h2 class="about-title">BOOKING CONFIRMED</h2>
+                    <h1 class="display-6 mb-4">Thank You, @TempData["BookingName"]!</h1>
+                    <p class="lead mb-4">Your spa appointment has been successfully booked and saved to our system. We look forward to pampering you!</p>
+
+                    <div class="booking-details text-start bg-light p-4 rounded my-4">
+                        <h5 class="mb-3">Booking Details:</h5>
+                        <div class="row mb-2">
+                            <div class="col-md-4 fw-bold">Booking Reference:</div>
+                            <div class="col-md-8">#@TempData["BookingId"]</div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-md-4 fw-bold">Treatment:</div>
+                            <div class="col-md-8">@TempData["BookingTreatment"]</div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-md-4 fw-bold">Date:</div>
+                            <div class="col-md-8">@TempData["BookingDate"]</div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-md-4 fw-bold">Time:</div>
+                            <div class="col-md-8">@TempData["BookingTime"]</div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info" role="alert">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <span>A confirmation email has been sent to your email address with all booking details.</span>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="text-center">
+                        <h5 class="mb-3">What to expect?</h5>
+                        <p>Please arrive 15 minutes prior to your appointment time to complete any necessary forms and prepare for your treatment.</p>
+
+                        <div class="d-flex flex-column flex-md-row justify-content-center gap-3 mt-4">
+                            <a href="@Url.Action("Spa", "Amenities")" class="btn btn-outline-primary rounded-pill px-4">
+                                <i class="fas fa-arrow-left me-2"></i> Back to Spa
+                            </a>
+                            <a href="@Url.Action("Index", "Home")" class="btn btn-primary rounded-pill px-4">
+                                Return to Home <i class="fas fa-home ms-2"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+        <style>
+            .about-title {
+                color: #b59678;
+                font-size: 1.2rem;
+                letter-spacing: 1px;
+                margin-bottom: 0.5rem;
+            }
+
+            .text-primary {
+                color: #b59678 !important;
+            }
+
+            .btn-primary {
+                background-color: #b59678;
+                border-color: #b59678;
+            }
+
+            .btn-primary:hover,
+            .btn-primary:focus {
+                background-color: #a08467;
+                border-color: #a08467;
+            }
+
+            .btn-outline-primary {
+                color: #b59678;
+                border-color: #b59678;
+            }
+
+            .btn-outline-primary:hover,
+            .btn-outline-primary:focus {
+                background-color: #b59678;
+                border-color: #b59678;
+                color: white;
+            }
+
+            .confirmation-icon {
+                color: #28a745;
+            }
+
+            .booking-details {
+                border-left: 4px solid #b59678;
+            }
+        </style>
+}

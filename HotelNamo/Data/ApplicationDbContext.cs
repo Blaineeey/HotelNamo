@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HotelNamo.Data
 {
-
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
@@ -24,6 +23,8 @@ namespace HotelNamo.Data
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<Discount> Discounts { get; set; }
         public DbSet<RoomImage> RoomImages { get; set; }
+        public DbSet<SpaBooking> SpaBookings { get; set; }
+        public DbSet<TableReservation> TableReservations { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -79,12 +80,26 @@ namespace HotelNamo.Data
                 .HasOne(ra => ra.Amenity)
                 .WithMany(a => a.RoomAmenities)
                 .HasForeignKey(ra => ra.AmenityId);
+
             builder.Entity<Booking>()
                 .HasOne(b => b.Room)
-                .WithMany(r => r.Bookings)  // **This was missing!**
+                .WithMany(r => r.Bookings)
                 .HasForeignKey(b => b.RoomId);
+
+            // Configure SpaBooking entity relationship to User (if needed)
+            builder.Entity<SpaBooking>()
+                .HasOne(sb => sb.User)
+                .WithMany()
+                .HasForeignKey(sb => sb.UserId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .IsRequired(false);
+
+            builder.Entity<TableReservation>()
+                .HasOne(tr => tr.User)
+                .WithMany()
+                .HasForeignKey(tr => tr.UserId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .IsRequired(false);
         }
-
     }
-
 }
