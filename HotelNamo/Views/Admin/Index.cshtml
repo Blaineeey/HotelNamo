@@ -3,12 +3,232 @@
     ViewData["Title"] = "Admin Dashboard";
 }
 
-<h2>Admin Dashboard</h2>
-<p>Welcome to the HotelNamo Admin Panel. Use the sidebar to manage the hotel’s operations:</p>
-<ul>
-    <li><strong>User/Staff Management:</strong> Create staff, list all users.</li>
-    <li><strong>Room Management:</strong> View and update room details.</li>
-    <li><strong>Housekeeping:</strong> Schedule and track housekeeping tasks.</li>
-    <li><strong>Maintenance:</strong> Log maintenance requests and track repairs.</li>
-    <!-- Add more features as needed -->
-</ul>
+<div class="admin-dashboard">
+    <!-- Stats Cards Row -->
+    <div class="row">
+        <div class="col-md-3 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body d-flex align-items-center">
+                    <div class="card-icon bg-primary text-white rounded-circle p-3 me-3">
+                        <i class="fa-solid fa-bed fa-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="card-title fw-bold mb-0">@ViewBag.TotalRooms</h3>
+                        <p class="card-text text-muted">Total Rooms</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body d-flex align-items-center">
+                    <div class="card-icon bg-success text-white rounded-circle p-3 me-3">
+                        <i class="fa-solid fa-calendar-check fa-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="card-title fw-bold mb-0">@ViewBag.ActiveBookings</h3>
+                        <p class="card-text text-muted">Active Bookings</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body d-flex align-items-center">
+                    <div class="card-icon bg-info text-white rounded-circle p-3 me-3">
+                        <i class="fa-solid fa-utensils fa-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="card-title fw-bold mb-0">@ViewBag.TotalDiningReservations</h3>
+                        <p class="card-text text-muted">Dining Reservations</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body d-flex align-items-center">
+                    <div class="card-icon bg-warning text-white rounded-circle p-3 me-3">
+                        <i class="fa-solid fa-spa fa-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="card-title fw-bold mb-0">@ViewBag.TotalSpaBookings</h3>
+                        <p class="card-text text-muted">Spa Bookings</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-3 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body d-flex align-items-center">
+                    <div class="card-icon bg-danger text-white rounded-circle p-3 me-3">
+                        <i class="fa-solid fa-screwdriver-wrench fa-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="card-title fw-bold mb-0">@ViewBag.PendingMaintenanceRequests</h3>
+                        <p class="card-text text-muted">Pending Maintenance</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body d-flex align-items-center">
+                    <div class="card-icon bg-secondary text-white rounded-circle p-3 me-3">
+                        <i class="fa-solid fa-broom fa-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="card-title fw-bold mb-0">@ViewBag.PendingHousekeepingTasks</h3>
+                        <p class="card-text text-muted">Pending Housekeeping</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body d-flex align-items-center">
+                    <div class="card-icon bg-dark text-white rounded-circle p-3 me-3">
+                        <i class="fa-solid fa-star fa-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="card-title fw-bold mb-0">@ViewBag.NewFeedbackCount</h3>
+                        <p class="card-text text-muted">New Feedback Today</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body d-flex align-items-center">
+                    <div class="card-icon bg-primary text-white rounded-circle p-3 me-3">
+                        <i class="fa-solid fa-users fa-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="card-title fw-bold mb-0">@ViewBag.TotalBookings</h3>
+                        <p class="card-text text-muted">Total Bookings</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Bookings Section -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Recent Bookings</h5>
+                        <a asp-action="AllBookings" class="btn btn-sm btn-outline-primary">View All</a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Room</th>
+                                    <th>Guest</th>
+                                    <th>Check-In</th>
+                                    <th>Check-Out</th>
+                                    <th>Status</th>
+                                    <th>Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var booking in ViewBag.LatestBookings)
+                                {
+                                    <tr>
+                                        <td>@booking.Room?.RoomNumber</td>
+                                        <td>
+                                            @if (booking.IsGuestBooking)
+                                            {
+                                                @booking.GuestName
+                                            }
+                                            else
+                                            {
+                                                @(booking.User?.FirstName + " " + booking.User?.LastName)
+                                            }
+                                        </td>
+                                        <td>@booking.CheckInDate.ToString("MMM dd, yyyy")</td>
+                                        <td>@booking.CheckOutDate.ToString("MMM dd, yyyy")</td>
+                                        <td>
+                                            @if (!booking.IsConfirmed)
+                                            {
+                                                <span class="badge bg-warning">Pending</span>
+                                            }
+                                            else if (booking.ActualCheckInTime != null && booking.ActualCheckOutTime == null)
+                                            {
+                                                <span class="badge bg-primary">Checked In</span>
+                                            }
+                                            else if (booking.ActualCheckOutTime != null)
+                                            {
+                                                <span class="badge bg-success">Completed</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-info">Confirmed</span>
+                                            }
+                                        </td>
+                                        <td>$@booking.TotalPrice.ToString("F2")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Links -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <a asp-action="CreateRoom" class="btn btn-outline-primary w-100">
+                                <i class="fa-solid fa-plus me-2"></i> Add New Room
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a asp-action="CreateStaff" class="btn btn-outline-success w-100">
+                                <i class="fa-solid fa-user-plus me-2"></i> Add Staff
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a asp-controller="Maintenance" asp-action="Create" class="btn btn-outline-danger w-100">
+                                <i class="fa-solid fa-wrench me-2"></i> Maintenance Request
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a asp-controller="Housekeeping" asp-action="Create" class="btn btn-outline-info w-100">
+                                <i class="fa-solid fa-broom me-2"></i> Housekeeping Task
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // You can add any dashboard-specific JavaScript here
+        // For example, charts or dynamic data loading
+    </script>
+}

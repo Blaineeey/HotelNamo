@@ -1,0 +1,217 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+@model IEnumerable<HotelNamo.Models.SpaBooking>
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Manage Spa Bookings";
+}
+
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-header bg-white">
+        <div class="d-flex justify-content-between align-items-center">
+            <h4 class="mb-0"><i class="fa-solid fa-spa me-2"></i>Spa Bookings</h4>
+        </div>
+    </div>
+    <div class="card-body">
+        <!-- Filter Form -->
+        <form method="get" class="mb-4 p-3 border rounded bg-light">
+            <div class="row g-3">
+                <div class="col-md-2">
+                    <label class="form-label">From Date</label>
+                    <input type="date" name="fromDate" class="form-control" value="@ViewBag.FromDate" />
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">To Date</label>
+                    <input type="date" name="toDate" class="form-control" value="@ViewBag.ToDate" />
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Status</label>
+                    <select name="status" class="form-select">
+                        <option value="">All Statuses</option>
+                        <option value="Confirmed" selected="@(ViewBag.Status == "Confirmed")">Confirmed</option>
+                        <option value="Completed" selected="@(ViewBag.Status == "Completed")">Completed</option>
+                        <option value="Cancelled" selected="@(ViewBag.Status == "Cancelled")">Cancelled</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Treatment</label>
+                    <select name="treatment" class="form-select">
+                        <option value="">All Treatments</option>
+                        @foreach (var treatment in ViewBag.Treatments)
+                        {
+                            <option value="@treatment" selected="@(ViewBag.Treatment == treatment)">@treatment</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Search</label>
+                    <input type="text" name="searchQuery" class="form-control" placeholder="Search by name or email" value="@ViewBag.SearchQuery" />
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fa-solid fa-filter me-1"></i> Filter
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <!-- Data Table -->
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover table-striped">
+                <thead class="table-dark">
+                    <tr class="text-center">
+                        <th>#ID</th>
+                        <th>Guest Name</th>
+                        <th>Treatment</th>
+                        <th>Date & Time</th>
+                        <th>Guests</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Any())
+                    {
+                        @foreach (var booking in Model)
+                        {
+                            <tr>
+                                <td class="text-center">@booking.Id</td>
+                                <td>
+                                    <strong>@booking.FullName</strong><br>
+                                    <small>@booking.Email</small><br>
+                                    <small>@booking.Phone</small>
+                                </td>
+                                <td class="text-center">
+                                    @booking.Treatment
+                                </td>
+                                <td class="text-center">
+                                    @booking.PreferredDate.ToString("MMM dd, yyyy")<br>
+                                    <span class="badge bg-info">@booking.PreferredTime</span>
+                                </td>
+                                <td class="text-center">
+                                    @booking.NumberOfGuests
+                                </td>
+                                <td class="text-center">
+                                    @switch (booking.Status)
+                                    {
+                                        case "Confirmed":
+                                            <span class="badge bg-success">Confirmed</span>
+                                            break;
+                                        case "Completed":
+                                            <span class="badge bg-primary">Completed</span>
+                                            break;
+                                        case "Cancelled":
+                                            <span class="badge bg-danger">Cancelled</span>
+                                            break;
+                                        default:
+                                            <span class="badge bg-secondary">@booking.Status</span>
+                                            break;
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    <div class="btn-group" role="group">
+                                        <!-- Status Change Buttons -->
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                Change Status
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li><a class="dropdown-item" href="@Url.Action("UpdateSpaBookingStatus", new { bookingId = booking.Id, status = "Confirmed" })">Confirm</a></li>
+                                                <li><a class="dropdown-item" href="@Url.Action("UpdateSpaBookingStatus", new { bookingId = booking.Id, status = "Completed" })">Mark Completed</a></li>
+                                                <li><a class="dropdown-item" href="@Url.Action("UpdateSpaBookingStatus", new { bookingId = booking.Id, status = "Cancelled" })">Cancel</a></li>
+                                            </ul>
+                                        </div>
+
+                                        <!-- Details button -->
+                                        <button type="button" class="btn btn-sm btn-info" title="View Details"
+                                                data-bs-toggle="modal" data-bs-target="#spaModal@(booking.Id)">
+                                            <i class="fa-solid fa-eye"></i>
+                                        </button>
+                                    </div>
+
+                                    <!-- Spa Booking Details Modal -->
+                                    <div class="modal fade" id="spaModal@(booking.Id)" tabindex="-1" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header bg-light">
+                                                    <h5 class="modal-title">Spa Booking #@booking.Id Details</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <h6 class="fw-bold">Guest Information</h6>
+                                                            <p><strong>Name:</strong> @booking.FullName</p>
+                                                            <p><strong>Email:</strong> @booking.Email</p>
+                                                            <p><strong>Phone:</strong> @booking.Phone</p>
+                                                            <p><strong>Number of Guests:</strong> @booking.NumberOfGuests</p>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <h6 class="fw-bold">Booking Details</h6>
+                                                            <p><strong>Date:</strong> @booking.PreferredDate.ToString("MMM dd, yyyy")</p>
+                                                            <p><strong>Time:</strong> @booking.PreferredTime</p>
+                                                            <p><strong>Treatment:</strong> @booking.Treatment</p>
+                                                            <p><strong>Status:</strong> @booking.Status</p>
+                                                        </div>
+                                                    </div>
+                                                    @if (!string.IsNullOrEmpty(booking.SpecialRequests))
+                                                    {
+                                                        <hr>
+                                                        <div class="row">
+                                                            <div class="col-12">
+                                                                <h6 class="fw-bold">Special Requests</h6>
+                                                                <p>@booking.SpecialRequests</p>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                    <hr>
+                                                    <div class="row">
+                                                        <div class="col-12">
+                                                            <h6 class="fw-bold">Booking Information</h6>
+                                                            <p><strong>Booking ID:</strong> @booking.Id</p>
+                                                            <p><strong>Booked On:</strong> @booking.BookingDate.ToString("MMM dd, yyyy hh:mm tt")</p>
+                                                            @if (!string.IsNullOrEmpty(booking.UserId))
+                                                            {
+                                                                <p><strong>Registered User:</strong> Yes (ID: @booking.UserId)</p>
+                                                            }
+                                                            else
+                                                            {
+                                                                <p><strong>Registered User:</strong> No (Guest Booking)</p>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                    @if (booking.Status != "Cancelled")
+                                                    {
+                                                        <a href="@Url.Action("UpdateSpaBookingStatus", new { bookingId = booking.Id, status = "Cancelled" })"
+                                                           class="btn btn-danger">Cancel Booking</a>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center py-4">
+                                <div class="alert alert-info mb-0">
+                                    <i class="fa-solid fa-info-circle me-2"></i> No spa bookings found with the specified criteria.
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>  

@@ -1,31 +1,273 @@
 ﻿@model IEnumerable<UserWithRolesViewModel>
 @{
     ViewData["Title"] = "Manage Users";
+    Layout = "_AdminLayout";
 }
 
-<h2>Manage Users</h2>
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-header bg-white">
+        <div class="d-flex justify-content-between align-items-center">
+            <h4 class="mb-0"><i class="fa-solid fa-users me-2"></i>User Management</h4>
+            <a asp-action="CreateStaff" class="btn btn-primary btn-sm">
+                <i class="fa-solid fa-user-plus me-1"></i> Add New Staff
+            </a>
+        </div>
+    </div>
+    <div class="card-body">
+        <!-- Search and Filter -->
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0">
+                        <i class="fa-solid fa-search text-muted"></i>
+                    </span>
+                    <input type="text" id="userSearch" class="form-control border-start-0" placeholder="Search by name or email">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <select id="roleFilter" class="form-select">
+                    <option value="">All Roles</option>
+                    <option value="Admin">Admin</option>
+                    <option value="Maintenance">Maintenance</option>
+                    <option value="Housekeeping">Housekeeping</option>
+                    <option value="Frontdesk">FrontDesk</option>
+                    <option value="User">User</option>
+                </select>
+            </div>
+        </div>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Email</th>
-            <th>Roles</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
+        <!-- Users Table -->
+        <div class="table-responsive">
+            <table class="table table-hover align-middle" id="usersTable">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col" style="width: 60px;"></th>
+                        <th scope="col">User</th>
+                        <th scope="col">Roles</th>
+                        <th scope="col" style="width: 180px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        var initials = !string.IsNullOrEmpty(item.Email) && item.Email.Length > 0 ?
+                        item.Email[0].ToString().ToUpper() : "?";
+
+                        <tr data-roles="@string.Join(",", item.Roles)">
+                            <td>
+                                <div class="avatar-circle" style="background-color: @GetAvatarColor(item.UserId)">
+                                    <span>@initials</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex flex-column">
+                                    <h6 class="mb-0">@item.Email</h6>
+                                    <small class="text-muted">ID: @item.UserId.Substring(0, 8)...</small>
+                                </div>
+                            </td>
+                            <td>
+                                @foreach (var role in item.Roles)
+                                {
+                                    <span class="badge @GetRoleBadgeClass(role) me-1">@role</span>
+                                }
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a asp-action="EditUser" asp-route-id="@item.UserId" class="btn btn-sm btn-outline-primary">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </a>
+                                    <button type="button" class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#userDetails@(item.UserId.Substring(0, 5))">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteConfirm@(item.UserId.Substring(0, 5))">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </div>
+
+                                <!-- User Details Modal -->
+                                <div class="modal fade" id="userDetails@(item.UserId.Substring(0, 5))" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header bg-light">
+                                                <h5 class="modal-title">User Details</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="text-center mb-4">
+                                                    <div class="avatar-circle avatar-lg mx-auto mb-3" style="background-color: @GetAvatarColor(item.UserId)">
+                                                        <span>@initials</span>
+                                                    </div>
+                                                    <h5>@item.Email</h5>
+                                                    <div>
+                                                        @foreach (var role in item.Roles)
+                                                        {
+                                                            <span class="badge @GetRoleBadgeClass(role) me-1">@role</span>
+                                                        }
+                                                    </div>
+                                                </div>
+
+                                                <div class="list-group mb-3">
+                                                    <div class="list-group-item">
+                                                        <div class="d-flex w-100 justify-content-between">
+                                                            <h6 class="mb-1">User ID</h6>
+                                                        </div>
+                                                        <p class="mb-1 text-break">@item.UserId</p>
+                                                    </div>
+                                                    <div class="list-group-item">
+                                                        <div class="d-flex w-100 justify-content-between">
+                                                            <h6 class="mb-1">Email</h6>
+                                                        </div>
+                                                        <p class="mb-1">@item.Email</p>
+                                                    </div>
+                                                    <div class="list-group-item">
+                                                        <div class="d-flex w-100 justify-content-between">
+                                                            <h6 class="mb-1">Assigned Roles</h6>
+                                                        </div>
+                                                        <p class="mb-1">@string.Join(", ", item.Roles)</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                <a asp-action="EditUser" asp-route-id="@item.UserId" class="btn btn-primary">Edit User</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Delete Confirmation Modal -->
+                                <div class="modal fade" id="deleteConfirm@(item.UserId.Substring(0, 5))" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog modal-sm">
+                                        <div class="modal-content">
+                                            <div class="modal-header bg-danger text-white">
+                                                <h5 class="modal-title">Confirm Delete</h5>
+                                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p>Are you sure you want to delete this user?</p>
+                                                <p class="mb-0 fw-bold">@item.Email</p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                <a asp-action="DeleteUser" asp-route-id="@item.UserId" class="btn btn-danger">Delete</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @if (!Model.Any())
         {
-            <tr>
-                <td>@item.Email</td>
-                <td>@string.Join(", ", item.Roles)</td>
-                <td>
-                    <a asp-action="EditUser" asp-route-id="@item.UserId">Edit</a> |
-                    <a asp-action="DeleteUser" asp-route-id="@item.UserId">Delete</a>
-                </td>
-            </tr>
+            <div class="text-center py-5">
+                <div class="mb-3">
+                    <i class="fa-solid fa-users-slash text-muted" style="font-size: 3rem;"></i>
+                </div>
+                <h5 class="text-muted">No users found</h5>
+                <p class="text-muted">Add a new staff member to get started</p>
+                <a asp-action="CreateStaff" class="btn btn-primary">
+                    <i class="fa-solid fa-user-plus me-1"></i> Add Staff
+                </a>
+            </div>
         }
-    </tbody>
-</table>
+    </div>
+</div>
 
-<a asp-action="CreateStaff" class="btn btn-primary">Create Staff User</a>
+@section Scripts {
+    <script>
+        // Search functionality
+        document.getElementById('userSearch').addEventListener('keyup', function() {
+            const searchValue = this.value.toLowerCase();
+            const table = document.getElementById('usersTable');
+            const rows = table.getElementsByTagName('tr');
+
+            for (let i = 1; i < rows.length; i++) {
+                const email = rows[i].getElementsByTagName('td')[1].textContent.toLowerCase();
+                if (email.includes(searchValue)) {
+                    rows[i].style.display = '';
+                } else {
+                    rows[i].style.display = 'none';
+                }
+            }
+        });
+
+        // Role filter functionality
+        document.getElementById('roleFilter').addEventListener('change', function() {
+            const filterValue = this.value.toLowerCase();
+            const table = document.getElementById('usersTable');
+            const rows = table.getElementsByTagName('tr');
+
+            for (let i = 1; i < rows.length; i++) {
+                const roles = rows[i].getAttribute('data-roles').toLowerCase();
+                if (filterValue === '' || roles.includes(filterValue)) {
+                    rows[i].style.display = '';
+                } else {
+                    rows[i].style.display = 'none';
+                }
+            }
+        });
+    </script>
+    <style>
+        .avatar-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+        }
+
+        .avatar-lg {
+            width: 80px;
+            height: 80px;
+            font-size: 1.75rem;
+        }
+
+        table.table th {
+            font-weight: 600;
+        }
+
+        .badge {
+            font-weight: 500;
+        }
+    </style>
+}
+
+@functions {
+    public string GetRoleBadgeClass(string role)
+    {
+        return role.ToLower() switch
+        {
+            "admin" => "bg-danger",
+            "maintenance" => "bg-warning",
+            "frontdesk" => "bg-info",
+            "user" => "bg-success",
+            _ => "bg-secondary"
+        };
+    }
+
+    public string GetAvatarColor(string userId)
+    {
+        // Generate a consistent color based on user ID
+        var colors = new[] {
+            "#4285F4", "#EA4335", "#FBBC05", "#34A853", // Google colors
+            "#0078D4", "#D83B01", "#107C10", "#5C2D91", // Microsoft colors
+            "#1DA1F2", "#FF5252", "#7C4DFF", "#FF9800"  // Various
+        };
+
+        // Use the first characters of the ID as a simple hash
+        int index = 0;
+        foreach (char c in userId.Take(4))
+        {
+            index += c;
+        }
+
+        return colors[index % colors.Length];
+    }
+}

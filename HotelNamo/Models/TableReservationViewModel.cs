@@ -41,6 +41,7 @@ namespace HotelNamo.Models
         [Display(Name = "Dining Venue")]
         public string Venue { get; set; }
 
+        // Non-required fields for additional information
         [Display(Name = "Special Requests")]
         public string SpecialRequests { get; set; }
 

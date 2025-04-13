@@ -35,13 +35,13 @@ namespace HotelNamo.Models
         [Required]
         public string Venue { get; set; }
 
-        public string SpecialRequests { get; set; }
+        public string? SpecialRequests { get; set; }
 
         // Occasion (e.g., Birthday, Anniversary)
-        public string Occasion { get; set; }
+        public string? Occasion { get; set; }
 
         // Dietary restrictions
-        public string DietaryRestrictions { get; set; }
+        public string? DietaryRestrictions { get; set; }
 
         [Required]
         public DateTime BookingDate { get; set; } = DateTime.Now;
