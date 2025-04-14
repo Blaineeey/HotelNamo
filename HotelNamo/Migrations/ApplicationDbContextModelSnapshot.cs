@@ -517,7 +517,6 @@ namespace HotelNamo.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("DietaryRestrictions")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
@@ -532,7 +531,6 @@ namespace HotelNamo.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Occasion")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Phone")
@@ -547,7 +545,6 @@ namespace HotelNamo.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SpecialRequests")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Status")
