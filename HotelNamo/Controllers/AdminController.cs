@@ -272,6 +272,13 @@ public class AdminController : Controller
         if (booking == null)
             return NotFound();
 
+        // Update room status
+        var room = _context.Rooms.Find(booking.RoomId);
+        if (room != null)
+        {
+            room.Status = "Vacant";
+        }
+
         booking.ActualCheckOutTime = DateTime.Now;
         await _context.SaveChangesAsync();
 
@@ -636,5 +643,168 @@ public class AdminController : Controller
         }
 
         return RedirectToAction("ListUsers");
+    }
+
+    // Add these methods to the AdminController.cs file
+
+    [HttpGet]
+    public async Task<IActionResult> EditRoom(int id)
+    {
+        var room = await _context.Rooms
+            .Include(r => r.RoomAmenities)
+            .Include(r => r.RoomImages)
+            .FirstOrDefaultAsync(r => r.Id == id);
+
+        if (room == null)
+        {
+            return NotFound();
+        }
+
+        // Get all available amenities for the form
+        ViewBag.Amenities = await _context.Amenities.ToListAsync();
+
+        // Get already selected amenity IDs for pre-selecting checkboxes
+        ViewBag.SelectedAmenities = room.RoomAmenities.Select(ra => ra.AmenityId).ToList();
+
+        // Get existing room image for pre-selection
+        ViewBag.CurrentImage = room.RoomImages.FirstOrDefault()?.ImagePath;
+
+        // Provide list of available images (same as in CreateRoom)
+        ViewBag.ExistingImages = new List<string>
+    {
+        "single-room.jpg",
+        "guest-room.jpg",
+        "deluxe-room.jpg",
+        "superior-room.jpg"
+    };
+
+        return View(room);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> EditRoom(Room room, int[] selectedAmenities, string selectedImage)
+    {
+        ModelState.Remove("RoomImages");
+
+        if (!ModelState.IsValid)
+        {
+            ViewBag.Amenities = await _context.Amenities.ToListAsync();
+            ViewBag.SelectedAmenities = selectedAmenities;
+            ViewBag.CurrentImage = selectedImage;
+            ViewBag.ExistingImages = new List<string>
+        {
+            "single-room.jpg", "guest-room.jpg", "superior-room.jpg", "deluxe-room.jpg"
+        };
+            return View(room);
+        }
+
+        // Get the existing room to update
+        var existingRoom = await _context.Rooms
+            .Include(r => r.RoomAmenities)
+            .Include(r => r.RoomImages)
+            .FirstOrDefaultAsync(r => r.Id == room.Id);
+
+        if (existingRoom == null)
+        {
+            return NotFound();
+        }
+
+        try
+        {
+            // Update basic room properties
+            existingRoom.RoomNumber = room.RoomNumber;
+            existingRoom.FloorNumber = room.FloorNumber;
+            existingRoom.Category = room.Category;
+            existingRoom.Price = room.Price;
+            existingRoom.Status = room.Status;
+            existingRoom.Description = room.Description;
+
+            // Update room amenities (remove existing and add new ones)
+            _context.RoomAmenities.RemoveRange(existingRoom.RoomAmenities);
+            existingRoom.RoomAmenities = selectedAmenities.Select(a => new RoomAmenity
+            {
+                RoomId = existingRoom.Id,
+                AmenityId = a
+            }).ToList();
+
+            // Update room image if a new one is selected
+            if (!string.IsNullOrEmpty(selectedImage))
+            {
+                // Remove existing images if any
+                if (existingRoom.RoomImages.Any())
+                {
+                    _context.RoomImages.RemoveRange(existingRoom.RoomImages);
+                }
+
+                // Add the new image
+                existingRoom.RoomImages = new List<RoomImage>
+            {
+                new RoomImage { ImagePath = selectedImage }
+            };
+            }
+
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = $"Room #{existingRoom.RoomNumber} has been updated successfully.";
+            return RedirectToAction("RoomList");
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddModelError("", $"An error occurred while updating the room: {ex.Message}");
+            ViewBag.Amenities = await _context.Amenities.ToListAsync();
+            ViewBag.SelectedAmenities = selectedAmenities;
+            ViewBag.CurrentImage = selectedImage;
+            ViewBag.ExistingImages = new List<string>
+        {
+            "single-room.jpg", "guest-room.jpg", "superior-room.jpg", "deluxe-room.jpg"
+        };
+            return View(room);
+        }
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> DeleteRoom(int id)
+    {
+        var room = await _context.Rooms
+            .Include(r => r.RoomAmenities)
+            .Include(r => r.RoomImages)
+            .Include(r => r.Bookings)
+            .FirstOrDefaultAsync(r => r.Id == id);
+
+        if (room == null)
+        {
+            return NotFound();
+        }
+
+        // Check if room has active bookings
+        bool hasActiveBookings = room.Bookings.Any(b => b.CheckOutDate >= DateTime.Today);
+        if (hasActiveBookings)
+        {
+            // If there are active bookings, don't allow deletion
+            TempData["ErrorMessage"] = $"Cannot delete Room #{room.RoomNumber} as it has active bookings.";
+            return RedirectToAction("RoomList");
+        }
+
+        try
+        {
+            // Remove room amenities
+            _context.RoomAmenities.RemoveRange(room.RoomAmenities);
+
+            // Remove room images
+            _context.RoomImages.RemoveRange(room.RoomImages);
+
+            // Remove the room
+            _context.Rooms.Remove(room);
+
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = $"Room #{room.RoomNumber} has been deleted successfully.";
+        }
+        catch (Exception ex)
+        {
+            TempData["ErrorMessage"] = $"An error occurred while deleting the room: {ex.Message}";
+        }
+
+        return RedirectToAction("RoomList");
     }
 }
