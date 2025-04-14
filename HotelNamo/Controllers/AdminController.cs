@@ -519,4 +519,122 @@ public class AdminController : Controller
         ViewBag.StatusMessage = "Your profile has been updated";
         return View(model);
     }
+    [HttpGet]
+    public async Task<IActionResult> EditUser(string id)
+    {
+        if (id == null)
+        {
+            return NotFound();
+        }
+
+        var user = await _userManager.FindByIdAsync(id);
+        if (user == null)
+        {
+            return NotFound();
+        }
+
+        var userRoles = await _userManager.GetRolesAsync(user);
+
+        var model = new EditUserViewModel
+        {
+            Id = user.Id,
+            Email = user.Email,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            SelectedRole = userRoles.FirstOrDefault() // Gets the first role
+        };
+
+        return View(model);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> EditUser(EditUserViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+
+        var user = await _userManager.FindByIdAsync(model.Id);
+        if (user == null)
+        {
+            ModelState.AddModelError("", "User not found");
+            return View(model);
+        }
+
+        // Update user details
+        user.FirstName = model.FirstName;
+        user.LastName = model.LastName;
+        user.Email = model.Email;
+        user.UserName = model.Email; // Update username to match email
+
+        var result = await _userManager.UpdateAsync(user);
+        if (!result.Succeeded)
+        {
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError("", error.Description);
+            }
+            return View(model);
+        }
+
+        // Handle role update
+        var currentRoles = await _userManager.GetRolesAsync(user);
+
+        // Remove current roles
+        if (currentRoles.Any())
+        {
+            await _userManager.RemoveFromRolesAsync(user, currentRoles);
+        }
+
+        // Add new role if specified
+        if (!string.IsNullOrEmpty(model.SelectedRole))
+        {
+            bool roleExists = await _roleManager.RoleExistsAsync(model.SelectedRole);
+            if (!roleExists)
+            {
+                ModelState.AddModelError("SelectedRole", $"Role '{model.SelectedRole}' does not exist.");
+                return View(model);
+            }
+            else
+            {
+                await _userManager.AddToRoleAsync(user, model.SelectedRole);
+            }
+        }
+
+        return RedirectToAction("ListUsers");
+    }
+
+    public async Task<IActionResult> DeleteUser(string id)
+    {
+        if (id == null)
+        {
+            return NotFound();
+        }
+
+        var user = await _userManager.FindByIdAsync(id);
+        if (user == null)
+        {
+            return NotFound();
+        }
+
+        // Check if the user is the current admin (prevent self-deletion)
+        if (User.Identity.Name == user.UserName)
+        {
+            TempData["ErrorMessage"] = "You cannot delete your own account.";
+            return RedirectToAction("ListUsers");
+        }
+
+        var result = await _userManager.DeleteAsync(user);
+        if (!result.Succeeded)
+        {
+            TempData["ErrorMessage"] = "An error occurred while deleting the user.";
+        }
+        else
+        {
+            TempData["SuccessMessage"] = "User deleted successfully.";
+        }
+
+        return RedirectToAction("ListUsers");
+    }
 }
