@@ -2,7 +2,9 @@
 using HotelNamo.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace HotelNamo.Controllers
 {
@@ -100,6 +102,96 @@ namespace HotelNamo.Controllers
             _context.SaveChanges();
 
             return RedirectToAction("Rooms");
+        }
+
+        // 7. Show walk-in booking form
+        [HttpGet]
+        public IActionResult WalkInBooking()
+        {
+            // Get available (vacant) rooms
+            var availableRooms = _context.Rooms
+                .Where(r => r.Status == "Vacant")
+                .Select(r => new SelectListItem
+                {
+                    Value = r.Id.ToString(),
+                    Text = $"{r.RoomNumber} - {r.Category} (${r.Price}/night)"
+                })
+                .ToList();
+
+            ViewBag.AvailableRooms = availableRooms;
+
+            return View();
+        }
+
+        // 8. Handle walk-in booking submission
+        [HttpPost]
+        public IActionResult WalkInBooking(Booking booking, bool checkInNow = false)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Get room details to calculate price
+                    var room = _context.Rooms.Find(booking.RoomId);
+                    if (room == null)
+                    {
+                        ModelState.AddModelError("RoomId", "Selected room not found.");
+                        return GetWalkInBookingView();
+                    }
+
+                    // Calculate number of nights and total price
+                    var nights = (booking.CheckOutDate - booking.CheckInDate).Days;
+                    if (nights <= 0)
+                    {
+                        ModelState.AddModelError("CheckOutDate", "Check-out date must be after check-in date.");
+                        return GetWalkInBookingView();
+                    }
+
+                    booking.TotalPrice = room.Price * nights;
+
+                    // Set as confirmed since it's created by staff
+                    booking.IsConfirmed = true;
+                    booking.BookingDate = DateTime.UtcNow;
+
+                    // If checking in now, set the actual check-in time
+                    if (checkInNow)
+                    {
+                        booking.ActualCheckInTime = DateTime.Now;
+
+                        // Update room status to occupied
+                        room.Status = "Occupied";
+                    }
+
+                    _context.Bookings.Add(booking);
+                    _context.SaveChanges();
+
+                    TempData["SuccessMessage"] = "Walk-in booking created successfully.";
+                    return RedirectToAction("Bookings");
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", $"Error creating booking: {ex.Message}");
+                }
+            }
+
+            return GetWalkInBookingView();
+        }
+
+        // Helper method to prepare the walk-in booking view
+        private IActionResult GetWalkInBookingView()
+        {
+            var availableRooms = _context.Rooms
+                .Where(r => r.Status == "Vacant")
+                .Select(r => new SelectListItem
+                {
+                    Value = r.Id.ToString(),
+                    Text = $"{r.RoomNumber} - {r.Category} (${r.Price}/night)"
+                })
+                .ToList();
+
+            ViewBag.AvailableRooms = availableRooms;
+
+            return View();
         }
     }
 }

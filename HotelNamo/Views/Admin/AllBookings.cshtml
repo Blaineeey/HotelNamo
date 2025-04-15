@@ -4,63 +4,244 @@
     ViewData["Title"] = "All Bookings";
 }
 
-<h2 class="mt-3">📅 All Bookings</h2>
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-header bg-white">
+        <div class="d-flex justify-content-between align-items-center">
+            <h4 class="mb-0"><i class="fa-solid fa-calendar-check me-2"></i>All Bookings</h4>
+        </div>
+    </div>
+    <div class="card-body">
+        <!-- Filter Form -->
+        <form method="get" class="mb-4 p-3 border rounded bg-light">
+            <div class="row g-3">
+                <div class="col-md-2">
+                    <label class="form-label">From Date</label>
+                    <input type="date" name="fromDate" class="form-control" value="@ViewBag.FromDate" />
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">To Date</label>
+                    <input type="date" name="toDate" class="form-control" value="@ViewBag.ToDate" />
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Status</label>
+                    <select name="status" class="form-select">
+                        <option value="">All Statuses</option>
+                        <option value="pending" selected="@(ViewBag.Status == "pending")">Pending</option>
+                        <option value="confirmed" selected="@(ViewBag.Status == "confirmed")">Confirmed</option>
+                        <option value="checkedIn" selected="@(ViewBag.Status == "checkedIn")">Checked In</option>
+                        <option value="checkedOut" selected="@(ViewBag.Status == "checkedOut")">Checked Out</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Search</label>
+                    <input type="text" name="searchQuery" class="form-control" placeholder="Search by name or email" value="@ViewBag.SearchQuery" />
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fa-solid fa-filter me-1"></i> Filter
+                    </button>
+                </div>
+            </div>
+        </form>
 
-<table class="table table-bordered table-hover mt-4">
-    <thead class="table-dark text-center">
-        <tr>
-            <th>ID</th>
-            <th>Room</th>
-            <th>User</th>
-            <th>Check-In</th>
-            <th>Check-Out</th>
-            <th>Confirmed</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody class="text-center">
-        @foreach (var b in Model)
-        {
-            <tr>
-                <td>@b.Id</td>
-                <td>@(b.Room?.RoomNumber ?? "N/A")</td>
-                <td>@(b.User?.FirstName + " " + b.User?.LastName ?? "N/A")</td>
-                <td>@b.CheckInDate.ToString("MMM dd, yyyy")</td>
-                <td>@b.CheckOutDate.ToString("MMM dd, yyyy")</td>
-                <td>
-                    <span class="badge @(b.IsConfirmed ? "bg-success" : "bg-danger")">
-                        @(b.IsConfirmed ? "Yes" : "No")
-                    </span>
-                </td>
-                <td class="text-center">
-                    <div class="btn-group" role="group">
-                        @if (!b.IsConfirmed)
+        <!-- Data Table -->
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover table-striped">
+                <thead class="table-dark">
+                    <tr class="text-center">
+                        <th>#ID</th>
+                        <th>Room</th>
+                        <th>Guest</th>
+                        <th>Check-In</th>
+                        <th>Check-Out</th>
+                        <th>Total Price</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Any())
+                    {
+                        @foreach (var booking in Model)
                         {
-                            <!-- Confirm Booking Button -->
-                            <a asp-action="ConfirmBooking" asp-route-bookingId="@b.Id"
-                               class="btn btn-sm btn-success">
-                                ✅ Confirm
-                            </a>
+                            <tr>
+                                <td class="text-center">@booking.Id</td>
+                                <td class="text-center">
+                                    @(booking.Room?.RoomNumber ?? "N/A")<br>
+                                    <span class="badge bg-info">@(booking.Room?.Category ?? "")</span>
+                                </td>
+                                <td>
+                                    @if (booking.IsGuestBooking)
+                                    {
+                                        <span>
+                                            <strong>@booking.GuestName</strong><br>
+                                            <small>@booking.GuestEmail</small><br>
+                                            <small>@booking.GuestPhone</small>
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span>
+                                            <strong>@(booking.User?.FirstName + " " + booking.User?.LastName)</strong><br>
+                                            <small>@booking.User?.Email</small>
+                                        </span>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    @booking.CheckInDate.ToString("MMM dd, yyyy")<br>
+                                    @if (booking.ActualCheckInTime != null)
+                                    {
+                                        <small class="text-success">
+                                            Checked in: @booking.ActualCheckInTime?.ToString("hh:mm tt")
+                                        </small>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    @booking.CheckOutDate.ToString("MMM dd, yyyy")<br>
+                                    @if (booking.ActualCheckOutTime != null)
+                                    {
+                                        <small class="text-danger">
+                                            Checked out: @booking.ActualCheckOutTime?.ToString("hh:mm tt")
+                                        </small>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    <span class="fw-bold">$@booking.TotalPrice.ToString("F2")</span>
+                                </td>
+                                <td class="text-center">
+                                    @if (!booking.IsConfirmed)
+                                    {
+                                        <span class="badge bg-warning">Pending</span>
+                                    }
+                                    else if (booking.ActualCheckInTime != null && booking.ActualCheckOutTime == null)
+                                    {
+                                        <span class="badge bg-primary">Checked In</span>
+                                    }
+                                    else if (booking.ActualCheckOutTime != null)
+                                    {
+                                        <span class="badge bg-success">Completed</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-info">Confirmed</span>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    <div class="btn-group" role="group">
+                                        @if (!booking.IsConfirmed)
+                                        {
+                                            <a asp-action="ConfirmBooking" asp-route-bookingId="@booking.Id"
+                                               class="btn btn-sm btn-success" title="Confirm Booking">
+                                                <i class="fa-solid fa-check"></i>
+                                            </a>
+                                        }
+                                        @if (booking.IsConfirmed && booking.ActualCheckInTime == null)
+                                        {
+                                            <a asp-action="AdminCheckIn" asp-route-bookingId="@booking.Id"
+                                               class="btn btn-sm btn-primary" title="Check In">
+                                                <i class="fa-solid fa-door-open"></i>
+                                            </a>
+                                        }
+                                        @if (booking.ActualCheckInTime != null && booking.ActualCheckOutTime == null)
+                                        {
+                                            <a asp-action="AdminCheckOut" asp-route-bookingId="@booking.Id"
+                                               class="btn btn-sm btn-danger" title="Check Out">
+                                                <i class="fa-solid fa-door-closed"></i>
+                                            </a>
+                                        }
+                                        <!-- Details button visible for all bookings -->
+                                        <button type="button" class="btn btn-sm btn-info" title="View Details"
+                                                data-bs-toggle="modal" data-bs-target="#bookingModal@(booking.Id)">
+                                            <i class="fa-solid fa-eye"></i>
+                                        </button>
+                                    </div>
+
+                                    <!-- Booking Details Modal -->
+                                    <div class="modal fade" id="bookingModal@(booking.Id)" tabindex="-1" aria-hidden="true">
+                                        <div class="modal-dialog modal-lg">
+                                            <div class="modal-content">
+                                                <div class="modal-header bg-light">
+                                                    <h5 class="modal-title">Booking #@booking.Id Details</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <h6 class="fw-bold">Guest Information</h6>
+                                                            @if (booking.IsGuestBooking)
+                                                            {
+                                                                <p><strong>Name:</strong> @booking.GuestName</p>
+                                                                <p><strong>Email:</strong> @booking.GuestEmail</p>
+                                                                <p><strong>Phone:</strong> @booking.GuestPhone</p>
+                                                            }
+                                                            else
+                                                            {
+                                                                <p><strong>Name:</strong> @(booking.User?.FirstName + " " + booking.User?.LastName)</p>
+                                                                <p><strong>Email:</strong> @booking.User?.Email</p>
+                                                            }
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <h6 class="fw-bold">Room Details</h6>
+                                                            <p><strong>Room Number:</strong> @booking.Room?.RoomNumber</p>
+                                                            <p><strong>Category:</strong> @booking.Room?.Category</p>
+                                                            <p><strong>Floor:</strong> @booking.Room?.FloorNumber</p>
+                                                        </div>
+                                                    </div>
+                                                    <hr>
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <h6 class="fw-bold">Booking Information</h6>
+                                                            <p><strong>Check-In:</strong> @booking.CheckInDate.ToString("MMM dd, yyyy")</p>
+                                                            <p><strong>Check-Out:</strong> @booking.CheckOutDate.ToString("MMM dd, yyyy")</p>
+                                                            <p><strong>Total Price:</strong> $@booking.TotalPrice.ToString("F2")</p>
+                                                            <p><strong>Booking Date:</strong> @booking.BookingDate.ToString("MMM dd, yyyy hh:mm tt")</p>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <h6 class="fw-bold">Status Information</h6>
+                                                            <p><strong>Confirmed:</strong> @(booking.IsConfirmed ? "Yes" : "No")</p>
+                                                            @if (booking.ActualCheckInTime != null)
+                                                            {
+                                                                <p><strong>Actual Check-In:</strong> @booking.ActualCheckInTime?.ToString("MMM dd, yyyy hh:mm tt")</p>
+                                                            }
+                                                            @if (booking.ActualCheckOutTime != null)
+                                                            {
+                                                                <p><strong>Actual Check-Out:</strong> @booking.ActualCheckOutTime?.ToString("MMM dd, yyyy hh:mm tt")</p>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                    @if (!string.IsNullOrEmpty(booking.SpecialRequests))
+                                                    {
+                                                        <hr>
+                                                        <div class="row">
+                                                            <div class="col-12">
+                                                                <h6 class="fw-bold">Special Requests</h6>
+                                                                <p>@booking.SpecialRequests</p>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
                         }
-                        @if (b.IsConfirmed && b.ActualCheckInTime == null)
-                        {
-                            <!-- Admin Check-In Button -->
-                            <a asp-action="AdminCheckIn" asp-route-bookingId="@b.Id"
-                               class="btn btn-sm btn-primary">
-                                🏨 Check In
-                            </a>
-                        }
-                        @if (b.ActualCheckInTime != null && b.ActualCheckOutTime == null)
-                        {
-                            <!-- Admin Check-Out Button -->
-                            <a asp-action="AdminCheckOut" asp-route-bookingId="@b.Id"
-                               class="btn btn-sm btn-danger">
-                                🚪 Check Out
-                            </a>
-                        }
-                    </div>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="8" class="text-center py-4">
+                                <div class="alert alert-info mb-0">
+                                    <i class="fa-solid fa-info-circle me-2"></i> No bookings found with the specified criteria.
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,32 +1,446 @@
 ﻿@model IEnumerable<HotelNamo.Models.Room>
 @{
-    ViewData["Title"] = "Room Inventory";
+    ViewData["Title"] = "Room Management";
+    Layout = "_AdminLayout";
 }
 
-<h2>Room Inventory</h2>
-<table class="table">
-    <thead>
-        <tr>
-            <th>Room Number</th>
-            <th>Category</th>
-            <th>Status</th>
-            <th>Price</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var room in Model)
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-header bg-white">
+        <div class="d-flex justify-content-between align-items-center">
+            <h4 class="mb-0"><i class="fa-solid fa-bed me-2"></i>Room Management</h4>
+            <a asp-action="CreateRoom" class="btn btn-primary btn-sm">
+                <i class="fa-solid fa-plus me-1"></i> Add New Room
+            </a>
+        </div>
+    </div>
+    <div class="card-body">
+        <!-- Search and Filters -->
+        <div class="row mb-4">
+            <div class="col-md-4 mb-3 mb-md-0">
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0">
+                        <i class="fa-solid fa-search text-muted"></i>
+                    </span>
+                    <input type="text" id="roomSearch" class="form-control border-start-0" placeholder="Search by room number or category">
+                </div>
+            </div>
+            <div class="col-md-3 mb-3 mb-md-0">
+                <select id="categoryFilter" class="form-select">
+                    <option value="">All Categories</option>
+                    @{
+                        var categories = Model.Select(r => r.Category).Distinct().OrderBy(c => c);
+                        foreach (var category in categories)
+                        {
+                            <option value="@category">@category</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-md-3 mb-3 mb-md-0">
+                <select id="statusFilter" class="form-select">
+                    <option value="">All Statuses</option>
+                    @{
+                        var statuses = Model.Select(r => r.Status).Distinct().OrderBy(s => s);
+                        foreach (var status in statuses)
+                        {
+                            <option value="@status">@status</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-md-2 mb-3 mb-md-0">
+                <select id="floorFilter" class="form-select">
+                    <option value="">All Floors</option>
+                    @{
+                        var floors = Model.Select(r => r.FloorNumber).Distinct().OrderBy(f => f);
+                        foreach (var floor in floors)
+                        {
+                            <option value="@floor">Floor @floor</option>
+                        }
+                    }
+                </select>
+            </div>
+        </div>
+
+        <!-- Room Grid View -->
+        <div class="row" id="roomGrid">
+            @foreach (var room in Model)
+            {
+                <div class="col-xl-3 col-lg-4 col-md-6 mb-4 room-card"
+                     data-category="@room.Category.ToLower()"
+                     data-status="@room.Status.ToLower()"
+                     data-floor="@room.FloorNumber"
+                     data-room-number="@room.RoomNumber">
+                    <div class="card h-100 border-0 shadow-sm room-item">
+                        <div class="position-relative">
+                            <img src="@Url.Content(GetRoomImageByCategory(room.Category))"
+                                 class="card-img-top"
+                                 style="height: 200px; object-fit: cover;"
+                                 onerror="this.onerror=null; this.src='@Url.Content("~/images/rooms/deluxe-room.jpg")';">
+                            <div class="position-absolute top-0 end-0 m-2">
+                                <span class="badge @GetStatusBadgeClass(room.Status)">@room.Status</span>
+                            </div>
+                            <div class="position-absolute bottom-0 start-0 m-2">
+                                <span class="badge bg-dark">Floor @room.FloorNumber</span>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="card-title mb-0">Room @room.RoomNumber</h5>
+                            </div>
+                            <p class="card-subtitle text-muted mb-2">@room.Category</p>
+
+                            <div class="d-flex mb-3">
+                                @if (room.RoomAmenities != null && room.RoomAmenities.Any())
+                                {
+                                    foreach (var amenity in room.RoomAmenities.Take(4))
+                                    {
+                                        <span class="badge bg-light text-dark me-1" title="@amenity.Amenity?.Name">
+                                            @Html.Raw(GetAmenityIcon(amenity.Amenity?.Name))
+                                        </span>
+                                    }
+
+                                    if (room.RoomAmenities.Count() > 4)
+                                    {
+                                        <span class="badge bg-light text-dark" title="More amenities">
+                                            +@(room.RoomAmenities.Count() - 4)
+                                        </span>
+                                    }
+                                }
+                            </div>
+                        </div>
+                        <div class="card-footer bg-white border-top-0 d-flex justify-content-between">
+                            <div class="btn-group" role="group">
+                                <a asp-action="EditRoom" asp-route-id="@room.Id" class="btn btn-sm btn-outline-primary">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </a>
+                                <button type="button" class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#roomDetails@(room.Id)">
+                                    <i class="fa-solid fa-eye"></i>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteRoom@(room.Id)">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Room Details Modal -->
+                    <div class="modal fade" id="roomDetails@(room.Id)" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header bg-light">
+                                    <h5 class="modal-title">Room #@room.RoomNumber Details</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-md-5">
+                                            <img src="@Url.Content(GetRoomImageByCategory(room.Category))"
+                                                 class="card-img-top"
+                                                 style="height: 200px; object-fit: cover;"
+                                                 onerror="this.onerror=null; this.src='@Url.Content("~/images/rooms/deluxe-room.jpg")';">
+                                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                                <h5 class="mb-0">@room.Category</h5>
+                                                <span class="badge @GetStatusBadgeClass(room.Status)">@room.Status</span>
+                                            </div>
+                                            <div class="list-group mb-3">
+                                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                                    <span>Room Number</span>
+                                                    <strong>@room.RoomNumber</strong>
+                                                </div>
+                                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                                    <span>Floor</span>
+                                                    <strong>@room.FloorNumber</strong>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-7">
+                                            <h6 class="fw-bold">Description</h6>
+                                            <p>@(string.IsNullOrEmpty(room.Description) ? "No description available." : room.Description)</p>
+
+                                            <h6 class="fw-bold mt-4">Amenities</h6>
+                                            @if (room.RoomAmenities != null && room.RoomAmenities.Any())
+                                            {
+                                                <div class="row">
+                                                    @foreach (var amenity in room.RoomAmenities)
+                                                    {
+                                                        <div class="col-lg-6 mb-2">
+                                                            <div class="d-flex align-items-center">
+                                                                <span class="me-2">@Html.Raw(GetAmenityIcon(amenity.Amenity?.Name))</span>
+                                                                <span>@(amenity.Amenity?.Name ?? "Unknown Amenity")</span>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <p>No amenities listed.</p>
+                                            }
+
+                                            <h6 class="fw-bold mt-4">Booking Information</h6>
+                                            <div class="list-group">
+                                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                                    <span>Current Bookings</span>
+                                                    <span class="badge bg-primary rounded-pill">@room.Bookings.Count(b => b.CheckOutDate >= DateTime.Today)</span>
+                                                </div>
+                                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                                    <span>Upcoming Check-ins</span>
+                                                    <span class="badge bg-info rounded-pill">@room.Bookings.Count(b => b.CheckInDate >= DateTime.Today && b.CheckInDate <= DateTime.Today.AddDays(7))</span>
+                                                </div>
+                                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                                    <span>Total Feedback</span>
+                                                    <span class="badge bg-success rounded-pill">@room.Feedbacks.Count</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    <a asp-action="EditRoom" asp-route-id="@room.Id" class="btn btn-primary">Edit Room</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Delete Confirmation Modal -->
+                    <div class="modal fade" id="deleteRoom@(room.Id)" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-sm">
+                            <div class="modal-content">
+                                <div class="modal-header bg-danger text-white">
+                                    <h5 class="modal-title">Confirm Delete</h5>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p>Are you sure you want to delete this room?</p>
+                                    <p class="mb-0 fw-bold">Room #@room.RoomNumber (@room.Category)</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    <a asp-action="DeleteRoom" asp-route-id="@room.Id" class="btn btn-danger">Delete</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Empty State -->
+        @if (!Model.Any())
         {
-            <tr>
-                <td>@room.RoomNumber</td>
-                <td>@room.Category</td>
-                <td>@room.Status</td>
-                <td>@room.Price</td>
-            </tr>
+            <div class="text-center py-5">
+                <div class="mb-3">
+                    <i class="fa-solid fa-bed text-muted" style="font-size: 3rem;"></i>
+                </div>
+                <h5 class="text-muted">No rooms found</h5>
+                <p class="text-muted">Add a new room to get started</p>
+                <a asp-action="CreateRoom" class="btn btn-primary">
+                    <i class="fa-solid fa-plus me-1"></i> Add Room
+                </a>
+            </div>
         }
-    </tbody>
-</table>
-<a asp-action="CreateRoom" class="btn btn-primary">Create New Room</a>
+    </div>
+</div>
 
-</table>
+<!-- View Toggle and Stats -->
+<div class="row mb-4">
+    <div class="col-md-6 mb-3 mb-md-0">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <h5 class="card-title">Room Statistics</h5>
+                <div class="row mt-3">
+                    <div class="col-6 col-sm-3 mb-3">
+                        <div class="text-center">
+                            <h3 class="mb-0">@Model.Count()</h3>
+                            <div class="text-muted small">Total Rooms</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-sm-3 mb-3">
+                        <div class="text-center">
+                            <h3 class="mb-0">@Model.Count(r => r.Status == "Available")</h3>
+                            <div class="text-muted small">Available</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-sm-3 mb-3">
+                        <div class="text-center">
+                            <h3 class="mb-0">@Model.Count(r => r.Status == "Occupied")</h3>
+                            <div class="text-muted small">Occupied</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-sm-3 mb-3">
+                        <div class="text-center">
+                            <h3 class="mb-0">@Model.Count(r => r.Status == "Maintenance")</h3>
+                            <div class="text-muted small">Maintenance</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <h5 class="card-title">Category Breakdown</h5>
+                <div class="row mt-3">
+                    @{
+                        var categoryGroups = Model.GroupBy(r => r.Category)
+                        .Select(g => new { Category = g.Key, Count = g.Count() })
+                        .OrderByDescending(g => g.Count);
 
-<a asp-action="CreateRoom" class="btn btn-primary">Add New Room</a>
+                        foreach (var category in categoryGroups)
+                        {
+                            var percentage = (category.Count * 100) / Math.Max(1, Model.Count());
+                            <div class="col-12 mb-2">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <span>@category.Category</span>
+                                    <span class="text-muted small">@category.Count (@percentage%)</span>
+                                </div>
+                                <div class="progress" style="height: 8px;">
+                                    <div class="progress-bar bg-primary" role="progressbar" style="width: @percentage%;"
+                                         aria-valuenow="@percentage" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Search functionality
+        document.getElementById('roomSearch').addEventListener('keyup', function() {
+            filterRooms();
+        });
+
+        // Category filter
+        document.getElementById('categoryFilter').addEventListener('change', function() {
+            filterRooms();
+        });
+
+        // Status filter
+        document.getElementById('statusFilter').addEventListener('change', function() {
+            filterRooms();
+        });
+
+        // Floor filter
+        document.getElementById('floorFilter').addEventListener('change', function() {
+            filterRooms();
+        });
+
+        function filterRooms() {
+            const searchValue = document.getElementById('roomSearch').value.toLowerCase();
+            const categoryValue = document.getElementById('categoryFilter').value.toLowerCase();
+            const statusValue = document.getElementById('statusFilter').value.toLowerCase();
+            const floorValue = document.getElementById('floorFilter').value;
+
+            const rooms = document.querySelectorAll('.room-card');
+
+            rooms.forEach(room => {
+                const roomNumber = room.getAttribute('data-room-number').toLowerCase();
+                const category = room.getAttribute('data-category').toLowerCase();
+                const status = room.getAttribute('data-status').toLowerCase();
+                const floor = room.getAttribute('data-floor');
+
+                const matchesSearch = roomNumber.includes(searchValue) || category.includes(searchValue);
+                const matchesCategory = categoryValue === '' || category === categoryValue;
+                const matchesStatus = statusValue === '' || status === statusValue;
+                const matchesFloor = floorValue === '' || floor === floorValue;
+
+                if (matchesSearch && matchesCategory && matchesStatus && matchesFloor) {
+                    room.style.display = '';
+                } else {
+                    room.style.display = 'none';
+                }
+            });
+        }
+    </script>
+    <style>
+        .room-image {
+            height: 180px;
+            object-fit: cover;
+        }
+
+        .room-item {
+            transition: transform 0.2s ease;
+        }
+
+            .room-item:hover {
+                transform: translateY(-5px);
+            }
+
+        .card-footer {
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+        }
+
+        /* Override pagination styles */
+        .pagination .page-link {
+            color: #007bff;
+            background-color: #fff;
+            border-color: #dee2e6;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: #007bff;
+            border-color: #007bff;
+            color: white;
+        }
+    </style>
+}
+
+@functions {
+    public string GetStatusBadgeClass(string status)
+    {
+        return status.ToLower() switch
+        {
+            "available" => "bg-success",
+            "occupied" => "bg-warning",
+            "maintenance" => "bg-danger",
+            "reserved" => "bg-info",
+            "cleaning" => "bg-primary",
+            _ => "bg-secondary"
+        };
+    }
+
+    public string GetRoomImageByCategory(string category)
+    {
+        return category switch
+        {
+            "Single" => "~/images/rooms/single-room.jpg",
+            "Double" => "~/images/rooms/guest-room.jpg",
+            "Suite" => "~/images/rooms/superior-room.jpg",
+            _ => "~/images/rooms/deluxe-room.jpg"
+        };
+    }
+
+    public string GetAmenityIcon(string amenityName)
+    {
+        if (string.IsNullOrEmpty(amenityName))
+            return "<i class=\"fa-solid fa-circle-question\"></i>";
+
+        return amenityName.ToLower() switch
+        {
+            var name when name.Contains("wifi") => "<i class=\"fa-solid fa-wifi\"></i>",
+            var name when name.Contains("tv") => "<i class=\"fa-solid fa-tv\"></i>",
+            var name when name.Contains("air") || name.Contains("ac") => "<i class=\"fa-solid fa-wind\"></i>",
+            var name when name.Contains("refrigerator") || name.Contains("fridge") => "<i class=\"fa-solid fa-snowflake\"></i>",
+            var name when name.Contains("safe") => "<i class=\"fa-solid fa-vault\"></i>",
+            var name when name.Contains("minibar") => "<i class=\"fa-solid fa-martini-glass\"></i>",
+            var name when name.Contains("coffee") => "<i class=\"fa-solid fa-mug-hot\"></i>",
+            var name when name.Contains("breakfast") => "<i class=\"fa-solid fa-utensils\"></i>",
+            var name when name.Contains("iron") => "<i class=\"fa-solid fa-shirt\"></i>",
+            var name when name.Contains("view") => "<i class=\"fa-solid fa-mountain-sun\"></i>",
+            var name when name.Contains("bath") => "<i class=\"fa-solid fa-bath\"></i>",
+            var name when name.Contains("shower") => "<i class=\"fa-solid fa-shower\"></i>",
+            var name when name.Contains("balcony") => "<i class=\"fa-solid fa-door-open\"></i>",
+            var name when name.Contains("desk") => "<i class=\"fa-solid fa-desk\"></i>",
+            var name when name.Contains("workspace") => "<i class=\"fa-solid fa-laptop\"></i>",
+            _ => "<i class=\"fa-solid fa-check\"></i>"
+        };
+    }
+}

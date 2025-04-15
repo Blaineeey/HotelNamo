@@ -198,5 +198,111 @@ namespace HotelNamo.Controllers
 
             return View(model);
         }
+
+        // Add these methods to the AccountController class
+
+        // GET: /Account/Profile
+        [HttpGet]
+        [Microsoft.AspNetCore.Authorization.Authorize]
+        public async Task<IActionResult> Profile()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var model = new ProfileViewModel
+            {
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email
+            };
+
+            return View(model);
+        }
+
+        // POST: /Account/Profile
+        [HttpPost]
+        [Microsoft.AspNetCore.Authorization.Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Profile(ProfileViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            // Verify current password
+            var passwordCheck = await _userManager.CheckPasswordAsync(user, model.CurrentPassword);
+            if (!passwordCheck)
+            {
+                ModelState.AddModelError("CurrentPassword", "Current password is incorrect");
+                return View(model);
+            }
+
+            // Check if email is being changed
+            if (user.Email != model.Email)
+            {
+                // Check if the new email is already in use
+                var existingUser = await _userManager.FindByEmailAsync(model.Email);
+                if (existingUser != null && existingUser.Id != user.Id)
+                {
+                    ModelState.AddModelError("Email", "Email is already in use");
+                    return View(model);
+                }
+
+                // Update email
+                var setEmailResult = await _userManager.SetEmailAsync(user, model.Email);
+                if (!setEmailResult.Succeeded)
+                {
+                    foreach (var error in setEmailResult.Errors)
+                    {
+                        ModelState.AddModelError("", error.Description);
+                    }
+                    return View(model);
+                }
+
+                // Update username to match email (since you're using email as username)
+                var setUsernameResult = await _userManager.SetUserNameAsync(user, model.Email);
+                if (!setUsernameResult.Succeeded)
+                {
+                    foreach (var error in setUsernameResult.Errors)
+                    {
+                        ModelState.AddModelError("", error.Description);
+                    }
+                    return View(model);
+                }
+            }
+
+            // Update other properties
+            user.FirstName = model.FirstName;
+            user.LastName = model.LastName;
+
+            // Save changes
+            var updateResult = await _userManager.UpdateAsync(user);
+            if (!updateResult.Succeeded)
+            {
+                foreach (var error in updateResult.Errors)
+                {
+                    ModelState.AddModelError("", error.Description);
+                }
+                return View(model);
+            }
+
+            // Re-sign in the user
+            await _signInManager.RefreshSignInAsync(user);
+
+            // Add success message
+            TempData["StatusMessage"] = "Your profile has been updated";
+
+            return RedirectToAction(nameof(Profile));
+        }
     }
 }
