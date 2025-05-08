@@ -277,6 +277,70 @@ namespace HotelNamo.Controllers
             return View("Modify", modifiedReservation);
         }
 
+        [Authorize(Roles = "Admin,FrontDesk")]
+        public async Task<IActionResult> FrontDeskReservations(DateTime? date)
+        {
+            // Use today's date if no date is provided
+            var searchDate = date ?? DateTime.Today;
+
+            // Get all reservations for the selected date
+            var reservations = await _context.TableReservations
+                .Where(r => r.ReservationDate.Date == searchDate.Date && r.Status == "Confirmed")
+                .OrderBy(r => r.ReservationTime)
+                .ToListAsync();
+
+            // Pass the date and reservations to the view
+            ViewData["SelectedDate"] = searchDate;
+
+            return View(reservations);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin,FrontDesk")]
+        public async Task<IActionResult> CheckInReservation(int id)
+        {
+            var reservation = await _context.TableReservations.FindAsync(id);
+
+            if (reservation == null)
+            {
+                return Json(new { success = false, message = "Reservation not found" });
+            }
+
+            // Update status to "Checked In"
+            reservation.Status = "Checked In";
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                return Json(new { success = true, message = "Guest checked in successfully" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        // Add this method to your DiningController.cs file
+
+        // GET: Dining/ReservationSummary
+        [Authorize(Roles = "Admin,FrontDesk")]
+        public async Task<IActionResult> ReservationSummary(DateTime? date)
+        {
+            // Use today's date if no date is provided
+            var searchDate = date ?? DateTime.Today;
+
+            // Get all reservations for the selected date
+            var reservations = await _context.TableReservations
+                .Where(r => r.ReservationDate.Date == searchDate.Date && r.Status == "Confirmed")
+                .OrderBy(r => r.ReservationTime)
+                .ToListAsync();
+
+            // Pass the date and reservations to the view
+            ViewData["SelectedDate"] = searchDate;
+
+            return View(reservations);
+        }
+
         private bool TableReservationExists(int id)
         {
             return _context.TableReservations.Any(e => e.Id == id);

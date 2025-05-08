@@ -1,0 +1,634 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+@model IEnumerable<HotelNamo.Models.TableReservation>
+@{
+    ViewData["Title"] = "Dining Reservation Summary";
+    var selectedDate = (DateTime)ViewData["SelectedDate"];
+    
+    // Group reservations by meal period
+    var reservationsByMeal = new Dictionary<string, List<TableReservation>>();
+    reservationsByMeal["Breakfast"] = new List<TableReservation>();
+    reservationsByMeal["Lunch"] = new List<TableReservation>();
+    reservationsByMeal["Dinner"] = new List<TableReservation>();
+    
+    foreach (var reservation in Model)
+    {
+        if (TimeSpan.TryParse(reservation.ReservationTime, out TimeSpan time))
+        {
+            if (time.Hours >= 7 && time.Hours < 11)
+            {
+                reservationsByMeal["Breakfast"].Add(reservation);
+            }
+            else if (time.Hours >= 11 && time.Hours < 15)
+            {
+                reservationsByMeal["Lunch"].Add(reservation);
+            }
+            else
+            {
+                reservationsByMeal["Dinner"].Add(reservation);
+            }
+        }
+        else
+        {
+            reservationsByMeal["Dinner"].Add(reservation); // Default to dinner if time parsing fails
+        }
+    }
+    
+    // Count totals
+    var totalReservations = Model.Count();
+    var totalGuests = Model.Sum(r => r.NumberOfGuests);
+}
+
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Dining Reservation Summary</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="/Admin">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="/Dining/FrontDeskReservations">Dining Reservations</a></li>
+        <li class="breadcrumb-item active">Summary</li>
+    </ol>
+    
+    <div class="row">
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-primary text-white mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="small">Total Reservations</div>
+                            <div class="h2">@totalReservations</div>
+                        </div>
+                        <div>
+                            <i class="fas fa-calendar-check fa-3x"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                    <span>For @selectedDate.ToString("MMMM d, yyyy")</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-success text-white mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="small">Total Guests</div>
+                            <div class="h2">@totalGuests</div>
+                        </div>
+                        <div>
+                            <i class="fas fa-users fa-3x"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                    <span>Expected today</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-warning text-dark mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="small">Breakfast Reservations</div>
+                            <div class="h2">@reservationsByMeal["Breakfast"].Count</div>
+                        </div>
+                        <div>
+                            <i class="fas fa-coffee fa-3x"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                    <span>@reservationsByMeal["Breakfast"].Sum(r => r.NumberOfGuests) guests</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-info text-white mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="small">Lunch & Dinner</div>
+                            <div class="h2">@(reservationsByMeal["Lunch"].Count + reservationsByMeal["Dinner"].Count)</div>
+                        </div>
+                        <div>
+                            <i class="fas fa-utensils fa-3x"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                    <span>@(reservationsByMeal["Lunch"].Sum(r => r.NumberOfGuests) + reservationsByMeal["Dinner"].Sum(r => r.NumberOfGuests)) guests</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-chart-pie me-1"></i>
+                    Reservations by Meal Period
+                </div>
+                <div class="card-body">
+                    <canvas id="mealPeriodChart" width="100%" height="50"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-chart-bar me-1"></i>
+                    Guests by Hour
+                </div>
+                <div class="card-body">
+                    <canvas id="hourlyGuestsChart" width="100%" height="50"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <div>
+                <i class="fas fa-table me-1"></i>
+                Quick Summary by Meal Period
+            </div>
+            <div>
+                <a href="/Dining/FrontDeskReservations" class="btn btn-outline-primary btn-sm">
+                    <i class="fas fa-list"></i> View Complete List
+                </a>
+                <button id="printSummary" class="btn btn-outline-secondary btn-sm">
+                    <i class="fas fa-print"></i> Print Summary
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <!-- Breakfast Section -->
+            @if (reservationsByMeal["Breakfast"].Any())
+            {
+                <div class="meal-section">
+                    <h3 class="meal-title">
+                        <i class="fas fa-coffee me-2"></i> Breakfast
+                        <span class="badge bg-warning text-dark ms-2">@reservationsByMeal["Breakfast"].Count reservations</span>
+                        <span class="badge bg-light text-dark">@reservationsByMeal["Breakfast"].Sum(r => r.NumberOfGuests) guests</span>
+                    </h3>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Time</th>
+                                    <th>Guest</th>
+                                    <th>Table</th>
+                                    <th>Size</th>
+                                    <th>Notes</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var reservation in reservationsByMeal["Breakfast"].OrderBy(r => r.ReservationTime))
+                                {
+                                    <tr>
+                                        <td>
+                                            @if (TimeSpan.TryParse(reservation.ReservationTime, out TimeSpan breakfastTime))
+                                            {
+                                                @DateTime.Today.Add(breakfastTime).ToString("h:mm tt")
+                                            }
+                                            else
+                                            {
+                                                @reservation.ReservationTime
+                                            }
+                                        </td>
+                                        <td><strong>@reservation.FullName</strong></td>
+                                        <td>Table @reservation.TableNumber</td>
+                                        <td>@reservation.NumberOfGuests</td>
+                                        <td>
+                                            @if (!string.IsNullOrEmpty(reservation.SpecialRequests) || 
+                                                 !string.IsNullOrEmpty(reservation.DietaryRestrictions) ||
+                                                 (!string.IsNullOrEmpty(reservation.Occasion) && reservation.Occasion != "None"))
+                                            {
+                                                <i class="fas fa-sticky-note text-warning" title="Has notes"></i>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
+            
+            @if (!Model.Any())
+            {
+                <div class="empty-state text-center py-5">
+                    <i class="fas fa-calendar-day fa-4x mb-3 text-muted"></i>
+                    <h5>No reservations found for this date</h5>
+                    <p class="text-muted">There are no dining reservations for @selectedDate.ToString("MMMM d, yyyy")</p>
+                </div>
+            }
+        </div>
+    </div>
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-map-marker-alt me-1"></i>
+            Table Reservation Map
+        </div>
+        <div class="card-body">
+            <div class="table-map-container">
+                <div class="venue-section">
+                    <h4>The Grand Restaurant</h4>
+                    <div class="table-map">
+                        <div class="stage-area">
+                            <span>Stage</span>
+                        </div>
+                        
+                        <div class="tables-grid">
+                            @for (int i = 1; i <= 32; i++)
+                            {
+                                var tableReservations = Model.Where(r => r.TableNumber == i.ToString() && r.Venue == "The Grand Restaurant").ToList();
+                                var isWindowTable = new[] { 8, 16, 24, 32 }.Contains(i);
+                                
+                                <div class="table-item @(isWindowTable ? "window-table" : "") @(tableReservations.Any() ? "reserved" : "")" 
+                                     data-table="@i" data-toggle="tooltip" 
+                                     title="@(tableReservations.Any() ? $"Table {i}: Reserved by {tableReservations.First().FullName}" : $"Table {i}: Available")">
+                                    <span>@i</span>
+                                    @if (tableReservations.Any())
+                                    {
+                                        <div class="reservation-indicator">
+                                            @foreach (var res in tableReservations)
+                                            {
+                                                if (TimeSpan.TryParse(res.ReservationTime, out TimeSpan resTime))
+                                                {
+                                                    if (resTime.Hours >= 7 && resTime.Hours < 11)
+                                                    {
+                                                        <span class="time-indicator breakfast" title="Breakfast: @DateTime.Today.Add(resTime).ToString("h:mm tt")"></span>
+                                                    }
+                                                    else if (resTime.Hours >= 11 && resTime.Hours < 15)
+                                                    {
+                                                        <span class="time-indicator lunch" title="Lunch: @DateTime.Today.Add(resTime).ToString("h:mm tt")"></span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="time-indicator dinner" title="Dinner: @DateTime.Today.Add(resTime).ToString("h:mm tt")"></span>
+                                                    }
+                                                }
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+                        
+                        <div class="table-map-legend">
+                            <div class="legend-item">
+                                <span class="legend-indicator available"></span>
+                                <span>Available</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-indicator reserved"></span>
+                                <span>Reserved</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-indicator window"></span>
+                                <span>Window Table</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="time-indicator breakfast"></span>
+                                <span>Breakfast</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="time-indicator lunch"></span>
+                                <span>Lunch</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="time-indicator dinner"></span>
+                                <span>Dinner</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .meal-section {
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 2rem;
+        }
+        
+        .meal-section:last-child {
+            border-bottom: none;
+        }
+        
+        .meal-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+        
+        .empty-state {
+            padding: 30px;
+        }
+        
+        /* Table Map Styles */
+        .table-map-container {
+            width: 100%;
+            overflow-x: auto;
+        }
+        
+        .venue-section {
+            margin-bottom: 2rem;
+        }
+        
+        .table-map {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .stage-area {
+            background-color: #d4c5b1;
+            text-align: center;
+            padding: 10px;
+            color: white;
+            font-weight: bold;
+            border-radius: 5px;
+            margin-bottom: 30px;
+        }
+        
+        .tables-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .table-item {
+            aspect-ratio: 1;
+            border-radius: 50%;
+            background-color: #fff;
+            border: 2px solid #28a745;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            font-weight: bold;
+        }
+        
+        .table-item.window-table {
+            background-color: #e6f7ff;
+            border-color: #0dcaf0;
+        }
+        
+        .table-item.reserved {
+            border-color: #dc3545;
+            background-color: #ffeeee;
+        }
+        
+        .reservation-indicator {
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 2px;
+        }
+        
+        .time-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        
+        .time-indicator.breakfast {
+            background-color: #ffc107;
+        }
+        
+        .time-indicator.lunch {
+            background-color: #28a745;
+        }
+        
+        .time-indicator.dinner {
+            background-color: #0d6efd;
+        }
+        
+        .table-map-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .legend-indicator {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        
+        .legend-indicator.available {
+            background-color: #fff;
+            border: 2px solid #28a745;
+        }
+        
+        .legend-indicator.reserved {
+            background-color: #ffeeee;
+            border: 2px solid #dc3545;
+        }
+        
+        .legend-indicator.window {
+            background-color: #e6f7ff;
+            border: 2px solid #0dcaf0;
+        }
+        
+        @@ media print {
+            .nav, .sb-sidenav, .breadcrumb, #printSummary, .navbar, .card-header {
+                display: none !important;
+            }
+            
+            body, .sb-nav-fixed, #layoutSidenav, #layoutSidenav_content, .container-fluid {
+                margin: 0 !important;
+                padding: 0 !important;
+                position: static !important;
+                width: 100% !important;
+                left: 0 !important;
+            }
+            
+            .card {
+                border: none !important;
+                box-shadow: none !important;
+            }
+            
+            .card-body {
+                padding: 0 !important;
+            }
+            
+            h1 {
+                font-size: 18pt !important;
+                margin-bottom: 10px !important;
+            }
+            
+            .table-map {
+                page-break-inside: avoid !important;
+            }
+        }
+    </style>
+}
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            });
+            
+            // Print functionality
+            document.getElementById('printSummary').addEventListener('click', function() {
+                window.print();
+            });
+            
+            // Chart JS initialization for Meal Period Chart
+            var mealPeriodChartCtx = document.getElementById('mealPeriodChart').getContext('2d');
+            var mealPeriodChart = new Chart(mealPeriodChartCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['Breakfast', 'Lunch', 'Dinner'],
+                    datasets: [{
+                        data: [
+                            @reservationsByMeal["Breakfast"].Count, 
+                            @reservationsByMeal["Lunch"].Count, 
+                            @reservationsByMeal["Dinner"].Count
+                        ],
+                        backgroundColor: [
+                            '#ffc107',
+                            '#28a745',
+                            '#0d6efd'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    var label = context.label || '';
+                                    var value = context.raw || 0;
+                                    var total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    var percentage = Math.round((value / total) * 100);
+                                    return label + ': ' + value + ' reservations (' + percentage + '%)';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Prepare data for hourly guests chart
+            var hourlyData = {};
+            
+            @foreach (var reservation in Model)
+            {
+                @:if (TimeSpan.TryParse('@reservation.ReservationTime', out TimeSpan time)) {
+                @:    var hour = time.Hours;
+                @:    if (!hourlyData[hour]) hourlyData[hour] = 0;
+                @:    hourlyData[hour] += @reservation.NumberOfGuests;
+                @:}
+            }
+            
+            // Convert hourly data to arrays for Chart.js
+            var hours = [];
+            var guestCounts = [];
+            
+            for (var hour = 7; hour <= 21; hour++) {
+                hours.push(hour + ':00');
+                guestCounts.push(hourlyData[hour] || 0);
+            }
+            
+            // Create Hourly Guests Chart
+            var hourlyGuestsChartCtx = document.getElementById('hourlyGuestsChart').getContext('2d');
+            var hourlyGuestsChart = new Chart(hourlyGuestsChartCtx, {
+                type: 'bar',
+                data: {
+                    labels: hours,
+                    datasets: [{
+                        label: 'Guests by Hour',
+                        data: guestCounts,
+                        backgroundColor: function(context) {
+                            var index = context.dataIndex;
+                            var hour = parseInt(hours[index]);
+                            
+                            if (hour >= 7 && hour < 11) return '#ffc107'; // Breakfast
+                            else if (hour >= 11 && hour < 15) return '#28a745'; // Lunch
+                            else return '#0d6efd'; // Dinner
+                        }
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                title: function(context) {
+                                    var hour = parseInt(context[0].label);
+                                    var period = '';
+                                    
+                                    if (hour >= 7 && hour < 11) period = 'Breakfast';
+                                    else if (hour >= 11 && hour < 15) period = 'Lunch';
+                                    else period = 'Dinner';
+                                    
+                                    return hour + ':00 (' + period + ')';
+                                },
+                                label: function(context) {
+                                    return context.raw + ' guests expected';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of Guests'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Hour of the Day'
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+}   

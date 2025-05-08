@@ -1,0 +1,289 @@
+﻿@model IEnumerable<HotelNamo.Models.TableReservation>
+@{
+    ViewData["Title"] = "Dining Reservations";
+    Layout = "_AdminLayout";
+    var selectedDate = (DateTime)ViewData["SelectedDate"];
+}
+
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Dining Reservations</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="/Admin">Dashboard</a></li>
+        <li class="breadcrumb-item active">Dining Reservations</li>
+    </ol>
+
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <div>
+                <i class="fas fa-utensils me-1"></i>
+                Dining Reservations for @selectedDate.ToString("dddd, MMMM d, yyyy")
+            </div>
+            <div>
+                <form asp-action="FrontDeskReservations" method="get" class="d-flex">
+                    <input type="date" name="date" value="@selectedDate.ToString("yyyy-MM-dd")" class="form-control me-2" />
+                    <button type="submit" class="btn btn-primary">View Date</button>
+                </form>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <div class="btn-group" role="group">
+                        <a asp-action="FrontDeskReservations" asp-route-date="@selectedDate.AddDays(-1).ToString("yyyy-MM-dd")" class="btn btn-outline-secondary">
+                            <i class="fas fa-chevron-left"></i> Previous Day
+                        </a>
+                        <a asp-action="FrontDeskReservations" asp-route-date="@DateTime.Today.ToString("yyyy-MM-dd")" class="btn btn-outline-primary">
+                            Today
+                        </a>
+                        <a asp-action="FrontDeskReservations" asp-route-date="@selectedDate.AddDays(1).ToString("yyyy-MM-dd")" class="btn btn-outline-secondary">
+                            Next Day <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-md-8 text-end">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-outline-success meal-filter active" data-meal="all">All</button>
+                        <button type="button" class="btn btn-outline-success meal-filter" data-meal="breakfast">Breakfast</button>
+                        <button type="button" class="btn btn-outline-success meal-filter" data-meal="lunch">Lunch</button>
+                        <button type="button" class="btn btn-outline-success meal-filter" data-meal="dinner">Dinner</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table id="reservationsTable" class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Guest Name</th>
+                            <th>Table</th>
+                            <th>Party Size</th>
+                            <th>Contact</th>
+                            <th>Meal</th>
+                            <th>Venue</th>
+                            <th>Status</th>
+                            <th>Notes</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Any())
+                        {
+                            @foreach (var reservation in Model)
+                            {
+                                string mealPeriod = "dinner";
+                                if (TimeSpan.TryParse(reservation.ReservationTime, out TimeSpan time))
+                                {
+                                    if (time.Hours >= 7 && time.Hours < 11)
+                                    {
+                                        mealPeriod = "breakfast";
+                                    }
+                                    else if (time.Hours >= 11 && time.Hours < 15)
+                                    {
+                                        mealPeriod = "lunch";
+                                    }
+                                }
+
+                                <tr class="reservation-row" data-meal="@mealPeriod">
+                                    <td>
+                                        @if (TimeSpan.TryParse(reservation.ReservationTime, out TimeSpan reservationTime))
+                                        {
+                                            @DateTime.Today.Add(reservationTime).ToString("h:mm tt")
+                                        }
+                                        else
+                                        {
+                                            @reservation.ReservationTime
+                                        }
+                                    </td>
+                                    <td><strong>@reservation.FullName</strong></td>
+                                    <td><span class="badge bg-info">Table @reservation.TableNumber</span></td>
+                                    <td>@reservation.NumberOfGuests @(reservation.NumberOfGuests == 1 ? "person" : "people")</td>
+                                    <td>
+                                        <div>@reservation.Phone</div>
+                                        <div><small>@reservation.Email</small></div>
+                                    </td>
+                                    <td>
+                                        <span class="badge @(mealPeriod == "breakfast" ? "bg-warning" : mealPeriod == "lunch" ? "bg-success" : "bg-primary")">
+                                            @mealPeriod.ToUpper()
+                                        </span>
+                                    </td>
+                                    <td>@reservation.Venue</td>
+                                    <td>
+                                        <span class="badge bg-success">@reservation.Status</span>
+                                    </td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(reservation.SpecialRequests) ||
+                                       !string.IsNullOrEmpty(reservation.DietaryRestrictions) ||
+                                       !string.IsNullOrEmpty(reservation.Occasion))
+                                        {
+                                            <button type="button" class="btn btn-sm btn-outline-info show-notes"
+                                                    data-bs-toggle="popover"
+                                                    data-bs-placement="top"
+                                                    data-bs-html="true"
+                                                    data-bs-content="
+                                            @if (!string.IsNullOrEmpty(reservation.Occasion) && reservation.Occasion != "None")
+                                            {
+                                                                                            <div><strong>Occasion:</strong> @reservation.Occasion</div>
+                                            }
+                                            @if (!string.IsNullOrEmpty(reservation.DietaryRestrictions))
+                                            {
+                                                                                            <div><strong>Dietary:</strong> @reservation.DietaryRestrictions</div>
+                                            }
+                                            @if (!string.IsNullOrEmpty(reservation.SpecialRequests))
+                                            {
+                                                                                            <div><strong>Requests:</strong> @reservation.SpecialRequests</div>
+                                            }
+                                                                            ">
+                                                                        <i class="fas fa-sticky-note"></i> View
+                                                                    </button>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">No notes</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <button type="button" class="btn btn-sm btn-success check-in" data-id="@reservation.Id">
+                                                <i class="fas fa-check"></i> Check-in
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown">
+                                                <span class="visually-hidden">Toggle Dropdown</span>
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li><a class="dropdown-item" href="#">Edit</a></li>
+                                                <li><a class="dropdown-item text-danger" href="#">Cancel</a></li>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="10" class="text-center py-5">
+                                    <div class="empty-state">
+                                        <i class="fas fa-calendar-day fa-4x mb-3 text-muted"></i>
+                                        <h5>No reservations found for this date</h5>
+                                        <p class="text-muted">There are no dining reservations for @selectedDate.ToString("MMMM d, yyyy")</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .empty-state {
+            padding: 30px;
+            text-align: center;
+        }
+
+        .badge.bg-warning {
+            background-color: #ffc107 !important;
+            color: #000;
+        }
+
+        .meal-period {
+            font-weight: bold;
+            padding: 10px 0;
+            margin-top: 15px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize popovers
+            var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+            var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+                return new bootstrap.Popover(popoverTriggerEl, {
+                    trigger: 'click',
+                    container: 'body'
+                })
+            });
+
+            // Close popover when clicking outside
+            document.addEventListener('click', function (e) {
+                if (!e.target.closest('[data-bs-toggle="popover"]') &&
+                    !e.target.closest('.popover')) {
+                    popoverList.forEach(popover => {
+                        popover._element.popover('hide');
+                    });
+                }
+            });
+
+            // Meal period filtering
+            const mealFilters = document.querySelectorAll('.meal-filter');
+            const reservationRows = document.querySelectorAll('.reservation-row');
+
+            mealFilters.forEach(filter => {
+                filter.addEventListener('click', function() {
+                    // Remove active class from all filters
+                    mealFilters.forEach(f => f.classList.remove('active'));
+
+                    // Add active class to clicked filter
+                    this.classList.add('active');
+
+                    const meal = this.dataset.meal;
+
+                    // Show/hide rows based on selected meal
+                    reservationRows.forEach(row => {
+                        if (meal === 'all' || row.dataset.meal === meal) {
+                            row.classList.remove('d-none');
+                        } else {
+                            row.classList.add('d-none');
+                        }
+                    });
+                });
+            });
+
+            // Check-in functionality
+            const checkInButtons = document.querySelectorAll('.check-in');
+
+            checkInButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const reservationId = this.dataset.id;
+
+                    // Change button to indicate checked-in
+                    this.innerHTML = '<i class="fas fa-check-circle"></i> Checked In';
+                    this.classList.remove('btn-success');
+                    this.classList.add('btn-secondary');
+                    this.disabled = true;
+
+                    // Here you would normally send an AJAX request to update the status
+                    console.log(`Reservation ${reservationId} checked in`);
+
+                    // Add actual AJAX call here
+                    // fetch(`/Dining/CheckInReservation/${reservationId}`, {
+                    //     method: 'POST',
+                    //     headers: {
+                    //         'Content-Type': 'application/json',
+                    //     }
+                    // })
+                    // .then(response => response.json())
+                    // .then(data => {
+                    //     console.log('Success:', data);
+                    // })
+                    // .catch((error) => {
+                    //     console.error('Error:', error);
+                    //     // Revert button if failed
+                    //     this.innerHTML = '<i class="fas fa-check"></i> Check-in';
+                    //     this.classList.add('btn-success');
+                    //     this.classList.remove('btn-secondary');
+                    //     this.disabled = false;
+                    // });
+                });
+            });
+        });
+    </script>
+}

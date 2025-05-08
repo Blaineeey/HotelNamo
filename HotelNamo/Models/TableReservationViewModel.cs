@@ -41,15 +41,14 @@ namespace HotelNamo.Models
         [Display(Name = "Dining Venue")]
         public string Venue { get; set; }
 
-        // Non-required fields for additional information
-        [Display(Name = "Special Requests")]
-        public string SpecialRequests { get; set; }
-
         [Display(Name = "Occasion")]
-        public string Occasion { get; set; }
+        public string? Occasion { get; set; }
 
         [Display(Name = "Dietary Restrictions")]
-        public string DietaryRestrictions { get; set; }
+        public string? DietaryRestrictions { get; set; }
+
+        [Display(Name = "Special Requests")]
+        public string? SpecialRequests { get; set; }
 
         [Required(ErrorMessage = "You must agree to the terms and conditions")]
         [Display(Name = "Terms and Conditions")]
