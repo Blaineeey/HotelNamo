@@ -2,6 +2,7 @@
 using HotelNamo.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 public class RoomController : Controller
 {
@@ -79,5 +80,35 @@ public class RoomController : Controller
         return RedirectToAction("Index");
     }
 
-    // Similarly implement Edit, Delete with [Authorize(Roles = "Admin,FrontDesk")]
+    // EDIT
+    [Authorize(Roles = "Admin,FrontDesk")]
+    [HttpGet]
+    public IActionResult Edit(int id)
+    {
+        var room = _context.Rooms.FirstOrDefault(r => r.Id == id);
+        if (room == null) return NotFound();
+        return View(room);
+    }
+
+    [Authorize(Roles = "Admin,FrontDesk")]
+    [HttpPost]
+    public async Task<IActionResult> Edit(Room model)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+
+        var room = await _context.Rooms.FirstOrDefaultAsync(r => r.Id == model.Id);
+        if (room == null) return NotFound();
+
+        room.RoomNumber = model.RoomNumber;
+        room.Category = model.Category;
+        room.Price = model.Price;
+        room.Status = model.Status;
+        room.Description = model.Description;
+
+        await _context.SaveChangesAsync();
+        return RedirectToAction("RoomList", "Admin");
+    }
 }

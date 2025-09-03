@@ -1,14 +1,522 @@
-﻿@{
+﻿@model HotelNamo.Models.AdminDashboardViewModel
+@using System.Linq
+@using System.Text.Json
+@{
     Layout = "_AdminLayout";
     ViewData["Title"] = "Admin Dashboard";
+
+    var monthlyLabelsJson = JsonSerializer.Serialize(Model.MonthlyBookings.Select(x => x.Label));
+    var monthlyValuesJson = JsonSerializer.Serialize(Model.MonthlyBookings.Select(x => x.Value));
+    var roomTypeLabelsJson = JsonSerializer.Serialize(Model.RoomTypeDistribution.Select(x => x.Label));
+    var roomTypeValuesJson = JsonSerializer.Serialize(Model.RoomTypeDistribution.Select(x => x.Value));
+    var revenueLabelsJson = JsonSerializer.Serialize(Model.RevenueByMonth.Select(x => x.Label));
+    var revenueValuesJson = JsonSerializer.Serialize(Model.RevenueByMonth.Select(x => x.Value));
 }
 
-<h2>Admin Dashboard</h2>
-<p>Welcome to the HotelNamo Admin Panel. Use the sidebar to manage the hotel’s operations:</p>
-<ul>
-    <li><strong>User/Staff Management:</strong> Create staff, list all users.</li>
-    <li><strong>Room Management:</strong> View and update room details.</li>
-    <li><strong>Housekeeping:</strong> Schedule and track housekeeping tasks.</li>
-    <li><strong>Maintenance:</strong> Log maintenance requests and track repairs.</li>
-    <!-- Add more features as needed -->
-</ul>
+@section Styles {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+            .stat-card:hover {
+                transform: translateY(-5px);
+            }
+
+            .stat-card.success {
+                background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            }
+
+            .stat-card.warning {
+                background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            }
+
+            .stat-card.info {
+                background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            }
+
+            .stat-card.primary {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .recent-activity {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .activity-item {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #eee;
+        }
+
+            .activity-item:last-child {
+                border-bottom: none;
+            }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            color: white;
+        }
+
+            .activity-icon.booking {
+                background: #28a745;
+            }
+
+            .activity-icon.payment {
+                background: #17a2b8;
+            }
+
+            .activity-icon.maintenance {
+                background: #ffc107;
+            }
+
+            .activity-icon.housekeeping {
+                background: #6f42c1;
+            }
+
+        .dashboard-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .dashboard-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .dashboard-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .btn-light {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+            .btn-light:hover {
+                background: rgba(255, 255, 255, 0.3);
+                border-color: rgba(255, 255, 255, 0.5);
+                color: white;
+                transform: translateY(-2px);
+            }
+
+        (max-width: 768px) {
+            .stat-card
+
+        {
+            margin-bottom: 1rem;
+        }
+
+        .dashboard-title {
+            font-size: 2rem;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+        }
+
+        }
+    </style>
+}
+
+<div class="dashboard-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="dashboard-title">Admin Dashboard</h1>
+            <p class="dashboard-subtitle">Welcome to HotelNamo Management System</p>
+        </div>
+        <div>
+            <button class="btn btn-light" onclick="refreshDashboard()">
+                <i class="fas fa-sync-alt me-2"></i>Refresh
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="stat-card primary">
+            <div class="stat-number">@Model.TotalUsers</div>
+            <div class="stat-label">
+                <i class="fas fa-users me-2"></i>Total Users
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card success">
+            <div class="stat-number">@Model.TotalRooms</div>
+            <div class="stat-label">
+                <i class="fas fa-bed me-2"></i>Total Rooms
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card info">
+            <div class="stat-number">@Model.TotalBookings</div>
+            <div class="stat-label">
+                <i class="fas fa-calendar-check me-2"></i>Total Bookings
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card warning">
+            <div class="stat-number">$@Model.TotalRevenue.ToString("N0")</div>
+            <div class="stat-label">
+                <i class="fas fa-dollar-sign me-2"></i>Total Revenue
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="stat-card success">
+            <div class="stat-number">@Model.AvailableRooms</div>
+            <div class="stat-label">
+                <i class="fas fa-check-circle me-2"></i>Available Rooms
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card warning">
+            <div class="stat-number">@Model.OccupiedRooms</div>
+            <div class="stat-label">
+                <i class="fas fa-user-friends me-2"></i>Occupied Rooms
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card info">
+            <div class="stat-number">@Model.ActiveBookings</div>
+            <div class="stat-label">
+                <i class="fas fa-clock me-2"></i>Active Bookings
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card primary">
+            <div class="stat-number">$@Model.MonthlyRevenue.ToString("N0")</div>
+            <div class="stat-label">
+                <i class="fas fa-chart-line me-2"></i>Monthly Revenue
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="chart-container">
+            <h5><i class="fas fa-chart-bar me-2"></i>Monthly Bookings</h5>
+            <canvas id="monthlyBookingsChart" width="400" height="200"></canvas>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="chart-container">
+            <h5><i class="fas fa-chart-pie me-2"></i>Room Type Distribution</h5>
+            <canvas id="roomTypeChart" width="400" height="200"></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="chart-container">
+            <h5><i class="fas fa-chart-line me-2"></i>Revenue by Month</h5>
+            <canvas id="revenueChart" width="800" height="200"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activities Row -->
+<div class="row">
+    <div class="col-md-6">
+        <div class="recent-activity">
+            <h5><i class="fas fa-calendar-check me-2"></i>Recent Bookings</h5>
+            @if (Model.RecentBookings != null && Model.RecentBookings.Any())
+            {
+                @foreach (var booking in Model.RecentBookings)
+                {
+                    <div class="activity-item d-flex align-items-center">
+                        <div class="activity-icon booking">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div>
+                            <div class="fw-bold">@booking.User?.FirstName @booking.User?.LastName</div>
+                            <div class="text-muted">
+                                Room @booking.Room?.RoomNumber - @(booking.IsConfirmed ? "Confirmed" :
+                        "Pending")
+                            </div>
+                            <small class="text-muted">@booking.BookingDate.ToString("MMM dd, yyyy")</small>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <p class="text-muted">No recent bookings</p>
+            }
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="recent-activity">
+            <h5><i class="fas fa-credit-card me-2"></i>Recent Payments</h5>
+            @if (Model.RecentPayments != null && Model.RecentPayments.Any())
+            {
+                @foreach (var payment in Model.RecentPayments)
+                {
+                    <div class="activity-item d-flex align-items-center">
+                        <div class="activity-icon payment">
+                            <i class="fas fa-credit-card"></i>
+                        </div>
+                        <div>
+                            <div class="fw-bold">$@payment.Amount.ToString("N2")</div>
+                            <div class="text-muted">@payment.PaymentMethod - @(payment.IsPaid ? "Paid" : "Pending")</div>
+                            <small class="text-muted">@payment.PaymentDate.ToString("MMM dd, yyyy")</small>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <p class="text-muted">No recent payments</p>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="recent-activity">
+            <h5><i class="fas fa-tools me-2"></i>Pending Maintenance</h5>
+            @if (Model.PendingMaintenance != null && Model.PendingMaintenance.Any())
+            {
+                @foreach (var maintenance in Model.PendingMaintenance)
+                {
+                    <div class="activity-item d-flex align-items-center">
+                        <div class="activity-icon maintenance">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                        <div>
+                            <div class="fw-bold">@maintenance.IssueDescription</div>
+                            <div class="text-muted">Room @maintenance.Room?.RoomNumber</div>
+                            <small class="text-muted">@DateTime.Now.ToString("MMM dd, yyyy")</small>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <p class="text-muted">No pending maintenance requests</p>
+            }
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="recent-activity">
+            <h5><i class="fas fa-broom me-2"></i>Pending Housekeeping</h5>
+            @if (Model.PendingHousekeeping != null && Model.PendingHousekeeping.Any())
+            {
+                @foreach (var housekeeping in Model.PendingHousekeeping)
+                {
+                    <div class="activity-item d-flex align-items-center">
+                        <div class="activity-icon housekeeping">
+                            <i class="fas fa-broom"></i>
+                        </div>
+                        <div>
+                            <div class="fw-bold">@housekeeping.TaskDescription</div>
+                            <div class="text-muted">Room @housekeeping.Room?.RoomNumber</div>
+                            <small class="text-muted">@DateTime.Now.ToString("MMM dd, yyyy")</small>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <p class="text-muted">No pending housekeeping tasks</p>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Show loading state
+        document.addEventListener('DOMContentLoaded', function () {
+            // Hide loading spinner if it exists
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            if (loadingSpinner) {
+                loadingSpinner.style.display = 'none';
+            }
+        });
+
+        // Error handling for charts
+        function handleChartError(chartId, error) {
+            console.error('Chart error:', error);
+            const canvas = document.getElementById(chartId);
+            if (canvas) {
+                const ctx = canvas.getContext('2d');
+                ctx.font = '16px Arial';
+                ctx.fillStyle = '#666';
+                ctx.textAlign = 'center';
+                ctx.fillText('Chart data unavailable', canvas.width / 2, canvas.height / 2);
+            }
+        }
+
+        // Monthly Bookings Chart
+        try {
+            const monthlyBookingsCtx = document.getElementById('monthlyBookingsChart').getContext('2d');
+            if (monthlyBookingsCtx) {
+                new Chart(monthlyBookingsCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: @Html.Raw(monthlyLabelsJson),
+                        datasets: [{
+                            label: 'Bookings',
+                            data: @Html.Raw(monthlyValuesJson),
+                            backgroundColor: 'rgba(102, 126, 234, 0.8)',
+                            borderColor: 'rgba(102, 126, 234, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+        } catch (error) {
+            handleChartError('monthlyBookingsChart', error);
+        }
+
+        // Room Type Distribution Chart
+        try {
+            const roomTypeCtx = document.getElementById('roomTypeChart').getContext('2d');
+            if (roomTypeCtx) {
+                new Chart(roomTypeCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: @Html.Raw(roomTypeLabelsJson),
+                        datasets: [{
+                            data: @Html.Raw(roomTypeValuesJson),
+                            backgroundColor: [
+                                'rgba(102, 126, 234, 0.8)',
+                                'rgba(118, 75, 162, 0.8)',
+                                'rgba(17, 153, 142, 0.8)',
+                                'rgba(240, 147, 251, 0.8)',
+                                'rgba(79, 172, 254, 0.8)'
+                            ]
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+            }
+        } catch (error) {
+            handleChartError('roomTypeChart', error);
+        }
+
+        // Revenue Chart
+        try {
+            const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+            if (revenueCtx) {
+                new Chart(revenueCtx, {
+                    type: 'line',
+                    data: {
+                        labels: @Html.Raw(revenueLabelsJson),
+                        datasets: [{
+                            label: 'Revenue ($)',
+                            data: @Html.Raw(revenueValuesJson),
+                            borderColor: 'rgba(17, 153, 142, 1)',
+                            backgroundColor: 'rgba(17, 153, 142, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function (value) {
+                                        return '$' + value.toLocaleString();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        } catch (error) {
+            handleChartError('revenueChart', error);
+        }
+
+        // Refresh dashboard function
+        function refreshDashboard() {
+            location.reload();
+        }
+
+        // Auto-refresh dashboard every 30 seconds
+        setInterval(function () {
+            location.reload();
+        }, 30000);
+    </script>
+}

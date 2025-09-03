@@ -1,52 +1,124 @@
 ﻿@model HotelNamo.Models.Room
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Create Room";
+}
 
-<div asp-validation-summary="All" class="text-danger"></div>
-
-<form asp-action="CreateRoom" method="post">
-    <label>Room Number:</label>
-    <input asp-for="RoomNumber" required class="form-control" />
-
-    <label>Floor Number:</label>
-    <input asp-for="FloorNumber" type="number" required class="form-control" />
-
-    <label>Category:</label>
-    <select asp-for="Category" class="form-control" required>
-        <option value="">-- Select Category --</option>
-        <option>Single</option>
-        <option>Double</option>
-        <option>Suite</option>
-        <option>Family</option>
-    </select>
-
-    <label>Price:</label>
-    <input asp-for="Price" required class="form-control" />
-
-    <label>Status:</label>
-    <select asp-for="Status" class="form-control">
-        <option>Vacant</option>
-        <option>Occupied</option>
-        <option>Maintenance</option>
-    </select>
-
-    <label>Description:</label>
-    <textarea asp-for="Description" class="form-control"></textarea>
-
-    <label>Select an Existing Image:</label>
-    <select name="selectedImage" required class="form-control">
-        <option value="">Select image</option>
-        @foreach (var image in ViewBag.ExistingImages)
-        {
-            <option value="@image">@image</option>
+@section Styles {
+    <style>
+        #existingPreview {
+            height: 120px;
+            object-fit: cover;
+            border: 1px dashed #ced4da;
         }
-    </select>
+    </style>
+}
 
-    <label>Amenities:</label>
-    @foreach (var amenity in ViewBag.Amenities)
-    {
-        <input type="checkbox" name="selectedAmenities" value="@amenity.Id" /> @amenity.Name
+<h2 class="mb-3">Create Room</h2>
+<div class="card border-0 shadow-sm">
+    <div class="card-body">
+        <div asp-validation-summary="All" class="alert alert-danger" role="alert"></div>
+        <form asp-action="CreateRoom" method="post">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label asp-for="RoomNumber" class="form-label"></label>
+                    <input asp-for="RoomNumber" class="form-control" required />
+                    <span asp-validation-for="RoomNumber" class="text-danger"></span>
+                </div>
+                <div class="col-md-3">
+                    <label asp-for="FloorNumber" class="form-label"></label>
+                    <input asp-for="FloorNumber" type="number" class="form-control" required />
+                    <span asp-validation-for="FloorNumber" class="text-danger"></span>
+                </div>
+                <div class="col-md-3">
+                    <label asp-for="Category" class="form-label"></label>
+                    <select asp-for="Category" class="form-select" required>
+                        <option value="">-- Select Category --</option>
+                        <option>Single</option>
+                        <option>Double</option>
+                        <option>Suite</option>
+                        <option>Family</option>
+                    </select>
+                    <span asp-validation-for="Category" class="text-danger"></span>
+                </div>
+                <div class="col-md-3">
+                    <label asp-for="Status" class="form-label"></label>
+                    <select asp-for="Status" class="form-select">
+                        <option>Available</option>
+                        <option>Occupied</option>
+                        <option>Maintenance</option>
+                    </select>
+                    <span asp-validation-for="Status" class="text-danger"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Price" class="form-label"></label>
+                    <input asp-for="Price" class="form-control" required />
+                    <span asp-validation-for="Price" class="text-danger"></span>
+                </div>
+                <div class="col-12">
+                    <label asp-for="Description" class="form-label"></label>
+                    <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+            </div>
 
-        <br />
-    }
+            <hr class="my-4" />
 
-    <button type="submit">Create Room</button>
-</form>
+            <div class="row g-3 align-items-end">
+                <div class="col-lg-8">
+                    <h5 class="mb-2">Choose Existing Image</h5>
+                    <select name="selectedImage" class="form-select" id="existingImageSelect">
+                        <option value="">Select image</option>
+                        @foreach (var image in ViewBag.ExistingImages)
+                        {
+                            <option value="@image">@image</option>
+                        }
+                    </select>
+                    <div class="form-text">Selecting an item will show its preview.</div>
+                </div>
+                <div class="col-lg-4">
+                    <img id="existingPreview" class="w-100 rounded" alt="Preview" />
+                </div>
+            </div>
+
+            <hr class="my-4" />
+
+            <div class="mb-3">
+                <h5>Amenities</h5>
+                <div class="row g-2">
+                    @foreach (var amenity in ViewBag.Amenities)
+                    {
+                        <div class="col-6 col-md-4">
+                            <label class="form-check-label">
+                                <input type="checkbox" class="form-check-input me-1" name="selectedAmenities"
+                                       value="@amenity.Id" />
+                                @amenity.Name
+                            </label>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 mt-3">
+                <a asp-action="RoomList" class="btn btn-outline-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">Create Room</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const existingSelect = document.getElementById('existingImageSelect');
+        const existingPreview = document.getElementById('existingPreview');
+        function setExistingPreview(fileName) {
+            if (!fileName) { existingPreview.src = ''; return; }
+            existingPreview.src = `${'@Url.Content("~/images/rooms/")'}${fileName}`;
+        }
+        if (existingSelect) {
+            existingSelect.addEventListener('change', function () {
+                setExistingPreview(this.value);
+            });
+        }
+    </script>
+}

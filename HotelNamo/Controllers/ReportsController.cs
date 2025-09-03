@@ -60,7 +60,7 @@ namespace HotelNamo.Controllers
         {
             var revenueData = _context.Bookings
                 .Where(b => b.IsConfirmed)
-                .GroupBy(b => new { b.CheckInDate.Year, b.CheckInDate.Month }) // Group by Year & Month
+                .GroupBy(b => new { b.CheckInDate.Year, b.CheckInDate.Month })
                 .Select(g => new RevenueReportViewModel
                 {
                     Year = g.Key.Year,
@@ -69,6 +69,27 @@ namespace HotelNamo.Controllers
                 })
                 .OrderBy(r => r.Year).ThenBy(r => r.Month)
                 .ToList();
+
+            if (!revenueData.Any())
+            {
+                // Fallback to Payments if bookings have not been aggregated/confirmed
+                revenueData = _context.Payments
+                    .GroupBy(p => new { p.PaymentDate.Year, p.PaymentDate.Month })
+                    .Select(g => new RevenueReportViewModel
+                    {
+                        Year = g.Key.Year,
+                        Month = g.Key.Month,
+                        TotalRevenue = g.Sum(p => p.Amount)
+                    })
+                    .OrderBy(r => r.Year).ThenBy(r => r.Month)
+                    .ToList();
+            }
+
+            var now = DateTime.Now;
+            ViewBag.CurrentMonthRevenue = revenueData
+                .Where(r => r.Year == now.Year && r.Month == now.Month)
+                .Select(r => r.TotalRevenue)
+                .FirstOrDefault();
 
             return View(revenueData);
         }

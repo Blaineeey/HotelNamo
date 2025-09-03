@@ -12,7 +12,7 @@ using System.Collections.Generic;
 
 namespace HotelNamo.Controllers
 {
-    [Authorize(Roles = "Admin,Housekeeping")]
+    [Authorize(Roles = "Admin,Housekeeping,HouseKeeping")]
     public class HousekeepingController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -24,23 +24,48 @@ namespace HotelNamo.Controllers
             _userManager = userManager;
         }
         // ✅ Housekeeping Dashboard - Only Show Tasks Assigned to the Logged-in Housekeeping Staff
-        [Authorize(Roles = "Housekeeping")]
+        [Authorize(Roles = "Housekeeping,HouseKeeping")]
         public async Task<IActionResult> Dashboard()
         {
             var userId = _userManager.GetUserId(User);
             var tasks = await _context.HousekeepingTasks
                 .Include(ht => ht.Room)
-                .Where(ht => ht.AssignedStaffId == userId)
+                .Where(ht => ht.AssignedStaffId == userId && ht.Status != "Done" && ht.Status != "Completed")
                 .ToListAsync();
 
             return View("Dashboard", tasks);
+        }
+
+        // ✅ Mark Housekeeping Task as Doing
+        [Authorize(Roles = "Housekeeping,HouseKeeping")]
+        [HttpPost]
+        public async Task<IActionResult> Start(int id)
+        {
+            var task = await _context.HousekeepingTasks.FindAsync(id);
+            if (task == null) return NotFound();
+            task.Status = "Doing";
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Dashboard");
+        }
+
+        // ✅ Mark Housekeeping Task as Done
+        [Authorize(Roles = "Housekeeping,HouseKeeping")]
+        [HttpPost]
+        public async Task<IActionResult> Complete(int id)
+        {
+            var task = await _context.HousekeepingTasks.FindAsync(id);
+            if (task == null) return NotFound();
+            task.Status = "Done";
+            task.CompletedAt = DateTime.Now;
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Dashboard");
         }
 
         // ✅ View All Tasks (Admin & Housekeeping Staff)
         public async Task<IActionResult> Index()
         {
             var user = await _userManager.GetUserAsync(User);
-            var isHousekeeping = await _userManager.IsInRoleAsync(user, "Housekeeping");
+            var isHousekeeping = await _userManager.IsInRoleAsync(user, "Housekeeping") || await _userManager.IsInRoleAsync(user, "HouseKeeping");
 
             var tasks = await _context.HousekeepingTasks
                 .Include(ht => ht.Room)
@@ -119,7 +144,7 @@ namespace HotelNamo.Controllers
             task.RoomId = (int)TempData["RoomId"];
             task.AssignedStaffId = TempData["AssignedStaffId"].ToString();
             task.Status = "Pending"; // Default status
- 
+
 
             _context.HousekeepingTasks.Add(task);
             await _context.SaveChangesAsync();
@@ -129,7 +154,7 @@ namespace HotelNamo.Controllers
         }
 
         // ✅ Housekeeping Staff Can Mark Task As Completed
-        [Authorize(Roles = "Housekeeping")]
+        [Authorize(Roles = "Housekeeping,HouseKeeping")]
         public async Task<IActionResult> CompleteTask(int id)
         {
             var task = await _context.HousekeepingTasks.FindAsync(id);

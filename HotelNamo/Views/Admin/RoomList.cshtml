@@ -1,32 +1,95 @@
 ﻿@model IEnumerable<HotelNamo.Models.Room>
 @{
+    Layout = "_AdminLayout";
     ViewData["Title"] = "Room Inventory";
 }
 
-<h2>Room Inventory</h2>
-<table class="table">
-    <thead>
-        <tr>
-            <th>Room Number</th>
-            <th>Category</th>
-            <th>Status</th>
-            <th>Price</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var room in Model)
-        {
-            <tr>
-                <td>@room.RoomNumber</td>
-                <td>@room.Category</td>
-                <td>@room.Status</td>
-                <td>@room.Price</td>
-            </tr>
+@section Styles {
+    <style>
+        .status-badge.Available {
+            background-color: #d1fae5;
+            color: #065f46;
         }
-    </tbody>
-</table>
-<a asp-action="CreateRoom" class="btn btn-primary">Create New Room</a>
 
-</table>
+        .status-badge.Occupied {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
 
-<a asp-action="CreateRoom" class="btn btn-primary">Add New Room</a>
+        .status-badge.Maintenance {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .room-card {
+            transition: transform .2s ease, box-shadow .2s ease;
+        }
+
+            .room-card:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 6px 16px rgba(0, 0, 0, .08);
+            }
+
+        .thumb {
+            height: 140px;
+            object-fit: cover;
+        }
+    </style>
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h2 class="mb-0">Room Inventory</h2>
+        <small class="text-muted">Manage availability, categories and pricing</small>
+    </div>
+    <div class="d-flex gap-2">
+        <input type="text" id="roomSearch" class="form-control form-control-sm"
+               placeholder="Search by room # or category" style="max-width: 300px;" />
+        <a asp-action="CreateRoom" class="btn btn-sm btn-primary">Add New Room</a>
+    </div>
+</div>
+
+<div class="row g-3" id="roomsGrid">
+    @foreach (var room in Model)
+    {
+        var thumb = room.RoomImages != null && room.RoomImages.Any() ? room.RoomImages.First().ImagePath : "";
+        <div class="col-md-6 col-lg-4 room-item" data-roomnumber="@room.RoomNumber" data-category="@room.Category">
+            <div class="card room-card border-0 h-100">
+                @if (!string.IsNullOrEmpty(thumb))
+                {
+                    <img src="@Url.Content($"~/images/rooms/{thumb}")" class="card-img-top thumb" alt="thumbnail"
+                         onerror="this.onerror=null; this.src='@Url.Content("~/images/rooms/deluxe-room.jpg")';" />
+                }
+                <div class="card-body d-flex flex-column">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h5 class="card-title mb-0">Room @room.RoomNumber</h5>
+                        <span class="badge status-badge @room.Status">@room.Status</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="badge bg-dark">@room.Category</span>
+                        <span class="fw-bold text-primary">@room.Price.ToString("C0")</span>
+                    </div>
+                    <div class="mt-auto d-flex justify-content-end gap-2">
+                        <a asp-controller="Admin" asp-action="RoomDetails" asp-route-id="@room.Id"
+                           class="btn btn-sm btn-outline-secondary">View</a>
+                        <a asp-controller="Admin" asp-action="EditRoom" asp-route-id="@room.Id"
+                           class="btn btn-sm btn-outline-primary">Edit</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('roomSearch').addEventListener('input', function () {
+            const term = this.value.toLowerCase();
+            document.querySelectorAll('#roomsGrid .room-item').forEach(item => {
+                const num = item.getAttribute('data-roomnumber').toLowerCase();
+                const cat = item.getAttribute('data-category').toLowerCase();
+                item.style.display = (num.includes(term) || cat.includes(term)) ? '' : 'none';
+            });
+        });
+    </script>
+}
