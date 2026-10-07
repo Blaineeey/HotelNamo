@@ -1,0 +1,39 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewData["Title"] = "Payment Processing";
+}
+
+<link rel="stylesheet" href="~/css/payment.css" />
+
+<div class="payment-container">
+    <h2>Payment Processing</h2>
+    <form method="post">
+        <div class="form-group">
+            <label>Payment Method *</label>
+            <select name="PaymentMethod">
+                <option>Credit/Debit Card</option>
+                <option>Online Wallet</option>
+                <option>Bank Transfer</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Card Number *</label>
+            <input type="text" name="CardNumber" placeholder="XXXX-XXXX-XXXX-XXXX" required />
+        </div>
+
+        <div class="form-group">
+            <label>Expiration Date *</label>
+            <input type="month" name="ExpirationDate" required />
+        </div>
+
+        <div class="form-group">
+            <label>CVV *</label>
+            <input type="text" name="CVV" placeholder="123" required />
+        </div>
+
+        <button type="submit" class="btn-submit">Pay Now</button>
+    </form>
+</div>

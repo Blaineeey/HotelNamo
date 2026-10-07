@@ -1,0 +1,130 @@
+﻿<head>
+    <link rel="stylesheet" href="~/css/billing.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+
+<div class="billing-container">
+    <h2>Billing & Invoice</h2>
+    <p class="description">
+        Securely manage your invoices and payments with ease.
+    </p>
+
+    <div class="billing-content">
+        <!-- Left: Billing Form -->
+        <form class="billing-form" method="post">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Full Name *</label>
+                    <input type="text" name="FullName" placeholder="Enter your full name" required />
+                </div>
+                <div class="form-group">
+                    <label>Last Name *</label>
+                    <input type="text" name="LastName" placeholder="Enter your last name" required />
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Billing Address *</label>
+                    <input type="text" name="BillingAddress" placeholder="Enter your billing address" required />
+                </div>
+                <div class="form-group">
+                    <label>City *</label>
+                    <input type="text" name="City" placeholder="Enter your city" required />
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Country *</label>
+                    <select id="countrySelect" name="Country">
+                        <option value="">Loading...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Zip Code *</label>
+                    <input type="text" name="ZipCode" placeholder="Enter your zip code" required />
+                </div>
+            </div>
+
+            <!-- Payment Method Section -->
+            <div class="form-group">
+                <label>Payment Method *</label>
+                <div class="payment-options">
+                    <label>
+                        <input type="radio" name="PaymentMethod" value="credit_card" required checked />
+                        <i class="fa-solid fa-credit-card"></i> Credit/Debit Card
+                    </label>
+                    <label>
+                        <input type="radio" name="PaymentMethod" value="paypal" required />
+                        <i class="fa-brands fa-paypal"></i> PayPal
+                    </label>
+                    <label>
+                        <input type="radio" name="PaymentMethod" value="bank_transfer" required />
+                        <i class="fa-solid fa-university"></i> Bank Transfer
+                    </label>
+                    <label>
+                        <input type="radio" name="PaymentMethod" value="gcash" required />
+                        <img src="~/images/gcash.png" alt="GCash" class="gcash-icon"> GCash
+                    </label>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit">Pay Invoice</button>
+        </form>
+
+        <!-- Right: Receipt Section -->
+        <div class="receipt">
+            <h3>Billing Summary</h3>
+            <div class="receipt-item">
+                <span>Room Charges:</span>
+                <span>$<span id="roomCharge">0.00</span></span>
+            </div>
+            <div class="receipt-item">
+                <span>Amenities:</span>
+                <span>$<span id="amenitiesCharge">0.00</span></span>
+            </div>
+            <div class="receipt-item">
+                <span>Other Services:</span>
+                <span>$<span id="otherCharge">0.00</span></span>
+            </div>
+            <div class="receipt-total">
+                <span>Total:</span>
+                <span>$<span id="totalCharge">0.00</span></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        function updateReceipt() {
+            const roomCharge = parseFloat(document.getElementById("roomCharge").textContent) || 0;
+            const amenitiesCharge = parseFloat(document.getElementById("amenitiesCharge").textContent) || 0;
+            const otherCharge = parseFloat(document.getElementById("otherCharge").textContent) || 0;
+
+            const total = roomCharge + amenitiesCharge + otherCharge;
+            document.getElementById("totalCharge").textContent = total.toFixed(2);
+        }
+
+        updateReceipt();
+
+        // Load countries dynamically
+        fetch("https://restcountries.com/v3.1/all")
+            .then(response => response.json())
+            .then(data => {
+                const countrySelect = document.getElementById("countrySelect");
+                countrySelect.innerHTML = ""; // Clear existing options
+
+                data.sort((a, b) => a.name.common.localeCompare(b.name.common)); // Sort alphabetically
+
+                data.forEach(country => {
+                    const option = document.createElement("option");
+                    option.value = country.name.common;
+                    option.textContent = country.name.common;
+                    countrySelect.appendChild(option);
+                });
+            })
+            .catch(error => console.error("Error loading countries:", error));
+    });
+</script>

@@ -1,0 +1,69 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewData["Title"] = "Reservation Form";
+}
+
+<link rel="stylesheet" href="~/css/reservation.css" />
+
+<div class="reservation-container">
+    <h2>Reservation Form</h2>
+    <form method="post">
+        <div class="form-group">
+            <label>From *</label>
+            <input type="date" name="FromDate" required />
+        </div>
+
+        <div class="form-group">
+            <label>Until *</label>
+            <input type="date" name="UntilDate" required />
+        </div>
+
+        <div class="form-group">
+            <label>Room Type *</label>
+            <select name="RoomType">
+                <option>Deluxe Room</option>
+                <option>Suite</option>
+                <option>Standard Room</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Room Requirements</label>
+            <select name="RoomRequirements">
+                <option>No Preference</option>
+                <option>Smoking</option>
+                <option>Non-Smoking</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Adults *</label>
+            <select name="Adults">
+                @for (int i = 1; i <= 5; i++)
+                {
+                    <option>@i</option>
+                }
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Children</label>
+            <select name="Children">
+                <option>-</option>
+                @for (int i = 0; i <= 5; i++)
+                {
+                    <option>@i</option>
+                }
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Special Requirements</label>
+            <textarea name="SpecialRequests"></textarea>
+        </div>
+
+        <button type="submit" class="btn-submit">Submit</button>
+    </form>
+</div>
