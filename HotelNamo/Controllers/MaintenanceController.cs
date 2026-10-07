@@ -129,21 +129,7 @@ namespace HotelNamo.Controllers
             return RedirectToAction("Index");
         }
 
-        // ✅ Mark Maintenance Request as Doing (Only Maintenance Staff)
-        [Authorize(Roles = "Maintenance")]
-        [HttpPost]
-        public async Task<IActionResult> Start(int id)
-        {
-            var request = await _context.MaintenanceRequests.FindAsync(id);
-            if (request == null) return NotFound();
-
-            request.Status = "Doing";
-            await _context.SaveChangesAsync();
-
-            return RedirectToAction("Dashboard");
-        }
-
-        // ✅ Mark Maintenance Request as Done (Only Maintenance Staff)
+        // ✅ Mark Maintenance Request as Completed (Only Maintenance Staff)
         [Authorize(Roles = "Maintenance")]
         [HttpPost]
         public async Task<IActionResult> Complete(int id)
@@ -151,7 +137,7 @@ namespace HotelNamo.Controllers
             var request = await _context.MaintenanceRequests.FindAsync(id);
             if (request == null) return NotFound();
 
-            request.Status = "Done";
+            request.Status = "Completed";
             await _context.SaveChangesAsync();
 
             return RedirectToAction("Dashboard");
@@ -177,7 +163,7 @@ namespace HotelNamo.Controllers
         {
             var user = await _userManager.GetUserAsync(User);
             var tasks = await _context.MaintenanceRequests
-                .Where(m => m.AssignedStaffId == user.Id && m.Status != "Done")
+                .Where(m => m.AssignedStaffId == user.Id && m.Status != "Completed")
                 .Include(m => m.Room)
                 .ToListAsync();
 

@@ -5,7 +5,6 @@
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
@@ -17,15 +16,14 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
-
 <body>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
             <a class="navbar-brand" asp-controller="Home" asp-action="Index">HotelNamo</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
-                    aria-label="Toggle navigation">
+                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
@@ -43,12 +41,6 @@
                     <li class="nav-item">
                         <a class="nav-link" asp-controller="Home" asp-action="Contact">Contact</a>
                     </li>
-                    @if (SignInManager.IsSignedIn(User) && User.IsInRole("Admin"))
-                    {
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Admin" asp-action="Index">Dashboard</a>
-                        </li>
-                    }
                 </ul>
                 <ul class="navbar-nav ms-auto">
                     @if (SignInManager.IsSignedIn(User))
@@ -57,12 +49,9 @@
                         <li class="nav-item">
                             <span class="nav-link disabled">Hello, @user.FirstName!</span>
                         </li>
-                        @if (!User.IsInRole("Admin"))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="Home" asp-action="UserHome">User Home</a>
-                            </li>
-                        }
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Home" asp-action="UserHome">User Home</a>
+                        </li>
                         <li class="nav-item">
                             <form asp-controller="Account" asp-action="Logout" method="post">
                                 <button type="submit" class="btn btn-link nav-link">Logout</button>
@@ -97,5 +86,4 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     @RenderSection("Scripts", required: false)
 </body>
-
 </html>

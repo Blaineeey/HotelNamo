@@ -1,0 +1,339 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+
+@model TableReservation
+@{
+    ViewData["Title"] = "Cancel Reservation";
+    Layout = "_UserLayout";
+}
+
+<link rel="stylesheet" href="~/css/home-style.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<style>
+    .cancel-section {
+        font-family: 'Raleway', sans-serif;
+        padding: 60px 0;
+        background-color: #f8f9fa;
+    }
+
+    .cancel-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .section-title {
+        font-size: 18px;
+        color: #b29674;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+    }
+
+    .main-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 42px;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 15px;
+    }
+
+    .cancel-subtitle {
+        font-size: 18px;
+        color: #666;
+        max-width: 700px;
+        margin: 0 auto;
+    }
+
+    .cancel-card {
+        background-color: white;
+        border-radius: 15px;
+        padding: 40px;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .reservation-details {
+        background-color: #f8f8f8;
+        border-radius: 12px;
+        padding: 25px;
+        margin-bottom: 30px;
+    }
+
+    .detail-row {
+        display: flex;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+    }
+
+    .detail-group {
+        flex: 1;
+        min-width: 200px;
+        margin-bottom: 15px;
+    }
+
+    .detail-label {
+        font-size: 14px;
+        color: #888;
+        margin-bottom: 5px;
+    }
+
+    .detail-value {
+        font-size: 16px;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .table-detail {
+        background-color: #f9f5f0;
+        border-radius: 12px;
+        padding: 20px;
+        margin: 20px 0;
+        display: flex;
+        align-items: center;
+    }
+
+    .table-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background-color: #b29674;
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 20px;
+        margin-right: 20px;
+    }
+
+    .table-number {
+        font-size: 24px;
+        font-weight: bold;
+    }
+
+    .table-description {
+        flex: 1;
+    }
+
+    .table-location {
+        font-size: 16px;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .table-venue {
+        font-size: 14px;
+        color: #666;
+        margin-top: 5px;
+    }
+
+    .cancel-warning {
+        background-color: #fff8e1;
+        border-left: 4px solid #ffc107;
+        padding: 20px;
+        margin: 30px 0;
+        border-radius: 8px;
+    }
+
+    .warning-title {
+        font-weight: 600;
+        font-size: 18px;
+        color: #e65100;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+    }
+
+        .warning-title i {
+            margin-right: 10px;
+            font-size: 20px;
+        }
+
+    .warning-message {
+        font-size: 15px;
+        color: #666;
+    }
+
+    .btn-container {
+        display: flex;
+        gap: 15px;
+        margin-top: 30px;
+    }
+
+    .btn-cancel {
+        background-color: #f44336;
+        color: white;
+        padding: 12px 30px;
+        font-size: 16px;
+        border-radius: 50px;
+        border: none;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        box-shadow: 0 5px 15px rgba(244, 67, 54, 0.3);
+        transition: all 0.3s ease;
+        flex: 1;
+    }
+
+        .btn-cancel:hover {
+            background-color: #d32f2f;
+            box-shadow: 0 8px 20px rgba(244, 67, 54, 0.4);
+        }
+
+    .btn-return {
+        background-color: transparent;
+        color: #666;
+        padding: 12px 30px;
+        font-size: 16px;
+        border-radius: 50px;
+        border: 2px solid #ddd;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+        flex: 1;
+    }
+
+        .btn-return:hover {
+            background-color: #f5f5f5;
+        }
+
+    /* Responsive styles */
+    @@ media (max-width: 768px) {
+        .cancel-section
+
+    {
+        padding: 40px 0;
+    }
+
+    .main-title {
+        font-size: 32px;
+    }
+
+    .cancel-card {
+        padding: 25px;
+    }
+
+    .btn-container {
+        flex-direction: column;
+    }
+
+    }
+</style>
+
+<div class="cancel-section">
+    <div class="container">
+        <div class="cancel-header">
+            <h3 class="section-title">Reservation Management</h3>
+            <h1 class="main-title">Cancel Reservation</h1>
+            <p class="cancel-subtitle">Please review your reservation details before cancellation.</p>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="cancel-card">
+                    <h4 class="mb-4">Reservation Details</h4>
+
+                    <div class="reservation-details">
+                        <div class="detail-row">
+                            <div class="detail-group">
+                                <div class="detail-label">Reservation Number</div>
+                                <div class="detail-value">#@Model.Id.ToString("D6")</div>
+                            </div>
+                            <div class="detail-group">
+                                <div class="detail-label">Status</div>
+                                <div class="detail-value">@Model.Status</div>
+                            </div>
+                        </div>
+
+                        <div class="detail-row">
+                            <div class="detail-group">
+                                <div class="detail-label">Date</div>
+                                <div class="detail-value">@Model.ReservationDate.ToString("dddd, MMMM d, yyyy")</div>
+                            </div>
+                            <div class="detail-group">
+                                <div class="detail-label">Time</div>
+                                <div class="detail-value">@DateTime.Parse(Model.ReservationTime).ToString("h:mm tt")</div>
+                            </div>
+                        </div>
+
+                        <div class="detail-row">
+                            <div class="detail-group">
+                                <div class="detail-label">Guest Name</div>
+                                <div class="detail-value">@Model.FullName</div>
+                            </div>
+                            <div class="detail-group">
+                                <div class="detail-label">Number of Guests</div>
+                                <div class="detail-value">@Model.NumberOfGuests @(Model.NumberOfGuests == 1 ? "Person" : "People")</div>
+                            </div>
+                        </div>
+
+                        <div class="detail-row">
+                            <div class="detail-group">
+                                <div class="detail-label">Email</div>
+                                <div class="detail-value">@Model.Email</div>
+                            </div>
+                            <div class="detail-group">
+                                <div class="detail-label">Phone</div>
+                                <div class="detail-value">@Model.Phone</div>
+                            </div>
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(Model.Occasion) || !string.IsNullOrEmpty(Model.SpecialRequests))
+                        {
+                            <div class="detail-row">
+                                @if (!string.IsNullOrEmpty(Model.Occasion))
+                                {
+                                    <div class="detail-group">
+                                        <div class="detail-label">Occasion</div>
+                                        <div class="detail-value">@Model.Occasion</div>
+                                    </div>
+                                }
+
+                                @if (!string.IsNullOrEmpty(Model.SpecialRequests))
+                                {
+                                    <div class="detail-group">
+                                        <div class="detail-label">Special Requests</div>
+                                        <div class="detail-value">@Model.SpecialRequests</div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+
+                    <div class="table-detail">
+                        <div class="table-icon">
+                            <span class="table-number">@Model.TableNumber</span>
+                        </div>
+                        <div class="table-description">
+                            <div class="table-location">Table @Model.TableNumber</div>
+                            <div class="table-venue">@Model.Venue</div>
+                        </div>
+                    </div>
+
+                    <div class="cancel-warning">
+                        <div class="warning-title">
+                            <i class="fas fa-exclamation-triangle"></i> Cancellation Policy
+                        </div>
+                        <div class="warning-message">
+                            <p>Please note that cancellations made less than 24 hours before the reservation time may incur a cancellation fee.</p>
+                            <p>Once cancelled, this reservation cannot be restored. You will need to make a new reservation if you wish to dine with us.</p>
+                        </div>
+                    </div>
+
+                    <form asp-action="CancelConfirmed" asp-route-id="@Model.Id" method="post">
+                        <div class="btn-container">
+                            <a asp-action="MyReservations" class="btn btn-return">
+                                <i class="fas fa-arrow-left me-2"></i> Return to My Reservations
+                            </a>
+                            <button type="submit" class="btn btn-cancel">
+                                <i class="fas fa-times me-2"></i> Cancel Reservation
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

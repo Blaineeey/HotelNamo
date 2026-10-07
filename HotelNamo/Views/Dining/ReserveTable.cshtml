@@ -1,0 +1,955 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+@model TableReservationViewModel
+@{
+    ViewData["Title"] = "Reserve a Table";
+    Layout = "_UserLayout";
+}
+
+<link rel="stylesheet" href="~/css/home-style.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<style>
+    /* Main Styles */
+    :root {
+        --primary-color: #b29674; 
+        --dark-color: #333;
+        --light-color: #f8f9fa;
+        --accent-color: #c5a880;
+        --error-color: #dc3545;
+        --success-color: #28a745;
+    }
+
+    .reservation-section {
+        font-family: 'Raleway', sans-serif;
+        padding: 40px 0;
+        background-color: var(--light-color);
+        min-height: calc(100vh - 100px); /* Full height minus header */
+        display: flex;
+        flex-direction: column;
+    }
+
+    .reservation-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .section-title {
+        font-size: 18px;
+        color: var(--primary-color);
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        margin-bottom: 5px;
+    }
+
+    .main-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 36px;
+        font-weight: bold;
+        color: var(--dark-color);
+        margin-bottom: 10px;
+    }
+
+    .reservation-subtitle {
+        font-size: 16px;
+        color: #666;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    /* Form Styles */
+    .reservation-form {
+        background-color: white;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        height: 100%;
+    }
+
+    .reservation-form-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 22px;
+        margin-bottom: 20px;
+        color: var(--dark-color);
+        font-weight: 600;
+    }
+
+    .form-label {
+        font-weight: 600;
+        margin-bottom: 6px;
+        color: #555;
+    }
+
+    .form-control {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 10px 12px;
+        margin-bottom: 15px;
+        font-size: 14px;
+        transition: all 0.3s;
+    }
+
+    .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(178, 150, 116, 0.25);
+    }
+
+    /* Dining Hall Layout */
+    .dining-hall {
+        width: 100%;
+        padding: 20px;
+        background-color: #f8f8f8;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        position: relative;
+    }
+
+    .stage-area {
+        height: 60px;
+        background-color: #d4c5b1;
+        border-radius: 8px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 30px;
+        position: relative;
+    }
+
+    .stage-label {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-family: 'Playfair Display', serif;
+        color: white;
+        font-size: 16px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        z-index: 1;
+    }
+
+    .stage-area::before {
+        content: "";
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(ellipse at center, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%);
+    }
+
+    .tables-container {
+        display: grid;
+        grid-template-columns: repeat(8, 1fr); /* Increased columns for landscape layout */
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .table {
+        width: 100%;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        background-color: white;
+        border: 2px solid #ddd;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        position: relative;
+        transition: all 0.3s ease;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .table:hover {
+        background-color: #f1e7db;
+    }
+
+    .table.selected {
+        background-color: var(--primary-color);
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(178, 150, 116, 0.4);
+    }
+
+    .table.unavailable {
+        background-color: #f8f8f8;
+        color: #aaa;
+        cursor: not-allowed;
+        border-color: #ddd;
+    }
+
+    .table-number {
+        font-weight: bold;
+    }
+    
+    .table.window {
+        background-color: #e6f7ff;
+        border-color: #a6d8ff;
+    }
+
+    .table.window.selected {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+    
+    .table.window.unavailable {
+        background-color: #f8f8f8;
+        border-color: #ddd;
+    }
+
+    /* Kitchen and features */
+    .kitchen-area {
+        position: absolute;
+        top: 25px;
+        right: 25px;
+        width: 120px;
+        height: 60px;
+        background-color: #f1f1f1;
+        border: 2px solid #ddd;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 8px;
+        font-weight: 600;
+        color: #555;
+        font-size: 14px;
+    }
+
+    .feature-box {
+        padding: 10px;
+        background-color: white;
+        border-radius: 5px;
+        margin-bottom: 10px;
+        box-shadow: 0 3px 6px rgba(0,0,0,0.05);
+    }
+
+    .feature-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-right: 15px;
+        font-size: 12px;
+    }
+
+    .feature-indicator {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+    }
+
+    .feature-window .feature-indicator {
+        background-color: #e6f7ff;
+        border: 1px solid #a6d8ff;
+    }
+
+    .feature-selected .feature-indicator {
+        background-color: var(--primary-color);
+        border: 1px solid var(--primary-color);
+    }
+
+    .feature-unavailable .feature-indicator {
+        background-color: #f8f8f8;
+        border: 1px solid #ddd;
+    }
+
+    /* CTA button */
+    .btn-reserve {
+        background-color: var(--primary-color);
+        color: white;
+        padding: 12px 30px;
+        font-size: 15px;
+        border-radius: 50px;
+        border: none;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        box-shadow: 0 5px 15px rgba(178, 150, 116, 0.3);
+        transition: all 0.3s ease;
+        display: block;
+        width: 100%;
+    }
+
+    .btn-reserve:hover, .btn-reserve:focus {
+        background-color: #a38563;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(178, 150, 116, 0.4);
+    }
+
+    .btn-reserve:disabled {
+        background-color: #cccccc;
+        cursor: not-allowed;
+    }
+
+    /* Time Selection Tabs */
+    .time-tabs {
+        display: flex;
+        margin-bottom: 15px;
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1px solid #ddd;
+    }
+
+    .time-tab {
+        flex: 1;
+        text-align: center;
+        padding: 10px 5px;
+        background-color: #f8f8f8;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.3s;
+        color: #666;
+    }
+
+    .time-tab:hover {
+        background-color: #f1e7db;
+    }
+
+    .time-tab.active {
+        background-color: var(--primary-color);
+        color: white;
+    }
+
+    .time-tab:not(:last-child) {
+        border-right: 1px solid #ddd;
+    }
+
+    /* Landscape Layout */
+    .reservation-content {
+        display: flex;
+        flex-direction: row;
+        gap: 20px;
+        flex: 1;
+    }
+
+    .reservation-column {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Row flex layouts */
+    .form-row {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 10px;
+    }
+
+    .form-row > div {
+        flex: 1;
+    }
+
+    /* Responsive */
+    @@ media (max-width: 992px) {
+        .reservation-content {
+            flex-direction: column;
+        }
+        
+        .main-title {
+            font-size: 30px;
+        }
+        
+        .tables-container {
+            grid-template-columns: repeat(5, 1fr);
+        }
+    }
+
+    @@ media (max-width: 768px) {
+        .reservation-section {
+            padding: 30px 0;
+        }
+        
+        .form-row {
+            flex-direction: column;
+            gap: 0;
+        }
+        
+        .reservation-form {
+            padding: 20px;
+        }
+        
+        .tables-container {
+            grid-template-columns: repeat(4, 1fr);
+        }
+        
+        .kitchen-area {
+            position: relative;
+            top: auto;
+            right: auto;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+    }
+
+    @@ media (max-width: 576px) {
+        .tables-container {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
+    /* Terms checkbox */
+    .form-check-input {
+        width: 18px;
+        height: 18px;
+        margin-top: 0.25em;
+    }
+
+    .form-check-label {
+        margin-left: 10px;
+        font-size: 14px;
+    }
+
+    .venue-image {
+        width: 100%;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 10px;
+        margin-bottom: 15px;
+    }
+
+    .validation-summary-errors ul {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 20px 0;
+        color: var(--error-color);
+        background-color: rgba(220, 53, 69, 0.1);
+        padding: 15px;
+        border-radius: 8px;
+    }
+    
+    .field-validation-error {
+        color: var(--error-color);
+        font-size: 13px;
+        margin-top: -10px;
+        margin-bottom: 15px;
+        display: block;
+    }
+
+    .additional-info-toggle {
+        color: var(--primary-color);
+        font-weight: 600;
+        margin-bottom: 15px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+</style>
+
+<div class="reservation-section">
+    <div class="container">
+        <div class="reservation-header">
+            <h3 class="section-title">Fine Dining</h3>
+            <h1 class="main-title">Reserve Your Table</h1>
+            <p class="reservation-subtitle">Enjoy a memorable dining experience with exquisite cuisine throughout the day. Select your preferred meal time and table location to complete your reservation.</p>
+        </div>
+
+        <form asp-action="ReserveTable" method="post" id="reservationForm">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            
+            <div class="reservation-content">
+                <!-- Left Column - Personal Details & Reservation -->
+                <div class="reservation-column">
+                    <div class="reservation-form mb-4">
+                        <h3 class="reservation-form-title">Reservation Details</h3>
+                        
+                        <div class="form-row">
+                            <div>
+                                <label asp-for="FullName" class="form-label"></label>
+                                <input asp-for="FullName" class="form-control" placeholder="Enter your full name" />
+                                <span asp-validation-for="FullName" class="field-validation-error"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div>
+                                <label asp-for="Email" class="form-label"></label>
+                                <input asp-for="Email" class="form-control" placeholder="Enter your email address" />
+                                <span asp-validation-for="Email" class="field-validation-error"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div>
+                                <label asp-for="Phone" class="form-label"></label>
+                                <input asp-for="Phone" class="form-control" placeholder="Enter your phone number" />
+                                <span asp-validation-for="Phone" class="field-validation-error"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div>
+                                <label asp-for="NumberOfGuests" class="form-label"></label>
+                                <select asp-for="NumberOfGuests" class="form-control">
+                                    @for (int i = 1; i <= 10; i++)
+                                    {
+                                        <option value="@i">@i @(i == 1 ? "Guest" : "Guests")</option>
+                                    }
+                                </select>
+                                <span asp-validation-for="NumberOfGuests" class="field-validation-error"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div>
+                                <label asp-for="ReservationDate" class="form-label"></label>
+                                <input asp-for="ReservationDate" type="date" class="form-control" min="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                                <span asp-validation-for="ReservationDate" class="field-validation-error"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div>
+                                <label for="mealTimeTabs" class="form-label">Meal Time</label>
+                                <div id="mealTimeTabs" class="time-tabs">
+                                    <div class="time-tab" data-meal="breakfast">Breakfast</div>
+                                    <div class="time-tab" data-meal="lunch">Lunch</div>
+                                    <div class="time-tab active" data-meal="dinner">Dinner</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div>
+                                <label asp-for="ReservationTime" class="form-label"></label>
+                                <select asp-for="ReservationTime" class="form-control" id="timeSelect">
+                                    <!-- Time options will be populated by JavaScript based on meal time -->
+                                </select>
+                                <span asp-validation-for="ReservationTime" class="field-validation-error"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div>
+                                <label asp-for="Venue" class="form-label"></label>
+                                <select asp-for="Venue" class="form-control" id="venueSelect">
+                                    <option value="">Select a dining venue</option>
+                                    <option value="The Grand Restaurant">The Grand Restaurant</option>
+                                </select>
+                                <span asp-validation-for="Venue" class="field-validation-error"></span>
+                            </div>
+                        </div>
+
+                        <div class="venue-preview mt-3" style="display:none;">
+                            <img id="venueImage" class="venue-image" src="" alt="Venue image" />
+                        </div>
+                        
+                        <div class="additional-info-toggle mt-4" id="additionalInfoToggle">
+                            <i class="fas fa-plus-circle"></i>
+                            <span>Add Additional Information</span>
+                        </div>
+                        
+                        <!-- Optional Fields Section -->
+                        <div id="additionalInfoContainer" style="display:none;">
+                            <div class="form-row">
+                                <div>
+                                    <label asp-for="Occasion" class="form-label"></label>
+                                    <select asp-for="Occasion" class="form-control">
+                                        <option value="">Select an occasion (optional)</option>
+                                        <option value="None">None / Regular Dining</option>
+                                        <option value="Birthday">Birthday</option>
+                                        <option value="Anniversary">Anniversary</option>
+                                        <option value="Business">Business Meeting</option>
+                                        <option value="Date">Date Night</option>
+                                        <option value="Celebration">Celebration</option>
+                                    </select>
+                                    <!-- No validation span needed for optional field -->
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div>
+                                    <label asp-for="DietaryRestrictions" class="form-label"></label>
+                                    <textarea asp-for="DietaryRestrictions" class="form-control" rows="2"
+                                              placeholder="Please inform us of any allergies or dietary restrictions (optional)"></textarea>
+                                    <!-- No validation span needed for optional field -->
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div>
+                                    <label asp-for="SpecialRequests" class="form-label"></label>
+                                    <textarea asp-for="SpecialRequests" class="form-control" rows="2"
+                                              placeholder="Any special requests or preferences for your dining experience (optional)"></textarea>
+                                    <!-- No validation span needed for optional field -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row mt-3">
+                            <div>
+                                <div class="form-check">
+                                    <input asp-for="AgreeToTerms" class="form-check-input" />
+                                    <label asp-for="AgreeToTerms" class="form-check-label">
+                                        I agree to the terms and conditions for reservations.
+                                    </label>
+                                </div>
+                                <span asp-validation-for="AgreeToTerms" class="field-validation-error"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column - Table Selection -->
+                <div class="reservation-column">
+                    <div class="reservation-form" id="tableSelectionSection" style="display:none;">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h3 class="reservation-form-title mb-0">Select Your Table</h3>
+                            <div id="mealTimeDisplay" class="meal-time-indicator">Dinner</div>
+                        </div>
+                        
+                        <div class="dining-hall">
+                            <div class="stage-area">
+                                <span class="stage-label">Live Music Stage</span>
+                            </div>
+                            
+                            <div class="kitchen-area">
+                                <i class="fas fa-utensils me-2"></i> Kitchen
+                            </div>
+                            
+                            <div class="tables-container">
+                                <!-- Tables will be generated dynamically by JavaScript -->
+                            </div>
+                            
+                            <div class="d-flex flex-wrap justify-content-center mb-3">
+                                <div class="feature-label">
+                                    <span class="feature-indicator"></span>
+                                    Regular
+                                </div>
+                                <div class="feature-label feature-window">
+                                    <span class="feature-indicator"></span>
+                                    Window
+                                </div>
+                                <div class="feature-label feature-selected">
+                                    <span class="feature-indicator"></span>
+                                    Selected
+                                </div>
+                                <div class="feature-label feature-unavailable">
+                                    <span class="feature-indicator"></span>
+                                    Unavailable
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <input type="hidden" asp-for="TableNumber" id="selectedTable" />
+                            <span asp-validation-for="TableNumber" class="field-validation-error"></span>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-reserve" id="reserveButton" disabled>
+                            <i class="fas fa-calendar-check me-2"></i> Complete Reservation
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tableSelectionSection = document.getElementById('tableSelectionSection');
+            const venueSelect = document.getElementById('venueSelect');
+            const venuePreview = document.querySelector('.venue-preview');
+            const venueImage = document.getElementById('venueImage');
+            const tablesContainer = document.querySelector('.tables-container');
+            const selectedTableInput = document.getElementById('selectedTable');
+            const reserveButton = document.getElementById('reserveButton');
+            const reservationDateInput = document.getElementById('ReservationDate');
+            const timeSelect = document.getElementById('timeSelect');
+            const mealTimeTabs = document.querySelectorAll('.time-tab');
+            const mealTimeDisplay = document.getElementById('mealTimeDisplay');
+            const additionalInfoToggle = document.getElementById('additionalInfoToggle');
+            const additionalInfoContainer = document.getElementById('additionalInfoContainer');
+            
+            // Make sure additional fields are not required
+            makeAdditionalFieldsOptional();
+            
+            // Define venue images
+            const venueImages = {
+                'The Grand Restaurant': '/images/grand-hotel-restaurant.jpg',
+            };
+            
+            // Define table layouts per venue
+            const venueLayouts = {
+                'The Grand Restaurant': {
+                    rows: 4,
+                    cols: 8, // Increased columns for landscape layout
+                    windowTables: [7, 15, 23, 31], // Tables by the window (right side)
+                    specialTables: [] // Any other special tables
+                }
+            };
+            
+            // Define time options based on meal time
+            const mealTimes = {
+                'breakfast': [
+                    { value: '07:00', display: '7:00 AM' },
+                    { value: '08:00', display: '8:00 AM' },
+                    { value: '09:00', display: '9:00 AM' },
+                    { value: '10:00', display: '10:00 AM' },
+                    { value: '11:00', display: '11:00 AM' }
+                ],
+                'lunch': [
+                    { value: '12:00', display: '12:00 PM' },
+                    { value: '13:00', display: '1:00 PM' },
+                    { value: '14:00', display: '2:00 PM' },
+                    { value: '15:00', display: '3:00 PM' },
+                    { value: '16:00', display: '4:00 PM' },
+                    { value: '17:00', display: '5:00 PM' }
+                ],
+                'dinner': [
+                    { value: '18:00', display: '6:00 PM' },
+                    { value: '19:00', display: '7:00 PM' },
+                    { value: '20:00', display: '8:00 PM' },
+                    { value: '21:00', display: '9:00 PM' }
+                ]
+            };
+            
+            // Function to make additional information fields optional
+            function makeAdditionalFieldsOptional() {
+                // Get the optional fields
+                const occasionField = document.getElementById('Occasion');
+                const dietaryRestrictionsField = document.getElementById('DietaryRestrictions');
+                const specialRequestsField = document.getElementById('SpecialRequests');
+                
+                // Remove any data-val attributes that might make them required
+                if (occasionField) {
+                    occasionField.removeAttribute('data-val-required');
+                    occasionField.setAttribute('data-val', 'false');
+                }
+                
+                if (dietaryRestrictionsField) {
+                    dietaryRestrictionsField.removeAttribute('data-val-required');
+                    dietaryRestrictionsField.setAttribute('data-val', 'false');
+                }
+                
+                if (specialRequestsField) {
+                    specialRequestsField.removeAttribute('data-val-required');
+                    specialRequestsField.setAttribute('data-val', 'false');
+                }
+            }
+            
+            // Toggle additional information section
+            additionalInfoToggle.addEventListener('click', function() {
+                const isHidden = additionalInfoContainer.style.display === 'none';
+                additionalInfoContainer.style.display = isHidden ? 'block' : 'none';
+                
+                // Update toggle text and icon
+                const toggleIcon = this.querySelector('i');
+                const toggleText = this.querySelector('span');
+                
+                if (isHidden) {
+                    toggleIcon.className = 'fas fa-minus-circle';
+                    toggleText.textContent = 'Hide Additional Information';
+                } else {
+                    toggleIcon.className = 'fas fa-plus-circle';
+                    toggleText.textContent = 'Add Additional Information';
+                }
+            });
+            
+            // Update time options based on meal time
+            function updateTimeOptions(mealTime) {
+                // Clear existing options
+                timeSelect.innerHTML = '';
+                
+                // Add default option
+                const defaultOption = document.createElement('option');
+                defaultOption.value = '';
+                defaultOption.textContent = 'Select a time';
+                timeSelect.appendChild(defaultOption);
+                
+                // Add time options based on meal time
+                if (mealTime && mealTimes[mealTime]) {
+                    mealTimes[mealTime].forEach(time => {
+                        const option = document.createElement('option');
+                        option.value = time.value;
+                        option.textContent = time.display;
+                        timeSelect.appendChild(option);
+                    });
+                    
+                    // Set a default selection (middle of the time range)
+                    const midIndex = Math.floor(mealTimes[mealTime].length / 2);
+                    timeSelect.value = mealTimes[mealTime][midIndex].value;
+                }
+                
+                // Update meal time display
+                mealTimeDisplay.textContent = mealTime.charAt(0).toUpperCase() + mealTime.slice(1);
+            }
+            
+            // Handle meal time tab selection
+            mealTimeTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Remove active class from all tabs
+                    mealTimeTabs.forEach(t => t.classList.remove('active'));
+                    
+                    // Add active class to clicked tab
+                    this.classList.add('active');
+                    
+                    // Update time options
+                    const mealTime = this.dataset.meal;
+                    updateTimeOptions(mealTime);
+                    
+                    // Clear table selection when meal time changes
+                    if (selectedTableInput.value) {
+                        selectedTableInput.value = '';
+                        document.querySelectorAll('.table.selected').forEach(t => {
+                            t.classList.remove('selected');
+                        });
+                        reserveButton.disabled = true;
+                    }
+                    
+                    // Check availability if venue is selected
+                    if (venueSelect.value) {
+                        checkAvailability();
+                    }
+                });
+            });
+            
+            // Handle venue selection
+            venueSelect.addEventListener('change', function() {
+                const selectedVenue = this.value;
+                
+                if (selectedVenue) {
+                    // Show venue image
+                    venuePreview.style.display = 'block';
+                    venueImage.src = venueImages[selectedVenue] || '/images/default-venue.jpg';
+                    
+                    // Show table selection section
+                    tableSelectionSection.style.display = 'block';
+                    
+                    // Generate tables for the selected venue
+                    generateTables(selectedVenue);
+                    
+                    // Check availability after generating tables
+                    checkAvailability();
+                } else {
+                    venuePreview.style.display = 'none';
+                    tableSelectionSection.style.display = 'none';
+                }
+            });
+            
+            // Generate tables based on the venue
+            function generateTables(venue) {
+                tablesContainer.innerHTML = '';
+                
+                if (!venueLayouts[venue]) return;
+                
+                const layout = venueLayouts[venue];
+                const totalTables = layout.rows * layout.cols;
+                
+                for (let i = 0; i < totalTables; i++) {
+                    const table = document.createElement('div');
+                    table.className = 'table';
+                    if (layout.windowTables.includes(i)) {
+                        table.classList.add('window');
+                    }
+                    
+                    const tableNumber = i + 1;
+                    table.dataset.table = tableNumber;
+                    
+                    table.innerHTML = `<span class="table-number">${tableNumber}</span>`;
+                    
+                    table.addEventListener('click', function() {
+                        if (this.classList.contains('unavailable')) {
+                            return; // Cannot select unavailable tables
+                        }
+                        
+                        // Deselect all tables
+                        document.querySelectorAll('.table.selected').forEach(t => {
+                            t.classList.remove('selected');
+                        });
+                        
+                        // Select this table
+                        this.classList.add('selected');
+                        selectedTableInput.value = this.dataset.table;
+                        
+                        // Enable the reserve button if a table is selected
+                        reserveButton.disabled = false;
+                    });
+                    
+                    tablesContainer.appendChild(table);
+                }
+            }
+            
+            // Check availability of tables
+            function checkAvailability() {
+                const venue = venueSelect.value;
+                const date = reservationDateInput.value;
+                const time = timeSelect.value;
+                const activeMealTab = document.querySelector('.time-tab.active');
+                const mealTime = activeMealTab ? activeMealTab.dataset.meal : 'dinner';
+                
+                if (!venue || !date || !time) return;
+                
+                // Reset table selections
+                selectedTableInput.value = '';
+                reserveButton.disabled = true;
+                
+                // Make all tables available first
+                document.querySelectorAll('.table').forEach(table => {
+                    table.classList.remove('unavailable', 'selected');
+                });
+                
+                // Fetch reserved tables from server
+                fetch(`/Dining/CheckAvailability?date=${date}&time=${time}&venue=${encodeURIComponent(venue)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const reservedTables = data.reservedTables || [];
+                        
+                        // Mark reserved tables as unavailable
+                        reservedTables.forEach(tableNumber => {
+                            const tableElement = document.querySelector(`.table[data-table="${tableNumber}"]`);
+                            if (tableElement) {
+                                tableElement.classList.add('unavailable');
+                            }
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error checking availability:', error);
+                    });
+            }
+            
+            // Check availability when date or time changes
+            reservationDateInput.addEventListener('change', checkAvailability);
+            timeSelect.addEventListener('change', checkAvailability);
+            
+            // Initialize meal time options on page load
+            const initialMealTime = 'dinner'; // Default to dinner
+            updateTimeOptions(initialMealTime);
+            
+            // Initialize placeholder images
+            venueImages['The Grand Restaurant'] = venueImages['The Grand Restaurant'] || '/img/placeholder/600/400';
+            
+            // Form validation
+            const form = document.getElementById('reservationForm');
+            form.addEventListener('submit', function(event) {
+                // Only validate the table selection if the table section is visible
+                if (!selectedTableInput.value && tableSelectionSection.style.display !== 'none') {
+                    event.preventDefault();
+                    
+                    // Show error for table selection
+                    const tableErrorElement = document.querySelector('[data-valmsg-for="TableNumber"]');
+                    if (tableErrorElement) {
+                        tableErrorElement.textContent = 'Please select a table';
+                    }
+                    
+                    // Scroll to the table selection section
+                    tableSelectionSection.scrollIntoView({ behavior: 'smooth' });
+                }
+                
+                // Do not validate additional fields if they are hidden
+                if (additionalInfoContainer.style.display === 'none') {
+                    // Clear any validation errors for hidden additional fields
+                    const additionalFieldsValidation = additionalInfoContainer.querySelectorAll('.field-validation-error');
+                    additionalFieldsValidation.forEach(error => {
+                        error.textContent = '';
+                    });
+                }
+            });
+        });
+    </script>
+}

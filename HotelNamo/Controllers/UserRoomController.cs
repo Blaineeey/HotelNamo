@@ -24,7 +24,6 @@ namespace HotelNamo.Controllers
                 .Include(r => r.RoomImages)
                 .Include(r => r.RoomAmenities).ThenInclude(ra => ra.Amenity)
                 .Include(r => r.Feedbacks)
-                .Where(r => r.Status == "Vacant")
                 .ToList();
 
             return View(rooms);
