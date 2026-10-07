@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using System.Threading.Tasks;
 using System.Linq;
-using System;
 
 namespace HotelNamo.Controllers
 {
@@ -51,31 +50,22 @@ namespace HotelNamo.Controllers
             if (result.Succeeded)
             {
                 var roles = await _userManager.GetRolesAsync(user);
-                bool IsIn(string roleName) => roles.Any(r => string.Equals(r, roleName, StringComparison.OrdinalIgnoreCase));
 
-                if (IsIn("Admin"))
+                if (roles.Contains("Admin"))
                 {
                     return RedirectToAction("AdminHome", "Home");
                 }
-                else if (IsIn("FrontDesk"))
+                else if (roles.Contains("FrontDesk"))
                 {
                     return RedirectToAction("Bookings", "FrontDesk");
                 }
-                else if (IsIn("Housekeeping") || IsIn("HouseKeeping"))
+                else if (roles.Contains("Housekeeping"))  // ✅ Redirect housekeeping staff
                 {
                     return RedirectToAction("Dashboard", "Housekeeping");
                 }
-                else if (IsIn("Maintenance"))
-                {
-                    return RedirectToAction("Dashboard", "Maintenance");
-                }
-                else if (IsIn("User"))
-                {
-                    return RedirectToAction("UserHome", "Home");
-                }
                 else
                 {
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("UserHome", "Home");
                 }
             }
 

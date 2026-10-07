@@ -47,24 +47,12 @@ namespace HotelNamo.Data
                 .HasForeignKey(ht => ht.AssignedStaffId)
                 .OnDelete(DeleteBehavior.SetNull);  // ✅ Fix: Set null instead of requiring a value
 
+
             builder.Entity<Feedback>()
                 .HasOne(f => f.User)
                 .WithMany()
                 .HasForeignKey(f => f.UserId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            builder.Entity<Feedback>()
-                .HasOne(f => f.Booking)
-                .WithOne(b => b.Feedback)
-                .HasForeignKey<Feedback>(f => f.BookingId)
                 .OnDelete(DeleteBehavior.Cascade);
-
-            builder.Entity<Feedback>()
-                .HasOne(f => f.Room)
-                .WithMany(r => r.Feedbacks)
-                .HasForeignKey(f => f.RoomId)
-                .OnDelete(DeleteBehavior.Restrict);
-
             // Explicitly define composite primary key clearly:
             builder.Entity<RoomAmenity>()
                 .HasKey(ra => new { ra.RoomId, ra.AmenityId });

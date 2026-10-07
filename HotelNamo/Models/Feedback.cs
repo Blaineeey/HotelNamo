@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+
 namespace HotelNamo.Models
 {
     public class Feedback
@@ -9,13 +10,7 @@ namespace HotelNamo.Models
         public int Id { get; set; }
 
         [Required]
-        public string UserId { get; set; } // User who submitted the feedback
-
-        [Required]
-        public int BookingId { get; set; } // Required booking reference
-
-        [Required]
-        public int RoomId { get; set; } // Required room reference
+        public string UserId { get; set; } // ✅ Ensures UserId is required
 
         [Required]
         [Range(1, 5)]
@@ -23,18 +18,12 @@ namespace HotelNamo.Models
 
         [Required]
         [MaxLength(500)]
-        public string Review { get; set; } // Feedback content
+        public string Review { get; set; } // ✅ Ensures Review exists
 
-        public DateTime DateSubmitted { get; set; } = DateTime.UtcNow;
+        public DateTime DateSubmitted { get; set; } = DateTime.UtcNow; // ✅ Ensures DateSubmitted exists
 
-        // Navigation properties
+        // ✅ Relationship with User
         [ForeignKey("UserId")]
         public ApplicationUser? User { get; set; }
-
-        [ForeignKey("BookingId")]
-        public Booking? Booking { get; set; }
-
-        [ForeignKey("RoomId")]
-        public Room? Room { get; set; }
     }
 }

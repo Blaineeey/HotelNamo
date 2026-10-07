@@ -22,29 +22,18 @@ namespace HotelNamo.Controllers
         [HttpGet]
         public IActionResult Create(int? roomId)
         {
-            // ✅ Fetch only rooms that are not already booked or occupied
-            var bookedRoomIds = _context.Bookings
-                .Where(b => b.IsConfirmed || (b.CheckInDate <= DateTime.Today && b.CheckOutDate >= DateTime.Today))
-                .Select(b => b.RoomId)
-                .ToList();
-
-            ViewBag.Rooms = _context.Rooms
-                .Where(r => r.Status == "Vacant" && !bookedRoomIds.Contains(r.Id))
-                .ToList();
-
+            ViewBag.Rooms = _context.Rooms.Where(r => r.Status == "Vacant").ToList();
             var model = new BookingViewModel
             {
                 RoomId = roomId ?? 0,
                 CheckInDate = DateTime.Today,
                 CheckOutDate = DateTime.Today.AddDays(1)
             };
-
             return View(model);
         }
 
-
         [HttpPost]
-        public async Task<IActionResult> Create(BookingViewModel vm)
+        public IActionResult Create(BookingViewModel vm)
         {
             if (!ModelState.IsValid)
             {
@@ -59,57 +48,40 @@ namespace HotelNamo.Controllers
                 return View(vm);
             }
 
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-                return RedirectToAction("Login", "Account");
-
             var room = _context.Rooms.Find(vm.RoomId);
             int totalDays = (vm.CheckOutDate - vm.CheckInDate).Days;
             decimal totalPrice = totalDays * room.Price;
 
-            // ✅ Check if a pending booking already exists
-            var existingBooking = await _context.Bookings
-                .FirstOrDefaultAsync(b => b.RoomId == vm.RoomId && b.UserId == user.Id &&
-                                          b.CheckInDate == vm.CheckInDate && b.CheckOutDate == vm.CheckOutDate &&
-                                          !b.IsConfirmed);
+            TempData["RoomId"] = vm.RoomId;
+            TempData["CheckInDate"] = vm.CheckInDate.ToString("yyyy-MM-dd");
+            TempData["CheckOutDate"] = vm.CheckOutDate.ToString("yyyy-MM-dd");
+            TempData["SpecialRequests"] = vm.SpecialRequests;
+            TempData["TotalPrice"] = totalPrice.ToString(); // Store explicitly as string
 
-            if (existingBooking == null)
-            {
-                var booking = new Booking
-                {
-                    RoomId = vm.RoomId,
-                    UserId = user.Id,
-                    CheckInDate = vm.CheckInDate,
-                    CheckOutDate = vm.CheckOutDate,
-                    SpecialRequests = vm.SpecialRequests,
-                    TotalPrice = totalPrice,
-                    CreatedDate = DateTime.Now,
-                    IsConfirmed = false
-                };
-
-                _context.Bookings.Add(booking);
-                await _context.SaveChangesAsync();
-                existingBooking = booking;
-            }
-
-            // ✅ Redirect to Payment Page with the correct booking ID
-            return RedirectToAction("Pay", "Payment", new { bookingId = existingBooking.Id });
+            return RedirectToAction("Confirm");
         }
 
-
-        public async Task<IActionResult> Confirm()
+        public IActionResult Confirm()
         {
-            if (!TempData.ContainsKey("BookingId"))
+            if (TempData["RoomId"] == null)
                 return RedirectToAction("Create");
 
-            var bookingId = Convert.ToInt32(TempData["BookingId"]);
+            var roomId = Convert.ToInt32(TempData["RoomId"]);
+            var checkIn = DateTime.Parse(TempData["CheckInDate"].ToString()!);
+            var checkOut = DateTime.Parse(TempData["CheckOutDate"].ToString()!);
+            var specialRequests = TempData["SpecialRequests"]?.ToString();
+            decimal totalPrice = decimal.Parse(TempData["TotalPrice"].ToString()!);
 
-            var booking = await _context.Bookings
-                .Include(b => b.Room)
-                .FirstOrDefaultAsync(b => b.Id == bookingId && !b.IsConfirmed);
-
-            if (booking == null)
-                return RedirectToAction("MyBookings");
+            var booking = new Booking
+            {
+                RoomId = roomId,
+                CheckInDate = checkIn,
+                CheckOutDate = checkOut,
+                SpecialRequests = specialRequests,
+                TotalPrice = totalPrice,
+                IsConfirmed = false, // Ensure it remains pending
+                Room = _context.Rooms.Find(roomId)!
+            };
 
             TempData.Keep();
 
@@ -117,35 +89,43 @@ namespace HotelNamo.Controllers
         }
 
 
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ConfirmBooking()
         {
-            if (!TempData.ContainsKey("BookingId"))
+            if (!TempData.ContainsKey("RoomId"))
                 return RedirectToAction("Create");
 
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
                 return RedirectToAction("Login", "Account");
 
-            var bookingId = Convert.ToInt32(TempData["BookingId"]);
+            var roomId = Convert.ToInt32(TempData["RoomId"]);
+            var checkIn = DateTime.Parse(TempData["CheckInDate"].ToString()!);
+            var checkOut = DateTime.Parse(TempData["CheckOutDate"].ToString()!);
+            var specialRequests = TempData["SpecialRequests"]?.ToString();
+            decimal totalPrice = decimal.Parse(TempData["TotalPrice"].ToString()!);
 
-            var booking = await _context.Bookings
-                .Include(b => b.Room)
-                .FirstOrDefaultAsync(b => b.Id == bookingId && b.UserId == user.Id && !b.IsConfirmed);
-
-            if (booking != null)
+            var booking = new Booking
             {
-                booking.IsConfirmed = true;
+                RoomId = roomId,
+                UserId = user.Id,
+                CheckInDate = checkIn,
+                CheckOutDate = checkOut,
+                SpecialRequests = specialRequests,
+                TotalPrice = totalPrice,
+                CreatedDate = DateTime.Now,
+                IsConfirmed = false // Booking remains pending
+            };
 
-                // ✅ Update Room Status to "Occupied"
-                var room = await _context.Rooms.FindAsync(booking.RoomId);
-                if (room != null)
-                {
-                    room.Status = "Occupied";
-                }
+            _context.Bookings.Add(booking);
+            await _context.SaveChangesAsync();
 
+            // **Update room status to "Reserved" after booking**
+            var room = await _context.Rooms.FindAsync(roomId);
+            if (room != null)
+            {
+                room.Status = "Reserved";
                 await _context.SaveChangesAsync();
             }
 

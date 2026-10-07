@@ -48,8 +48,22 @@ namespace HotelNamo.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ProcessPayment(Payment payment)
         {
+            Console.WriteLine("🚀 Payment process started...");
+
+            // Debug: Log ModelState errors
             if (!ModelState.IsValid)
             {
+                Console.WriteLine("❌ Invalid ModelState - Returning to payment page");
+
+                foreach (var key in ModelState.Keys)
+                {
+                    var errors = ModelState[key].Errors;
+                    foreach (var error in errors)
+                    {
+                        Console.WriteLine($"🔴 Error in {key}: {error.ErrorMessage}");
+                    }
+                }
+
                 return View("Pay", payment);
             }
 
@@ -59,25 +73,37 @@ namespace HotelNamo.Controllers
 
             if (booking == null)
             {
+                Console.WriteLine("❌ Booking not found!");
                 ModelState.AddModelError("", "Booking not found.");
                 return View("Pay", payment);
             }
 
-            // ✅ Process payment
+            Console.WriteLine($"🔍 Processing payment for Booking ID: {booking.Id}, Amount: {payment.Amount}");
+
+            // Simulate successful transaction
             payment.IsPaid = true;
             payment.TransactionId = Guid.NewGuid().ToString();
             payment.PaymentDate = DateTime.Now;
 
             _context.Payments.Add(payment);
+
+            // ✅ Confirm booking after payment
+            booking.IsConfirmed = true;
+            Console.WriteLine("✅ Booking status changed to Confirmed");
+
+            // ✅ Update room status
+            if (booking.Room != null)
+            {
+                booking.Room.Status = "Occupied";
+                Console.WriteLine($"🏠 Room {booking.Room.RoomNumber} marked as Occupied");
+            }
+
             await _context.SaveChangesAsync();
+            Console.WriteLine("✅ Database changes saved successfully");
 
-            // ✅ Store Booking ID to use in Confirm step
-            TempData["BookingId"] = booking.Id;
-
-            // ✅ Redirect to Confirm Page after successful payment
-            return RedirectToAction("Confirm", "Booking");
+            // ✅ Redirect back to MyBookings after payment
+            return RedirectToAction("MyBookings", "Booking");
         }
-
 
     }
 }
