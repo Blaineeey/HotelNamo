@@ -1,238 +1,411 @@
-﻿﻿@{
-    Layout = "_UserLayout";
-    ViewData["Title"] = "Welcome to HotelNamo";
+﻿@{
+    ViewData["Title"] = "Home Page";
 }
-<link rel="stylesheet" href="~/css/home-style.css" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Montana</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<div class="hero-section text-center text-white py-5">
-    <h1 class="display-4">Welcome to HotelNamo</h1>
-    <p class="lead">Experience comfort and luxury at an affordable price.</p>
-    <p>Discover an unforgettable stay with premium rooms and top-notch amenities.</p>
-    <div class="button-group d-inline-flex gap-2">
-        <a class="btn btn-primary btn-lg px-4" asp-controller="UserRoom" asp-action="Index">View Rooms</a>
-        <a class="btn btn-outline-dark btn-lg px-4" asp-controller="Home" asp-action="About">Learn More</a>
+    <!-- <link rel="manifest" href="site.webmanifest"> -->
+    <link rel="shortcut icon" type="image/x-icon" href="img/favicon.png">
+    <!-- Place favicon.ico in the root directory -->
+    <!-- CSS here -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/owl.carousel.min.css">
+    <link rel="stylesheet" href="css/magnific-popup.css">
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/themify-icons.css">
+    <link rel="stylesheet" href="css/nice-select.css">
+    <link rel="stylesheet" href="css/flaticon.css">
+    <link rel="stylesheet" href="css/gijgo.css">
+    <link rel="stylesheet" href="css/animate.css">
+    <link rel="stylesheet" href="css/slicknav.css">
+    <link rel="stylesheet" href="css/style.css">
+    <!-- <link rel="stylesheet" href="css/responsive.css"> -->
+</head>
+
+<div class="slider_area">
+    <div class="slider_active owl-carousel">
+        <div class="single_slider d-flex align-items-center justify-content-center slider_bg_1">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="slider_text text-center">
+                            <h3>Montana Resort</h3>
+                            <p>Unlock to enjoy the view of Martine</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="single_slider  d-flex align-items-center justify-content-center slider_bg_2">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="slider_text text-center">
+                            <h3>Life is Beautiful</h3>
+                            <p>Unlock to enjoy the view of Martine</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="single_slider d-flex align-items-center justify-content-center slider_bg_1">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="slider_text text-center">
+                            <h3>Montana Resort</h3>
+                            <p>Unlock to enjoy the view of Martine</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="single_slider  d-flex align-items-center justify-content-center slider_bg_2">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="slider_text text-center">
+                            <h3>Life is Beautiful</h3>
+                            <p>Unlock to enjoy the view of Martine</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
-
-<div class="container my-5">
-    <div class="row align-items-center">
-        <div class="col-md-6">
-            <h2 class="about-title">About Us</h2>
-            <h1 class="about-heading">Unwind A Hotel Booking Agency</h1>
-            <p class="about-description">
-                HotelNamo is your home away from home. Enjoy our deluxe, suite,
-                and standard rooms for all types of travelers. Our friendly staff
-                and modern amenities ensure a wonderful stay. Far far away, behind the word
-                mountains, far from the countries Vokalia and Consonantia, there live the blind texts.
-                Separated they live in Bookmarksgrove right at the coast of the Semantics,
-                a large language ocean.
-            </p>
-            <a class="btn btn-about px-4" asp-controller="Home" asp-action="About">Book Your Room Now</a>
-        </div>
-        <div class="col-md-6">
-            <img src="~/images/rooms/superior-room.jpg" class="img-fluid rounded shadow" alt="Hotel Lobby" />
-        </div>
-    </div>
-</div>
-
-<div class="container my-5">
-    <h2 class="text-center mb-4">Explore Our Hotel Services</h2>
-    <div class="row justify-content-center">
-        <div class="col-auto service-icon">
-            <div class="icon-wrapper">
-                <i class="fas fa-wifi"></i>
-            </div>
-            <p>Free Wifi</p>
-        </div>
-        <div class="col-auto service-icon">
-            <div class="icon-wrapper">
-                <i class="fas fa-concierge-bell"></i>
-            </div>
-            <p>Easy Booking</p>
-        </div>
-        <div class="col-auto service-icon">
-            <div class="icon-wrapper">
-                <i class="fas fa-utensils"></i>
-            </div>
-            <p>Restaurant</p>
-        </div>
-        <div class="col-auto service-icon">
-            <div class="icon-wrapper active">
-                <i class="fas fa-spa"></i>
-            </div>
-            <p>Beauty & Health</p>
-        </div>
-        <div class="col-auto service-icon">
-            <div class="icon-wrapper">
-                <i class="fas fa-swimmer"></i>
-            </div>
-            <p>Swimming Pool</p>
-        </div>
-        <div class="col-auto service-icon">
-            <div class="icon-wrapper">
-                <i class="fas fa-hands-helping"></i>
-            </div>
-            <p>Help & Support</p>
-        </div>
-    </div>
-</div>
-
-
-<div class="offers-section text-center py-5">
-    <h2 class="display-5 mb-5">Ongoing Offers</h2>
+<!-- slider_area_end -->
+<!-- about_area_start -->
+<div class="about_area">
     <div class="container">
-        <div class="row justify-content-center gap-3">
-            <div class="col-md-3">
-                <div class="card h-100">
-                    <img src="~/images/rooms/superior-room.jpg" class="card-img-top" alt="Offer Image">
-                    <div class="card-body">
-                        <h4 class="card-title">Up to 35% savings on Club rooms and Suites</h4>
-                        <ul class="list-unstyled text-muted">
-                            <li>• Luxuries condition</li>
-                            <li>• 3 Adults & 2 Children size</li>
-                            <li>• Sea view side</li>
-                        </ul>
-                        <a href="#" class="btn btn-outline-primary">Book Now</a>
+        <div class="row">
+            <div class="col-xl-5 col-lg-5">
+                <div class="about_info">
+                    <div class="section_title mb-20px">
+                        <span>About Us</span>
+                        <h3>
+                            A Luxuries Hotel <br>
+                            with Nature
+                        </h3>
                     </div>
+                    <p>
+                        Suscipit libero pretium nullam potenti. Interdum, blandit phasellus consectetuer dolor ornare
+                        dapibus enim ut tincidunt rhoncus tellus sollicitudin pede nam maecenas, dolor sem. Neque
+                        sollicitudin enim. Dapibus lorem feugiat facilisi faucibus et. Rhoncus.
+                    </p>
+                    <a href="#" class="line-button">Learn More</a>
                 </div>
             </div>
-
-            <div class="col-md-3">
-                <div class="card h-100">
-                    <img src="~/images/rooms/single-room.jpg" class="card-img-top" alt="Offer Image">
-                    <div class="card-body">
-                        <h4 class="card-title">Up to 35% savings on Club rooms and Suites</h4>
-                        <ul class="list-unstyled text-muted">
-                            <li>• Luxuries condition</li>
-                            <li>• 3 Adults & 2 Children size</li>
-                            <li>• Sea view side</li>
-                        </ul>
-                        <a href="#" class="btn btn-outline-primary">Book Now</a>
+            <div class="col-xl-7 col-lg-7">
+                <div class="about_thumb d-flex">
+                    <div class="img_1">
+                        <img src="img/about/about_1.png" alt="">
                     </div>
-                </div>
-            </div>
-
-            <div class="col-md-3">
-                <div class="card h-100">
-                    <img src="~/images/rooms/superior-room.jpg" class="card-img-top" alt="Offer Image">
-                    <div class="card-body">
-                        <h4 class="card-title">Up to 35% savings on Club rooms and Suites</h4>
-                        <ul class="list-unstyled text-muted">
-                            <li>• Luxuries condition</li>
-                            <li>• 3 Adults & 2 Children size</li>
-                            <li>• Sea view side</li>
-                        </ul>
-                        <a href="#" class="btn btn-outline-primary">Book Now</a>
+                    <div class="img_2">
+                        <img src="img/about/about_2.png" alt="">
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-<section class="contact-section text-center py-5">
-    <div class="contact-overlay">
-        <h2 class="display-5 mb-4">Contact Us & Reservations</h2>
-        <p class="lead">Reach out to us for bookings, inquiries, or any assistance.</p>
-        <div class="container">
-            <div class="row justify-content-center gap-3">
-                <div class="col-md-4">
-                    <div class="contact-info">
-                        <i class="fas fa-phone-alt fa-2x mb-2"></i>
-                        <h4>Call Us</h4>
-                        <p>+1 (234) 567-8901</p>
-                    </div>
+<!-- about_area_end -->
+<!-- offers_area_start -->
+<div class="offers_area">
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="section_title text-center mb-100">
+                    <span>Our Offers</span>
+                    <h3>Ongoing Offers</h3>
                 </div>
-                <div class="col-md-4">
-                    <div class="contact-info">
-                        <i class="fas fa-envelope fa-2x mb-2"></i>
-                        <h4>Email Us</h4>
-                        <p>info@hotelnamo.com</p>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="contact-info">
-                        <i class="fas fa-map-marker-alt fa-2x mb-2"></i>
-                        <h4>Visit Us</h4>
-                        <p>1234 Paradise Road, Beach City</p>
-                    </div>
-                </div>
-            </div>
-            <div class="mt-4">
-                <a class="btn btn-primary btn-lg px-4" asp-controller="Reservation" asp-action="Index">Make a Reservation</a>
             </div>
         </div>
-    </div>
-</section>
-
-
-<section class="testimonial-section">
-    <h3 class="section-title">Testimonial</h3>
-    <h1 class="main-title">Happy Guests</h1>
-    <div class="testimonial-container">
-        <div class="testimonial-card">
-            <img src="~/images/lesterpic.jpg" alt="Roger Scott" class="profile-image">
-            <h3 class="name">Roger Scott</h3>
-            <p class="role">MARKETING MANAGER</p>
-            <p class="quote">
-                "Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts."
-            </p>
-        </div>
-        <div class="testimonial-card">
-            <img src="~/images/lesterpic.jpg" alt="Roger Scott" class="profile-image">
-            <h3 class="name">Roger Scott</h3>
-            <p class="role">MARKETING MANAGER</p>
-            <p class="quote">
-                "Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts."
-            </p>
-        </div>
-        <div class="testimonial-card">
-            <img src="~/images/lesterpic.jpg" alt="Roger Scott" class="profile-image">
-            <h3 class="name">Roger Scott</h3>
-            <p class="role">MARKETING MANAGER</p>
-            <p class="quote">
-                "Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts."
-            </p>
-        </div>
-    </div>
-</section>
-
-<section class="gallery-section py-5">
-    <div class="container-fluid">
-        <div class="row no-gutters">
-            <div class="col-md-3 gallery-item">
-                <div class="img-overlay">
-                    <img src="~/images/superior-room.jpg" alt="Gallery Image 1" class="img-fluid">
-                    <div class="overlay">
-                        <i class="fab fa-instagram"></i>
+        <div class="row">
+            <div class="col-xl-4 col-md-4">
+                <div class="single_offers">
+                    <div class="about_thumb">
+                        <img src="img/offers/1.png" alt="">
                     </div>
+                    <h3>
+                        Up to 35% savings on Club <br>
+                        rooms and Suites
+                    </h3>
+                    <ul>
+                        <li>Luxaries condition</li>
+                        <li>3 Adults & 2 Children size</li>
+                        <li>Sea view side</li>
+                    </ul>
+                    <a href="#" class="book_now">book now</a>
                 </div>
             </div>
-            <div class="col-md-3 gallery-item">
-                <div class="img-overlay">
-                    <img src="~/images/single-room.jpg" alt="Gallery Image 2" class="img-fluid">
-                    <div class="overlay">
-                        <i class="fab fa-instagram"></i>
+            <div class="col-xl-4 col-md-4">
+                <div class="single_offers">
+                    <div class="about_thumb">
+                        <img src="img/offers/2.png" alt="">
                     </div>
+                    <h3>
+                        Up to 35% savings on Club <br>
+                        rooms and Suites
+                    </h3>
+                    <ul>
+                        <li>Luxaries condition</li>
+                        <li>3 Adults & 2 Children size</li>
+                        <li>Sea view side</li>
+                    </ul>
+                    <a href="#" class="book_now">book now</a>
                 </div>
             </div>
-            <div class="col-md-3 gallery-item">
-                <div class="img-overlay">
-                    <img src="~/images/superior-room.jpg" alt="Gallery Image 3" class="img-fluid">
-                    <div class="overlay">
-                        <i class="fab fa-instagram"></i>
+            <div class="col-xl-4 col-md-4">
+                <div class="single_offers">
+                    <div class="about_thumb">
+                        <img src="img/offers/3.png" alt="">
                     </div>
-                </div>
-            </div>
-            <div class="col-md-3 gallery-item">
-                <div class="img-overlay">
-                    <img src="~/images/single-room.jpg" alt="Gallery Image 4" class="img-fluid">
-                    <div class="overlay">
-                        <i class="fab fa-instagram"></i>
-                    </div>
+                    <h3>
+                        Up to 35% savings on Club <br>
+                        rooms and Suites
+                    </h3>
+                    <ul>
+                        <li>Luxaries condition</li>
+                        <li>3 Adults & 2 Children size</li>
+                        <li>Sea view side</li>
+                    </ul>
+                    <a href="#" class="book_now">book now</a>
                 </div>
             </div>
         </div>
     </div>
-</section>
+</div>
+<!-- offers_area_end -->
+<!-- video_area_start -->
+<div class="video_area video_bg overlay">
+    <div class="video_area_inner text-center">
+        <span>Montana Sea View</span>
+        <h3>
+            Relax and Enjoy your <br>
+            Vacation
+        </h3>
+        <a href="https://www.youtube.com/watch?v=vLnPwxZdW4Y" class="video_btn popup-video">
+            <i class="fa fa-play"></i>
+        </a>
+    </div>
+</div>
+<!-- video_area_end -->
+<!-- about_area_start -->
+<div class="about_area">
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-7 col-lg-7">
+                <div class="about_thumb2 d-flex">
+                    <div class="img_1">
+                        <img src="img/about/1.png" alt="">
+                    </div>
+                    <div class="img_2">
+                        <img src="img/about/2.png" alt="">
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-5 col-lg-5">
+                <div class="about_info">
+                    <div class="section_title mb-20px">
+                        <span>Delicious Food</span>
+                        <h3>
+                            We Serve Fresh and <br>
+                            Delicious Food
+                        </h3>
+                    </div>
+                    <p>
+                        Suscipit libero pretium nullam potenti. Interdum, blandit phasellus consectetuer dolor ornare
+                        dapibus enim ut tincidunt rhoncus tellus sollicitudin pede nam maecenas, dolor sem. Neque
+                        sollicitudin enim. Dapibus lorem feugiat facilisi faucibus et. Rhoncus.
+                    </p>
+                    <a href="#" class="line-button">Learn More</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- about_area_end -->
+<!-- features_room_startt -->
+<div class="features_room">
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="section_title text-center mb-100">
+                    <span>Featured Rooms</span>
+                    <h3>Choose a Better Room</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="rooms_here">
+        <div class="single_rooms">
+            <div class="room_thumb">
+                <img src="img/rooms/1.png" alt="">
+                <div class="room_heading d-flex justify-content-between align-items-center">
+                    <div class="room_heading_inner">
+                        <span>From $250/night</span>
+                        <h3>Superior Room</h3>
+                    </div>
+                    <a href="#" class="line-button">book now</a>
+                </div>
+            </div>
+        </div>
+        <div class="single_rooms">
+            <div class="room_thumb">
+                <img src="img/rooms/2.png" alt="">
+                <div class="room_heading d-flex justify-content-between align-items-center">
+                    <div class="room_heading_inner">
+                        <span>From $250/night</span>
+                        <h3>Deluxe Room</h3>
+                    </div>
+                    <a href="#" class="line-button">book now</a>
+                </div>
+            </div>
+        </div>
+        <div class="single_rooms">
+            <div class="room_thumb">
+                <img src="img/rooms/3.png" alt="">
+                <div class="room_heading d-flex justify-content-between align-items-center">
+                    <div class="room_heading_inner">
+                        <span>From $250/night</span>
+                        <h3>Signature Room</h3>
+                    </div>
+                    <a href="#" class="line-button">book now</a>
+                </div>
+            </div>
+        </div>
+        <div class="single_rooms">
+            <div class="room_thumb">
+                <img src="img/rooms/4.png" alt="">
+                <div class="room_heading d-flex justify-content-between align-items-center">
+                    <div class="room_heading_inner">
+                        <span>From $250/night</span>
+                        <h3>Couple Room</h3>
+                    </div>
+                    <a href="#" class="line-button">book now</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- features_room_end -->
+<!-- forQuery_start -->
+<div class="forQuery">
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-10 offset-xl-1 col-md-12">
+                <div class="Query_border">
+                    <div class="row align-items-center justify-content-center">
+                        <div class="col-xl-6 col-md-6">
+                            <div class="Query_text">
+                                <p>For Reservation 0r Query?</p>
+                            </div>
+                        </div>
+                        <div class="col-xl-6 col-md-6">
+                            <div class="phone_num">
+                                <a href="#" class="mobile_no">+10 576 377 4789</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- forQuery_end-->
+<!-- instragram_area_start -->
+<div class="instragram_area">
+    <div class="single_instagram">
+        <img src="img/instragram/1.png" alt="">
+        <div class="ovrelay">
+            <a href="#">
+                <i class="fa fa-instagram"></i>
+            </a>
+        </div>
+    </div>
+    <div class="single_instagram">
+        <img src="img/instragram/2.png" alt="">
+        <div class="ovrelay">
+            <a href="#">
+                <i class="fa fa-instagram"></i>
+            </a>
+        </div>
+    </div>
+    <div class="single_instagram">
+        <img src="img/instragram/3.png" alt="">
+        <div class="ovrelay">
+            <a href="#">
+                <i class="fa fa-instagram"></i>
+            </a>
+        </div>
+    </div>
+    <div class="single_instagram">
+        <img src="img/instragram/4.png" alt="">
+        <div class="ovrelay">
+            <a href="#">
+                <i class="fa fa-instagram"></i>
+            </a>
+        </div>
+    </div>
+    <div class="single_instagram">
+        <img src="img/instragram/5.png" alt="">
+        <div class="ovrelay">
+            <a href="#">
+                <i class="fa fa-instagram"></i>
+            </a>
+        </div>
+    </div>
+</div>
+<!-- instragram_area_end -->
+<!-- form itself end-->
+<form id="test-form" class="white-popup-block mfp-hide">
+    <div class="popup_box ">
+        <div class="popup_inner">
+            <h3>Check Availability</h3>
+            <form action="#">
+                <div class="row">
+                    <div class="col-xl-6">
+                        <input id="datepicker" placeholder="Check in date">
+                    </div>
+                    <div class="col-xl-6">
+                        <input id="datepicker2" placeholder="Check out date">
+                    </div>
+                    <div class="col-xl-6">
+                        <select class="form-select wide" id="default-select" class="">
+                            <option data-display="Adult">1</option>
+                            <option value="1">2</option>
+                            <option value="2">3</option>
+                            <option value="3">4</option>
+                        </select>
+                    </div>
+                    <div class="col-xl-6">
+                        <select class="form-select wide" id="default-select" class="">
+                            <option data-display="Children">1</option>
+                            <option value="1">2</option>
+                            <option value="2">3</option>
+                            <option value="3">4</option>
+                        </select>
+                    </div>
+                    <div class="col-xl-12">
+                        <select class="form-select wide" id="default-select" class="">
+                            <option data-display="Room type">Room type</option>
+                            <option value="1">Laxaries Rooms</option>
+                            <option value="2">Deluxe Room</option>
+                            <option value="3">Signature Room</option>
+                            <option value="4">Couple Room</option>
+                        </select>
+                    </div>
+                    <div class="col-xl-12">
+                        <button type="submit" class="boxed-btn3">Check Availability</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</form>
+<!-- form itself end -->
