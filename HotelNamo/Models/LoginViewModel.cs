@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-namespace HotelNamo.Models
-{ 
+
 public class LoginViewModel
 {
     [Required]
@@ -12,5 +11,4 @@ public class LoginViewModel
     public string Password { get; set; }
 
     public bool RememberMe { get; set; }
-}
 }

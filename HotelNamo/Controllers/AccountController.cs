@@ -1,208 +1,123 @@
-﻿using HotelNamo.Models;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Identity.UI.Services;
+using HotelNamo.Models;
 using System.Threading.Tasks;
-using System.Linq;
-using System;
 
-namespace HotelNamo.Controllers
+public class AccountController : Controller
 {
-    public class AccountController : Controller
+    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly SignInManager<ApplicationUser> _signInManager;
+    private readonly RoleManager<IdentityRole> _roleManager;
+
+    public AccountController(UserManager<ApplicationUser> userManager,
+                             SignInManager<ApplicationUser> signInManager,
+                             RoleManager<IdentityRole> roleManager)
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly IEmailSender _emailSender;
+        _userManager = userManager;
+        _signInManager = signInManager;
+        _roleManager = roleManager;
+    }
 
-        public AccountController(UserManager<ApplicationUser> userManager,
-                                 SignInManager<ApplicationUser> signInManager,
-                                 IEmailSender emailSender)
+    [HttpGet]
+    public IActionResult Register()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Register(RegisterViewModel model)
+    {
+        if (!ModelState.IsValid)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
-            _emailSender = emailSender;
-        }
-
-        // GET: /Account/Login
-        [HttpGet]
-        public IActionResult Login()
-        {
-            return View();
-        }
-
-        // POST: /Account/Login
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginViewModel model)
-        {
-            if (!ModelState.IsValid)
-                return View(model);
-
-            var user = await _userManager.FindByEmailAsync(model.Email);
-            if (user == null)
-            {
-                ModelState.AddModelError("", "Invalid login attempt.");
-                return View(model);
-            }
-
-            var result = await _signInManager.PasswordSignInAsync(
-                user, model.Password, model.RememberMe, lockoutOnFailure: false);
-
-            if (result.Succeeded)
-            {
-                var roles = await _userManager.GetRolesAsync(user);
-                bool IsIn(string roleName) => roles.Any(r => string.Equals(r, roleName, StringComparison.OrdinalIgnoreCase));
-
-                if (IsIn("Admin"))
-                {
-                    return RedirectToAction("AdminHome", "Home");
-                }
-                else if (IsIn("FrontDesk"))
-                {
-                    return RedirectToAction("Bookings", "FrontDesk");
-                }
-                else if (IsIn("Housekeeping") || IsIn("HouseKeeping"))
-                {
-                    return RedirectToAction("Dashboard", "Housekeeping");
-                }
-                else if (IsIn("Maintenance"))
-                {
-                    return RedirectToAction("Dashboard", "Maintenance");
-                }
-                else if (IsIn("User"))
-                {
-                    return RedirectToAction("UserHome", "Home");
-                }
-                else
-                {
-                    return RedirectToAction("Index", "Home");
-                }
-            }
-
-            ModelState.AddModelError("", "Invalid login attempt.");
+            TempData["Error"] = "⚠️ Please fill in all required fields.";
             return View(model);
         }
 
-        // GET: /Account/Register
-        [HttpGet]
-        public IActionResult Register()
+        if (model.Password != model.ConfirmPassword)
         {
-            return View();
-        }
-
-        // POST: /Account/Register
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(RegisterViewModel model)
-        {
-            if (!ModelState.IsValid)
-                return View(model);
-
-            var user = new ApplicationUser
-            {
-                FirstName = model.FirstName,
-                LastName = model.LastName,
-                UserName = model.Email,
-                Email = model.Email
-            };
-
-            var result = await _userManager.CreateAsync(user, model.Password);
-            if (result.Succeeded)
-            {
-                await _userManager.AddToRoleAsync(user, "User");
-                await _signInManager.SignInAsync(user, isPersistent: false);
-                return RedirectToAction("UserHome", "Home");
-            }
-
-            foreach (var error in result.Errors)
-            {
-                ModelState.AddModelError("", error.Description);
-            }
-
+            TempData["Error"] = "⚠️ Passwords do not match.";
             return View(model);
         }
 
-        // POST: /Account/Logout
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Logout()
+        var user = new ApplicationUser
         {
-            await _signInManager.SignOutAsync();
-            return RedirectToAction("Index", "Home");
-        }
+            UserName = model.Email,
+            Email = model.Email,
+            FirstName = model.FirstName,
+            LastName = model.LastName,
+            Role = "User"
+        };
 
-        // Enable Two-Factor Authentication
-        [HttpPost]
-        public async Task<IActionResult> EnableTwoFactorAuthentication()
+        var result = await _userManager.CreateAsync(user, model.Password);
+        if (result.Succeeded)
         {
-            var user = await _userManager.GetUserAsync(User);
-            await _userManager.SetTwoFactorEnabledAsync(user, true);
-            await _signInManager.RefreshSignInAsync(user);
-            return RedirectToAction("Profile");
-        }
-
-        // Disable Two-Factor Authentication
-        [HttpPost]
-        public async Task<IActionResult> DisableTwoFactorAuthentication()
-        {
-            var user = await _userManager.GetUserAsync(User);
-            await _userManager.SetTwoFactorEnabledAsync(user, false);
-            await _signInManager.RefreshSignInAsync(user);
-            return RedirectToAction("Profile");
-        }
-
-        // GET: Forgot Password
-        [HttpGet]
-        public IActionResult ForgotPassword()
-        {
-            return View();
-        }
-
-        // POST: Forgot Password
-        [HttpPost]
-        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
-        {
-            if (!ModelState.IsValid) return View(model);
-
-            var user = await _userManager.FindByEmailAsync(model.Email);
-            if (user != null)
+            if (!await _roleManager.RoleExistsAsync("User"))
             {
-                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-                var callback = Url.Action("ResetPassword", "Account", new { token, email = user.Email }, Request.Scheme);
-
-                await _emailSender.SendEmailAsync(model.Email, "Reset Password",
-                    $"Please reset your password by <a href='{callback}'>clicking here</a>.");
+                await _roleManager.CreateAsync(new IdentityRole("User"));
             }
 
-            return RedirectToAction("ForgotPasswordConfirmation");
+            await _userManager.AddToRoleAsync(user, "User");
+            await _signInManager.SignInAsync(user, isPersistent: false);
+
+            return RedirectToAction("UserHome", "User");
         }
 
-        // GET: Reset Password
-        [HttpGet]
-        public IActionResult ResetPassword(string token, string email)
+        TempData["Error"] = string.Join("\n", result.Errors.Select(e => e.Description));
+        return View(model);
+    }
+
+    [HttpGet]
+    public IActionResult Login()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Login(LoginViewModel model)
+    {
+        if (!ModelState.IsValid)
         {
-            if (token == null || email == null) return RedirectToAction("Index", "Home");
-            var model = new ResetPasswordViewModel { Token = token, Email = email };
+            TempData["Error"] = "⚠️ Please fill in all required fields.";
             return View(model);
         }
 
-        // POST: Reset Password
-        [HttpPost]
-        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        var user = await _userManager.FindByEmailAsync(model.Email);
+        if (user == null)
         {
-            if (!ModelState.IsValid) return View(model);
-
-            var user = await _userManager.FindByEmailAsync(model.Email);
-            if (user == null) return RedirectToAction("ResetPasswordConfirmation");
-
-            var result = await _userManager.ResetPasswordAsync(user, model.Token, model.Password);
-            if (result.Succeeded)
-                return RedirectToAction("ResetPasswordConfirmation");
-
-            foreach (var error in result.Errors)
-                ModelState.AddModelError("", error.Description);
-
+            TempData["Error"] = "⚠️ Invalid email or password.";
             return View(model);
         }
+
+        var result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, lockoutOnFailure: false);
+        if (result.Succeeded)
+        {
+            if (await _userManager.IsInRoleAsync(user, "Admin"))
+            {
+                return RedirectToAction("AdminHome", "Home");
+            }
+            else if (await _userManager.IsInRoleAsync(user, "User"))
+            {
+                return RedirectToAction("UserHome", "User");
+            }
+        }
+
+        TempData["Error"] = "⚠️ Invalid email or password.";
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Logout()
+    {
+        await _signInManager.SignOutAsync();
+        return RedirectToAction("Login", "Account");
+    }
+
+    [HttpGet]
+    public IActionResult AccessDenied()
+    {
+        return View();
     }
 }
