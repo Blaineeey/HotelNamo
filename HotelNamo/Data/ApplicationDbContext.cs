@@ -1,90 +1,134 @@
-﻿using HotelNamo.Models;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace HotelNamo.Data
+public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 {
-
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        : base(options)
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-            : base(options)
-        {
-        }
-
-        public DbSet<Room> Rooms { get; set; }
-        public DbSet<Booking> Bookings { get; set; }
-        public DbSet<Payment> Payments { get; set; }
-        public DbSet<HousekeepingTask> HousekeepingTasks { get; set; }
-        public DbSet<MaintenanceRequest> MaintenanceRequests { get; set; }
-        public DbSet<Amenity> Amenities { get; set; }
-        public DbSet<RoomAmenity> RoomAmenities { get; set; }
-        public DbSet<Feedback> Feedbacks { get; set; }
-        public DbSet<Notification> Notifications { get; set; }
-        public DbSet<Discount> Discounts { get; set; }
-        public DbSet<RoomImage> RoomImages { get; set; }
-
-        protected override void OnModelCreating(ModelBuilder builder)
-        {
-            base.OnModelCreating(builder);  // <--- IMPORTANT: Don't remove this!
-
-            builder.Entity<MaintenanceRequest>()
-                .HasOne(m => m.AssignedStaff)
-                .WithMany()
-                .HasForeignKey(m => m.AssignedStaffId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            builder.Entity<HousekeepingTask>()
-                .HasOne(ht => ht.Room)
-                .WithMany(r => r.HousekeepingTasks)
-                .HasForeignKey(ht => ht.RoomId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            builder.Entity<HousekeepingTask>()
-                .HasOne(ht => ht.AssignedStaff)
-                .WithMany()
-                .HasForeignKey(ht => ht.AssignedStaffId)
-                .OnDelete(DeleteBehavior.SetNull);  // ✅ Fix: Set null instead of requiring a value
-
-            builder.Entity<Feedback>()
-                .HasOne(f => f.User)
-                .WithMany()
-                .HasForeignKey(f => f.UserId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            builder.Entity<Feedback>()
-                .HasOne(f => f.Booking)
-                .WithOne(b => b.Feedback)
-                .HasForeignKey<Feedback>(f => f.BookingId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            builder.Entity<Feedback>()
-                .HasOne(f => f.Room)
-                .WithMany(r => r.Feedbacks)
-                .HasForeignKey(f => f.RoomId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            // Explicitly define composite primary key clearly:
-            builder.Entity<RoomAmenity>()
-                .HasKey(ra => new { ra.RoomId, ra.AmenityId });
-
-            // Explicitly define relationships clearly:
-            builder.Entity<RoomAmenity>()
-                .HasOne(ra => ra.Room)
-                .WithMany(r => r.RoomAmenities)
-                .HasForeignKey(ra => ra.RoomId);
-
-            builder.Entity<RoomAmenity>()
-                .HasOne(ra => ra.Amenity)
-                .WithMany(a => a.RoomAmenities)
-                .HasForeignKey(ra => ra.AmenityId);
-            builder.Entity<Booking>()
-                .HasOne(b => b.Room)
-                .WithMany(r => r.Bookings)  // **This was missing!**
-                .HasForeignKey(b => b.RoomId);
-        }
-
     }
 
+    public DbSet<Room> Rooms { get; set; }
+    public DbSet<Reservation> Reservations { get; set; }
+    public DbSet<Payment> Payments { get; set; }
+    public DbSet<Review> Reviews { get; set; }
+    public DbSet<ServiceRequest> ServiceRequests { get; set; }
+    public DbSet<HousekeepingTask> HousekeepingTasks { get; set; }
+    public DbSet<Discount> Discounts { get; set; }
+    public DbSet<Notification> Notifications { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder builder)
+    {
+        base.OnModelCreating(builder);
+
+        // User Roles
+        builder.Entity<ApplicationUser>(entity =>
+        {
+            entity.Property(e => e.FirstName).HasMaxLength(100).IsRequired();
+            entity.Property(e => e.LastName).HasMaxLength(100).IsRequired();
+            entity.Property(e => e.Role).HasMaxLength(50).IsRequired(); // Admin, Guest, Housekeeping, FrontDesk
+        });
+
+        // Rooms
+        builder.Entity<Room>(entity =>
+        {
+            entity.HasKey(r => r.Id);
+            entity.Property(r => r.RoomNumber).HasMaxLength(10).IsRequired();
+            entity.Property(r => r.RoomType).HasMaxLength(50).IsRequired();
+            entity.Property(r => r.PricePerNight).IsRequired();
+            entity.Property(r => r.Status).HasMaxLength(20).IsRequired(); // Available, Booked, Maintenance
+        });
+
+        // Reservations
+        builder.Entity<Reservation>(entity =>
+        {
+            entity.HasKey(r => r.Id);
+            entity.HasOne(r => r.User)
+                  .WithMany()
+                  .HasForeignKey(r => r.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(r => r.Room)
+                  .WithMany()
+                  .HasForeignKey(r => r.RoomId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.Property(r => r.CheckInDate).IsRequired();
+            entity.Property(r => r.CheckOutDate).IsRequired();
+            entity.Property(r => r.Status).HasMaxLength(20).IsRequired(); // Pending, Confirmed, CheckedIn, Completed
+        });
+
+        // Payments
+        builder.Entity<Payment>(entity =>
+        {
+            entity.HasKey(p => p.Id);
+            entity.HasOne(p => p.Reservation)
+                  .WithOne()
+                  .HasForeignKey<Payment>(p => p.ReservationId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.Property(p => p.Amount).IsRequired();
+            entity.Property(p => p.PaymentDate).IsRequired();
+            entity.Property(p => p.PaymentMethod).HasMaxLength(50).IsRequired(); // Card, PayPal, Bank Transfer
+            entity.Property(p => p.PaymentStatus).HasMaxLength(20).IsRequired(); // Pending, Completed, Failed
+        });
+
+        // Reviews
+        builder.Entity<Review>(entity =>
+        {
+            entity.HasKey(r => r.Id);
+            entity.HasOne(r => r.User)
+                  .WithMany()
+                  .HasForeignKey(r => r.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(r => r.Room)
+                  .WithMany()
+                  .HasForeignKey(r => r.RoomId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.Property(r => r.Rating).IsRequired();
+            entity.Property(r => r.Comment).HasMaxLength(500);
+            entity.Property(r => r.ReviewDate).IsRequired();
+        });
+
+        // Housekeeping Tasks
+        builder.Entity<HousekeepingTask>(entity =>
+        {
+            entity.HasKey(h => h.Id);
+            entity.HasOne(h => h.Room)
+                  .WithMany()
+                  .HasForeignKey(h => h.RoomId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.Property(h => h.Status).HasMaxLength(20).IsRequired(); // Pending, Completed
+        });
+
+        // Service Requests
+        builder.Entity<ServiceRequest>(entity =>
+        {
+            entity.HasKey(s => s.Id);
+            entity.HasOne(s => s.User)
+                  .WithMany()
+                  .HasForeignKey(s => s.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.Property(s => s.RequestType).HasMaxLength(100).IsRequired(); // Spa, Airport Transfer, Room ServiceA
+            entity.Property(s => s.Status).HasMaxLength(20).IsRequired(); // Pending, Completed
+        });
+
+        // Discounts & Promotions
+        builder.Entity<Discount>(entity =>
+        {
+            entity.HasKey(d => d.Id);
+            entity.Property(d => d.Code).HasMaxLength(20).IsRequired();
+            entity.Property(d => d.DiscountPercentage).IsRequired();
+            entity.Property(d => d.ExpirationDate).IsRequired();
+        });
+
+        // Notifications
+        builder.Entity<Notification>(entity =>
+        {
+            entity.HasKey(n => n.Id);
+            entity.HasOne(n => n.User)
+                  .WithMany()
+                  .HasForeignKey(n => n.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.Property(n => n.Message).HasMaxLength(500).IsRequired();
+            entity.Property(n => n.IsRead).IsRequired();
+        });
+    }
 }
