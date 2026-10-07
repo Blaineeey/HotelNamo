@@ -5,7 +5,6 @@
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
@@ -16,10 +15,7 @@
     <!-- Example: link to Bootstrap & admin CSS -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/admin.css" />
-
-    @RenderSection("Styles", required: false)
 </head>
-
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <a class="navbar-brand ms-3" asp-controller="Admin" asp-action="Index">HotelNamo Admin</a>
@@ -72,18 +68,7 @@
                     <li class="nav-item">
                         <a class="nav-link" asp-controller="FrontDesk" asp-action="Rooms">Front Desk</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" asp-controller="Reports" asp-action="BookingsReport">📋 Booking Report</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" asp-controller="Reports" asp-action="RevenueReport">💰 Revenue Report</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" asp-controller="Reports" asp-action="OccupancyReport">🏠 Room Occupancy</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" asp-controller="Housekeeping" asp-action="Index">🧹 Housekeeping</a>
-                    </li>
+
                     <!-- Add more admin links (Reports, Payments, etc.) -->
                 </ul>
             </nav>
@@ -99,5 +84,4 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     @RenderSection("Scripts", required: false)
 </body>
-
 </html>

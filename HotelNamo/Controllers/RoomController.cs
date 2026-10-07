@@ -2,7 +2,6 @@
 using HotelNamo.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 public class RoomController : Controller
 {
@@ -40,75 +39,14 @@ public class RoomController : Controller
     }
 
     [Authorize(Roles = "Admin,FrontDesk")]
-    public async Task<IActionResult> Create(Room room, int[] selectedAmenities, List<IFormFile> images)
+    [HttpPost]
+    public async Task<IActionResult> Create(Room room)
     {
-        if (!ModelState.IsValid)
-            return View(room);
-
-        room.RoomAmenities = selectedAmenities.Select(a => new RoomAmenity { AmenityId = a }).ToList();
-        room.RoomImages = new List<RoomImage>();
-
-        // Loop through each uploaded file
-        foreach (var image in images)
-        {
-            if (image.Length > 0)
-            {
-                // Generate a unique file name clearly
-                var fileName = Guid.NewGuid() + Path.GetExtension(image.FileName);
-
-                // Define the path clearly
-                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "rooms", fileName);
-
-                // Save the file clearly
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await image.CopyToAsync(stream);
-                }
-
-                // Add the image record to RoomImages
-                var roomImage = new RoomImage { ImagePath = fileName };
-                room.RoomImages.Add(roomImage);
-            }
-        }
-
-        // Add amenities if applicable (ensure you handle amenities selection clearly)
-        room.RoomAmenities = room.RoomAmenities ?? new List<RoomAmenity>();
-
+        if (!ModelState.IsValid) return View(room);
         _context.Rooms.Add(room);
         await _context.SaveChangesAsync();
-
         return RedirectToAction("Index");
     }
 
-    // EDIT
-    [Authorize(Roles = "Admin,FrontDesk")]
-    [HttpGet]
-    public IActionResult Edit(int id)
-    {
-        var room = _context.Rooms.FirstOrDefault(r => r.Id == id);
-        if (room == null) return NotFound();
-        return View(room);
-    }
-
-    [Authorize(Roles = "Admin,FrontDesk")]
-    [HttpPost]
-    public async Task<IActionResult> Edit(Room model)
-    {
-        if (!ModelState.IsValid)
-        {
-            return View(model);
-        }
-
-        var room = await _context.Rooms.FirstOrDefaultAsync(r => r.Id == model.Id);
-        if (room == null) return NotFound();
-
-        room.RoomNumber = model.RoomNumber;
-        room.Category = model.Category;
-        room.Price = model.Price;
-        room.Status = model.Status;
-        room.Description = model.Description;
-
-        await _context.SaveChangesAsync();
-        return RedirectToAction("RoomList", "Admin");
-    }
+    // Similarly implement Edit, Delete with [Authorize(Roles = "Admin,FrontDesk")]
 }
