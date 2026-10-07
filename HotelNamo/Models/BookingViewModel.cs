@@ -1,18 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace HotelNamo.Models
+﻿public class BookingViewModel
 {
-    public class BookingViewModel
-    {
-        [Required]
-        public int RoomId { get; set; }
-
-        [Required, DataType(DataType.Date)]
-        public DateTime CheckInDate { get; set; }
-
-        [Required, DataType(DataType.Date)]
-        public DateTime CheckOutDate { get; set; }
-
-        public string? SpecialRequests { get; set; }
-    }
+    public int RoomId { get; set; }
+    public DateTime CheckInDate { get; set; }
+    public DateTime CheckOutDate { get; set; }
+    // No UserId property
 }

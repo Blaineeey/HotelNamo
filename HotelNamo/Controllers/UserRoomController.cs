@@ -1,7 +1,6 @@
 ﻿using HotelNamo.Data;
 using HotelNamo.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Linq;
 
 namespace HotelNamo.Controllers
@@ -21,33 +20,21 @@ namespace HotelNamo.Controllers
         public IActionResult Index()
         {
             var rooms = _context.Rooms
-                .Include(r => r.RoomImages)
-                .Include(r => r.RoomAmenities).ThenInclude(ra => ra.Amenity)
-                .Include(r => r.Feedbacks)
-                .Where(r => r.Status == "Vacant")
+                .Where(r => r.Status == "Vacant")  // or "Available"
+                .OrderBy(r => r.RoomNumber)
                 .ToList();
 
-            return View(rooms);
+            return View(rooms);  // calls Views/UserRoom/Index.cshtml
         }
 
         // Optional: Single room details
         [HttpGet]
         public IActionResult Details(int id)
         {
-            var room = _context.Rooms
-                .Include(r => r.RoomAmenities)
-                .ThenInclude(ra => ra.Amenity)
-                .Include(r => r.RoomImages)
-                .Include(r => r.Feedbacks)
-                    .ThenInclude(f => f.User) 
-                .Include(r => r.Feedbacks)
-                    .ThenInclude(f => f.Booking)
-                .FirstOrDefault(r => r.Id == id);
+            var room = _context.Rooms.FirstOrDefault(r => r.Id == id && r.Status == "Vacant");
+            if (room == null) return NotFound();
 
-            if (room == null)
-                return NotFound();
-
-            return View(room);
+            return View(room); // calls Views/UserRoom/Details.cshtml
         }
     }
 }

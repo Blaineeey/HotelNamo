@@ -3,10 +3,13 @@ using HotelNamo.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace HotelNamo.Controllers
 {
+    // Allows normal users (role = "User") and front desk staff (role = "FrontDesk") to book rooms
     [Authorize(Roles = "User,FrontDesk")]
     public class BookingController : Controller
     {
@@ -19,184 +22,105 @@ namespace HotelNamo.Controllers
             _userManager = userManager;
         }
 
+        // GET: /Booking/Create?roomId=5 (optional roomId)
         [HttpGet]
         public IActionResult Create(int? roomId)
         {
-            // ✅ Fetch only rooms that are not already booked or occupied
-            var bookedRoomIds = _context.Bookings
-                .Where(b => b.IsConfirmed || (b.CheckInDate <= DateTime.Today && b.CheckOutDate >= DateTime.Today))
-                .Select(b => b.RoomId)
-                .ToList();
-
-            ViewBag.Rooms = _context.Rooms
-                .Where(r => r.Status == "Vacant" && !bookedRoomIds.Contains(r.Id))
-                .ToList();
-
-            var model = new BookingViewModel
+            // Pre-fill with a default date range
+            var model = new Booking
             {
                 RoomId = roomId ?? 0,
                 CheckInDate = DateTime.Today,
                 CheckOutDate = DateTime.Today.AddDays(1)
             };
-
             return View(model);
         }
 
-
+        // POST: /Booking/Create
         [HttpPost]
         public async Task<IActionResult> Create(BookingViewModel vm)
         {
-            if (!ModelState.IsValid)
-            {
-                ViewBag.Rooms = _context.Rooms.Where(r => r.Status == "Vacant").ToList();
-                return View(vm);
-            }
-
-            if (!CheckRoomAvailability(vm.RoomId, vm.CheckInDate, vm.CheckOutDate))
-            {
-                ModelState.AddModelError("", "Room is not available for the selected dates.");
-                ViewBag.Rooms = _context.Rooms.Where(r => r.Status == "Vacant").ToList();
-                return View(vm);
-            }
+            if (!ModelState.IsValid) return View(vm);
 
             var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-                return RedirectToAction("Login", "Account");
-
-            var room = _context.Rooms.Find(vm.RoomId);
-            int totalDays = (vm.CheckOutDate - vm.CheckInDate).Days;
-            decimal totalPrice = totalDays * room.Price;
-
-            // ✅ Check if a pending booking already exists
-            var existingBooking = await _context.Bookings
-                .FirstOrDefaultAsync(b => b.RoomId == vm.RoomId && b.UserId == user.Id &&
-                                          b.CheckInDate == vm.CheckInDate && b.CheckOutDate == vm.CheckOutDate &&
-                                          !b.IsConfirmed);
-
-            if (existingBooking == null)
+            var booking = new Booking
             {
-                var booking = new Booking
-                {
-                    RoomId = vm.RoomId,
-                    UserId = user.Id,
-                    CheckInDate = vm.CheckInDate,
-                    CheckOutDate = vm.CheckOutDate,
-                    SpecialRequests = vm.SpecialRequests,
-                    TotalPrice = totalPrice,
-                    CreatedDate = DateTime.Now,
-                    IsConfirmed = false
-                };
+                RoomId = vm.RoomId,
+                CheckInDate = vm.CheckInDate,
+                CheckOutDate = vm.CheckOutDate,
+                UserId = user.Id,
+                IsConfirmed = false
+            };
 
-                _context.Bookings.Add(booking);
-                await _context.SaveChangesAsync();
-                existingBooking = booking;
-            }
-
-            // ✅ Redirect to Payment Page with the correct booking ID
-            return RedirectToAction("Pay", "Payment", new { bookingId = existingBooking.Id });
-        }
-
-
-        public async Task<IActionResult> Confirm()
-        {
-            if (!TempData.ContainsKey("BookingId"))
-                return RedirectToAction("Create");
-
-            var bookingId = Convert.ToInt32(TempData["BookingId"]);
-
-            var booking = await _context.Bookings
-                .Include(b => b.Room)
-                .FirstOrDefaultAsync(b => b.Id == bookingId && !b.IsConfirmed);
-
-            if (booking == null)
-                return RedirectToAction("MyBookings");
-
-            TempData.Keep();
-
-            return View(booking);
-        }
-
-
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ConfirmBooking()
-        {
-            if (!TempData.ContainsKey("BookingId"))
-                return RedirectToAction("Create");
-
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-                return RedirectToAction("Login", "Account");
-
-            var bookingId = Convert.ToInt32(TempData["BookingId"]);
-
-            var booking = await _context.Bookings
-                .Include(b => b.Room)
-                .FirstOrDefaultAsync(b => b.Id == bookingId && b.UserId == user.Id && !b.IsConfirmed);
-
-            if (booking != null)
-            {
-                booking.IsConfirmed = true;
-
-                // ✅ Update Room Status to "Occupied"
-                var room = await _context.Rooms.FindAsync(booking.RoomId);
-                if (room != null)
-                {
-                    room.Status = "Occupied";
-                }
-
-                await _context.SaveChangesAsync();
-            }
-
+            _context.Bookings.Add(booking);
+            await _context.SaveChangesAsync();
             return RedirectToAction("MyBookings");
         }
 
 
-
-        // Allows a user to cancel their own booking explicitly
-        [Authorize(Roles = "User")]
-        public async Task<IActionResult> Cancel(int bookingId)
+        // Only front desk staff can check in
+        [Authorize(Roles = "FrontDesk")]
+        public async Task<IActionResult> CheckIn(int bookingId)
         {
-            var booking = await _context.Bookings
-                .Include(b => b.Room)
-                .FirstOrDefaultAsync(b => b.Id == bookingId && b.UserId == _userManager.GetUserId(User));
+            var booking = await _context.Bookings.FindAsync(bookingId);
+            if (booking == null) return NotFound();
 
-            if (booking == null)
-                return NotFound();
+            booking.IsConfirmed = true;
+            booking.ActualCheckInTime = DateTime.Now;
 
-            // Remove booking explicitly
-            _context.Bookings.Remove(booking);
-
-            // Set room status back to vacant if booking was confirmed explicitly
-            if (booking.Room != null)
-                booking.Room.Status = "Vacant";
+            // Update the room status to "Occupied"
+            var room = await _context.Rooms.FindAsync(booking.RoomId);
+            if (room != null)
+                room.Status = "Occupied";
 
             await _context.SaveChangesAsync();
-
-            return RedirectToAction("MyBookings");
+            return RedirectToAction("Index", "Home");
         }
 
-
-        private bool CheckRoomAvailability(int roomId, DateTime checkIn, DateTime checkOut)
+        // Only front desk staff can check out
+        [Authorize(Roles = "FrontDesk")]
+        public async Task<IActionResult> CheckOut(int bookingId)
         {
-            return !_context.Bookings.Any(b =>
-                b.RoomId == roomId && b.IsConfirmed &&
-                (checkIn < b.CheckOutDate && checkOut > b.CheckInDate));
+            var booking = await _context.Bookings.FindAsync(bookingId);
+            if (booking == null) return NotFound();
+
+            booking.ActualCheckOutTime = DateTime.Now;
+
+            // Update the room status to "Vacant"
+            var room = await _context.Rooms.FindAsync(booking.RoomId);
+            if (room != null)
+                room.Status = "Vacant";
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Index", "Home");
         }
+
+        // Normal users can see their own bookings
         [Authorize(Roles = "User")]
-        public IActionResult MyBookings()
+        public async Task<IActionResult> MyBookings()
         {
-            var userId = _userManager.GetUserId(User);
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
 
             var bookings = _context.Bookings
-                .Include(b => b.Room)
-                .ThenInclude(r => r.RoomImages)
-                .Where(b => b.UserId == userId)
-                .OrderByDescending(b => b.CreatedDate)
+                .Where(b => b.UserId == user.Id)
+                .OrderByDescending(b => b.Id)
                 .ToList();
 
             return View(bookings);
+        }
+
+        // Helper to check if a room is free for the given date range
+        private bool CheckRoomAvailability(int roomId, DateTime checkIn, DateTime checkOut)
+        {
+            return !_context.Bookings
+                .Any(b => b.RoomId == roomId
+                       && b.IsConfirmed
+                       && checkIn < b.CheckOutDate
+                       && checkOut > b.CheckInDate);
         }
     }
 }

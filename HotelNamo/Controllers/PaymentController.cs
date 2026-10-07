@@ -1,83 +1,52 @@
 ﻿using HotelNamo.Data;
-using HotelNamo.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
+using HotelNamo.Models;
 
 namespace HotelNamo.Controllers
 {
-    [Authorize(Roles = "User")]
+    [Authorize(Roles = "FrontDesk,Guest")]
     public class PaymentController : Controller
     {
         private readonly ApplicationDbContext _context;
-        private readonly UserManager<ApplicationUser> _userManager;
 
-        public PaymentController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        public PaymentController(ApplicationDbContext context)
         {
             _context = context;
-            _userManager = userManager;
         }
 
         [HttpGet]
-        public async Task<IActionResult> Pay(int bookingId)
+        public IActionResult Process(int bookingId)
         {
-            var booking = await _context.Bookings
-                .Include(b => b.Room)
-                .FirstOrDefaultAsync(b => b.Id == bookingId && b.UserId == _userManager.GetUserId(User));
-
-            if (booking == null)
-            {
-                return NotFound();
-            }
-
-            var model = new Payment
-            {
-                BookingId = booking.Id,
-                Amount = booking.TotalPrice,
-                PaymentMethod = "Credit Card"
-            };
-
-            return View(model);
+            // Return a view with booking info
+            return View(new PaymentViewModel { BookingId = bookingId });
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ProcessPayment(Payment payment)
+        public async Task<IActionResult> Process(PaymentViewModel model)
         {
-            if (!ModelState.IsValid)
+            if (!ModelState.IsValid) return View(model);
+
+            var payment = new Payment
             {
-                return View("Pay", payment);
-            }
-
-            var booking = await _context.Bookings
-                .Include(b => b.Room)
-                .FirstOrDefaultAsync(b => b.Id == payment.BookingId);
-
-            if (booking == null)
-            {
-                ModelState.AddModelError("", "Booking not found.");
-                return View("Pay", payment);
-            }
-
-            // ✅ Process payment
-            payment.IsPaid = true;
-            payment.TransactionId = Guid.NewGuid().ToString();
-            payment.PaymentDate = DateTime.Now;
-
+                BookingId = model.BookingId,
+                Amount = model.Amount,
+                PaymentDate = DateTime.Now,
+                PaymentMethod = model.PaymentMethod
+            };
             _context.Payments.Add(payment);
             await _context.SaveChangesAsync();
 
-            // ✅ Store Booking ID to use in Confirm step
-            TempData["BookingId"] = booking.Id;
-
-            // ✅ Redirect to Confirm Page after successful payment
-            return RedirectToAction("Confirm", "Booking");
+            // Possibly mark booking as paid
+            return RedirectToAction("Receipt", new { paymentId = payment.Id });
         }
 
-
+        public async Task<IActionResult> Receipt(int paymentId)
+        {
+            var payment = await _context.Payments.FindAsync(paymentId);
+            if (payment == null) return NotFound();
+            return View(payment);
+        }
     }
+
 }
