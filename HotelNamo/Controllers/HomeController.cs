@@ -1,43 +1,48 @@
-using Microsoft.AspNetCore.Authorization;
+using System.Diagnostics;
+using HotelNamo.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 
-public class HomeController : Controller
+namespace HotelNamo.Controllers
 {
-    private readonly IConfiguration _configuration;
-
-    // Inject IConfiguration through the constructor
-    public HomeController(IConfiguration configuration)
+    public class HomeController : Controller
     {
-        _configuration = configuration;
-    }
+        private readonly ILogger<HomeController> _logger;
 
-    public IActionResult Index()
-    {
-        return View();
-    }
+        public HomeController(ILogger<HomeController> logger)
+        {
+            _logger = logger;
+        }
 
-    [Authorize(Roles = "Admin")]
-    public IActionResult AdminHome()
-    {
-        return RedirectToAction("Index", "Admin");
-    }
+        public IActionResult Index()
+        {
+            return View();
+        }
 
-    [Authorize(Roles = "User")]
-    public IActionResult UserHome()
-    {
-        return View();
-    }
+        public IActionResult Privacy()
+        {
+            return View();
+        }
 
-    public IActionResult About()
-    {
-        return View();
-    }
-
-    public IActionResult Contact()
-    {
-        // Pass the Google Maps API key to the view using the injected configuration
-        ViewBag.GoogleMapsApiKey = _configuration["GoogleMaps:ApiKey"];
-        return View();
+        public IActionResult Rooms()
+        {
+            return View();
+        }
+        public IActionResult About()
+        {
+            return View();
+        }
+        public IActionResult Services()
+        {
+            return View();
+        }
+        public IActionResult Booking()
+        {
+            return View();
+        }
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error()
+        {
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
     }
 }
