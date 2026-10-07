@@ -1,0 +1,428 @@
+﻿@model HotelNamo.Models.GuestBookingViewModel;
+@{
+    ViewData["Title"] = "Book a Room as Guest";
+    Layout = "_UserLayout";
+}
+
+<div class="container my-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <!-- Booking Process Steps -->
+            <div class="booking-steps mb-4">
+                <div class="step active">
+                    <div class="step-number">1</div>
+                    <div class="step-text">Booking Details</div>
+                </div>
+                <div class="step-connector"></div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-text">Payment</div>
+                </div>
+                <div class="step-connector"></div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-text">Confirmation</div>
+                </div>
+            </div>
+
+            <!-- Booking Card -->
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white">
+                    <h2 class="about-title mb-0">Plan Your Stay</h2>
+                    <h1 class="display-6">Book Your Room</h1>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="CreateGuest" method="post">
+                        <div asp-validation-summary="All" class="text-danger mb-4"></div>
+
+                        <!-- Login Option -->
+                        <div class="alert alert-info mb-4">
+                            <div class="d-flex align-items-center">
+                                <div class="me-3">
+                                    <i class="fas fa-info-circle fa-2x"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1">Already have an account?</h5>
+                                    <p class="mb-2">Sign in to access your saved preferences and manage your bookings easily.</p>
+                                    <a asp-controller="Account" asp-action="Login" class="btn btn-outline-primary btn-sm">Sign In</a>
+                                    <a asp-controller="Account" asp-action="Register" class="btn btn-outline-secondary btn-sm ms-2">Create Account</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Guest Information Section -->
+                        <div class="mb-4">
+                            <h5 class="mb-3"><i class="fas fa-user me-2 text-muted"></i>Guest Information</h5>
+                            <div class="row">
+                                <div class="col-md-12 mb-3">
+                                    <div class="form-group">
+                                        <label asp-for="GuestName" class="form-label">Full Name</label>
+                                        <input asp-for="GuestName" class="form-control form-control-lg" placeholder="Enter your full name" required />
+                                        <span asp-validation-for="GuestName" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-group">
+                                        <label asp-for="GuestEmail" class="form-label">Email Address</label>
+                                        <input asp-for="GuestEmail" class="form-control form-control-lg" type="email" placeholder="you@example.com" required />
+                                        <span asp-validation-for="GuestEmail" class="text-danger"></span>
+                                        <small class="form-text text-muted">For booking confirmation and updates</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-group">
+                                        <label asp-for="GuestPhone" class="form-label">Phone Number</label>
+                                        <input asp-for="GuestPhone" class="form-control form-control-lg" placeholder="(123) 456-7890" required />
+                                        <span asp-validation-for="GuestPhone" class="text-danger"></span>
+                                        <small class="form-text text-muted">For urgent communications</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Room Selection Section -->
+                        <div class="mb-4">
+                            <h5 class="mb-3"><i class="fas fa-bed me-2 text-muted"></i>Room Selection</h5>
+                            <div class="form-group">
+                                <label class="form-label">Select Room Type</label>
+                                <select asp-for="RoomId" class="form-select form-select-lg" required id="roomSelect">
+                                    <option value="">-- Select Room --</option>
+                                    @foreach (var room in ViewBag.Rooms)
+                                    {
+                                        <option value="@room.Id" data-price="@room.Price" data-category="@room.Category" data-description="@room.Description">
+                                            @room.RoomNumber - @room.Category (@room.Price.ToString("C"))
+                                        </option>
+                                    }
+                                </select>
+                                <small class="form-text text-muted">Choose from our selection of premium rooms and suites</small>
+                            </div>
+                        </div>
+
+                        <!-- Room Details (will appear when room is selected) -->
+                        <div id="roomDetails" class="alert alert-light border mb-4" style="display: none;">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <h5 class="room-category"></h5>
+                                    <h4 class="room-price"></h4>
+                                </div>
+                                <div class="col-md-8">
+                                    <p class="room-description"></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Date Selection Section -->
+                        <div class="row mb-4">
+                            <h5 class="mb-3"><i class="fas fa-calendar-alt me-2 text-muted"></i>Stay Dates</h5>
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <div class="form-group">
+                                    <label class="form-label">Check-in Date</label>
+                                    <input asp-for="CheckInDate" class="form-control form-control-lg" type="date" required id="checkInDate" />
+                                    <small class="form-text text-muted">Check-in time starts at 2:00 PM</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">Check-out Date</label>
+                                    <input asp-for="CheckOutDate" class="form-control form-control-lg" type="date" required id="checkOutDate" />
+                                    <small class="form-text text-muted">Check-out time is until 12:00 AM</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Stay Summary -->
+                        <div id="staySummary" class="alert alert-light border mb-4" style="display: none;">
+                            <h5><i class="fas fa-info-circle me-2"></i>Stay Summary</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Duration:</strong> <span id="stayDuration">0</span> nights</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Total:</strong> <span id="stayTotal" class="text-primary">$0.00</span></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Special Requests Section -->
+                        <div class="mb-4">
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-concierge-bell me-2 text-muted"></i>Special Requests
+                                </label>
+                                <textarea asp-for="SpecialRequests" class="form-control" rows="4"
+                                          placeholder="Let us know if you have any special requirements or preferences..."></textarea>
+                                <small class="form-text text-muted">We'll do our best to accommodate your requests, subject to availability</small>
+                            </div>
+                        </div>
+
+                        <!-- Terms and Policies -->
+                        <div class="mb-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="termsCheck" required>
+                                <label class="form-check-label" for="termsCheck">
+                                    I agree to the <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">terms and conditions</a> and <a href="#" data-bs-toggle="modal" data-bs-target="#policyModal">cancellation policy</a>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">Continue to Payment</button>
+                            <p class="text-center text-muted mt-2 small">Your credit card will not be charged until the next step</p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Additional Information -->
+            <div class="card mt-4 border-0">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 text-center mb-3 mb-md-0">
+                            <i class="fas fa-calendar-alt text-muted mb-2" style="font-size: 24px;"></i>
+                            <h6>Flexible Dates</h6>
+                            <p class="text-muted small">Free cancellation up to 24 hours before check-in</p>
+                        </div>
+                        <div class="col-md-4 text-center mb-3 mb-md-0">
+                            <i class="fas fa-tag text-muted mb-2" style="font-size: 24px;"></i>
+                            <h6>Best Rate Guarantee</h6>
+                            <p class="text-muted small">Find a better price and we'll match it</p>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <i class="fas fa-headset text-muted mb-2" style="font-size: 24px;"></i>
+                            <h6>24/7 Support</h6>
+                            <p class="text-muted small">Help is always available</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Terms and Conditions Modal -->
+<div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="termsModalLabel">Terms and Conditions</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h6>Booking Terms</h6>
+                <p>By completing this booking, you agree to the following terms and conditions:</p>
+                <ul>
+                    <li>Rates are per room, per night, based on single/double occupancy.</li>
+                    <li>A valid credit card is required to guarantee your reservation.</li>
+                    <li>Check-in time is 3:00 PM; check-out time is 11:00 AM.</li>
+                    <li>Early check-in and late check-out are subject to availability and may incur additional charges.</li>
+                    <li>All rates are subject to applicable taxes and fees.</li>
+                </ul>
+                <h6>Reservation Policy</h6>
+                <p>We require a valid credit card to hold your reservation. Your card will not be charged until check-in unless specified otherwise in the rate details.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">I Understand</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Cancellation Policy Modal -->
+<div class="modal fade" id="policyModal" tabindex="-1" aria-labelledby="policyModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="policyModalLabel">Cancellation Policy</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Our standard cancellation policy allows for:</p>
+                <ul>
+                    <li>Free cancellation up to 24 hours before check-in</li>
+                    <li>Cancellations made less than 24 hours before check-in will be charged one night's stay</li>
+                    <li>No-shows will be charged the full amount of the reservation</li>
+                </ul>
+                <p>Special rates or promotions may have different cancellation policies.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">I Understand</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        /* About title styling to match home page */
+        .about-title {
+            color: #b59678;
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+        }
+
+        /* Booking steps styling */
+        .booking-steps {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
+        .step-number {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #f0f0f0;
+            color: #666;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-right: 10px;
+        }
+
+        .step.active .step-number {
+            background-color: #b59678;
+            color: white;
+        }
+
+        .step.completed .step-number {
+            background-color: #b59678;
+            color: white;
+        }
+
+        .step-connector {
+            flex-grow: 1;
+            height: 2px;
+            background-color: #f0f0f0;
+            margin: 0 10px;
+        }
+
+            .step-connector.completed {
+                background-color: #b59678;
+            }
+
+        .step-text {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Room price styling */
+        .room-price {
+            color: #b59678;
+            font-weight: 600;
+        }
+
+        /* Button styling to match your site */
+        .btn-primary {
+            background-color: #b59678;
+            border-color: #b59678;
+        }
+
+            .btn-primary:hover {
+                background-color: #a08467;
+                border-color: #a08467;
+            }
+
+        /* Make sure date inputs look good across browsers */
+        input[type="date"] {
+            appearance: none;
+            -webkit-appearance: none;
+            padding: 0.5rem 1rem;
+        }
+
+        /* Form control styling */
+        .form-control:focus, .form-select:focus {
+            border-color: #b59678;
+            box-shadow: 0 0 0 0.25rem rgba(181, 150, 120, 0.25);
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Set minimum check-in date to today
+            const today = new Date();
+            const todayStr = today.toISOString().split('T')[0];
+            $('#checkInDate').attr('min', todayStr);
+
+            // Set minimum check-out date based on check-in
+            $('#checkInDate').change(function() {
+                const checkInDate = new Date($(this).val());
+                const nextDay = new Date(checkInDate);
+                nextDay.setDate(nextDay.getDate() + 1);
+                const nextDayStr = nextDay.toISOString().split('T')[0];
+                $('#checkOutDate').attr('min', nextDayStr);
+
+                // If check-out date is before the new check-in date, update it
+                const checkOutDate = new Date($('#checkOutDate').val());
+                if (checkOutDate <= checkInDate) {
+                    $('#checkOutDate').val(nextDayStr);
+                }
+
+                updateStaySummary();
+            });
+
+            // Update stay summary when check-out date changes
+            $('#checkOutDate').change(function() {
+                updateStaySummary();
+            });
+
+            // Show room details when room is selected
+            $('#roomSelect').change(function() {
+                const selectedOption = $(this).find(':selected');
+                if (selectedOption.val() !== '') {
+                    const category = selectedOption.data('category');
+                    const price = parseFloat(selectedOption.data('price')).toLocaleString('en-US', {
+                        style: 'currency',
+                        currency: 'USD'
+                    });
+                    const description = selectedOption.data('description') || 'Enjoy your stay in our comfortable room with modern amenities.';
+
+                    $('.room-category').text(category);
+                    $('.room-price').text(price + ' per night');
+                    $('.room-description').text(description);
+                    $('#roomDetails').slideDown();
+
+                    updateStaySummary();
+                } else {
+                    $('#roomDetails').slideUp();
+                    $('#staySummary').slideUp();
+                }
+            });
+
+            // Function to update stay summary
+            function updateStaySummary() {
+                const checkInDate = new Date($('#checkInDate').val());
+                const checkOutDate = new Date($('#checkOutDate').val());
+                const selectedOption = $('#roomSelect').find(':selected');
+
+                if (!isNaN(checkInDate) && !isNaN(checkOutDate) && checkOutDate > checkInDate && selectedOption.val() !== '') {
+                    const nightsDiff = Math.round((checkOutDate - checkInDate) / (1000 * 60 * 60 * 24));
+                    const pricePerNight = parseFloat(selectedOption.data('price'));
+                    const totalPrice = nightsDiff * pricePerNight;
+
+                    $('#stayDuration').text(nightsDiff);
+                    $('#stayTotal').text(totalPrice.toLocaleString('en-US', {
+                        style: 'currency',
+                        currency: 'USD'
+                    }));
+
+                    $('#staySummary').slideDown();
+                } else {
+                    $('#staySummary').slideUp();
+                }
+            }
+        });
+    </script>
+}

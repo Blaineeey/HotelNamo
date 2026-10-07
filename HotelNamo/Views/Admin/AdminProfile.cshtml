@@ -4,22 +4,122 @@
     ViewData["Title"] = "Admin Profile";
 }
 
-<h2>Update Admin Profile</h2>
-<form asp-action="AdminProfile" method="post">
-    <div class="form-group">
-        <label asp-for="FirstName"></label>
-        <input asp-for="FirstName" class="form-control" />
-        <span asp-validation-for="FirstName" class="text-danger"></span>
+<div class="row">
+    <div class="col-lg-8 col-md-10 mx-auto">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0"><i class="fa-solid fa-user-shield me-2"></i>Admin Profile</h4>
+                </div>
+            </div>
+            <div class="card-body">
+                @if (ViewBag.StatusMessage != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="fa-solid fa-check-circle me-2"></i> @ViewBag.StatusMessage
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+
+                <div class="row mb-4">
+                    <div class="col-md-4 text-center mb-4 mb-md-0">
+                        <div class="profile-avatar-large mx-auto mb-3">
+                            <span>@(Model.FirstName?[0])@(Model.LastName?[0])</span>
+                        </div>
+                        <h5>@Model.FirstName @Model.LastName</h5>
+                        <p class="text-muted">Administrator</p>
+                    </div>
+
+                    <div class="col-md-8">
+                        <form asp-action="AdminProfile" method="post">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-floating mb-3">
+                                        <input asp-for="FirstName" class="form-control" placeholder="First Name" />
+                                        <label asp-for="FirstName">First Name</label>
+                                        <span asp-validation-for="FirstName" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-floating mb-3">
+                                        <input asp-for="LastName" class="form-control" placeholder="Last Name" />
+                                        <label asp-for="LastName">Last Name</label>
+                                        <span asp-validation-for="LastName" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-floating mb-3">
+                                <input asp-for="Email" class="form-control" placeholder="Email Address" />
+                                <label asp-for="Email">Email Address</label>
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                                <div class="form-text">Your email is used for notifications and account recovery.</div>
+                            </div>
+
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                                <button type="reset" class="btn btn-outline-secondary me-md-2">
+                                    <i class="fa-solid fa-rotate-left me-1"></i> Reset
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fa-solid fa-save me-1"></i> Save Changes
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="border-top pt-4 mt-2">
+                    <h5><i class="fa-solid fa-shield-alt me-2"></i>Security Options</h5>
+                    <div class="list-group">
+                        <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-0">Change Password</h6>
+                                <small class="text-muted">Update your account password</small>
+                            </div>
+                            <span class="badge rounded-pill bg-light text-dark">
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </span>
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-0">Two-Factor Authentication</h6>
+                                <small class="text-muted">Add an extra layer of security</small>
+                            </div>
+                            <span class="badge rounded-pill bg-light text-dark">
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="form-group">
-        <label asp-for="LastName"></label>
-        <input asp-for="LastName" class="form-control" />
-        <span asp-validation-for="LastName" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="Email"></label>
-        <input asp-for="Email" class="form-control" />
-        <span asp-validation-for="Email" class="text-danger"></span>
-    </div>
-    <button type="submit" class="btn btn-primary">Save Changes</button>
-</form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <style>
+        .profile-avatar-large {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background-color: #007bff;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            font-weight: 500;
+        }
+
+        .form-floating > .form-control {
+            padding-top: 1.625rem;
+            padding-bottom: 0.625rem;
+        }
+
+        .list-group-item h6 {
+            font-weight: 500;
+        }
+    </style>
+}

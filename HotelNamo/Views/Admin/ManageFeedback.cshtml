@@ -1,0 +1,431 @@
+﻿@model IEnumerable<HotelNamo.Models.Feedback>
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Manage Feedback";
+}
+
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-header bg-white">
+        <div class="d-flex justify-content-between align-items-center">
+            <h4 class="mb-0"><i class="fa-solid fa-star me-2"></i>Customer Feedback</h4>
+        </div>
+    </div>
+    <div class="card-body">
+        <!-- Filter Form -->
+        <form method="get" class="mb-4 p-3 border rounded bg-light">
+            <div class="row g-3">
+                <div class="col-md-2">
+                    <label class="form-label">Min Rating</label>
+                    <select name="minRating" class="form-select">
+                        <option value="">Any</option>
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            if (ViewBag.MinRating == i)
+                            {
+                                <option value="@i" selected>@i ⭐</option>
+                            }
+                            else
+                            {
+                                <option value="@i">@i ⭐</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Max Rating</label>
+                    <select name="maxRating" class="form-select">
+                        <option value="">Any</option>
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            if (ViewBag.MaxRating == i)
+                            {
+                                <option value="@i" selected>@i ⭐</option>
+                            }
+                            else
+                            {
+                                <option value="@i">@i ⭐</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Room Category</label>
+                    <select name="roomCategory" class="form-select">
+                        <option value="">All Categories</option>
+                        @foreach (var category in ViewBag.RoomCategories)
+                        {
+                            if (ViewBag.RoomCategory == category)
+                            {
+                                <option value="@category" selected>@category</option>
+                            }
+                            else
+                            {
+                                <option value="@category">@category</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">From Date</label>
+                    <input type="date" name="fromDate" class="form-control" value="@ViewBag.FromDate" />
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">To Date</label>
+                    <input type="date" name="toDate" class="form-control" value="@ViewBag.ToDate" />
+                </div>
+                <div class="col-md-1 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fa-solid fa-filter me-1"></i> Filter
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <!-- Data Table -->
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover table-striped">
+                <thead class="table-dark">
+                    <tr class="text-center">
+                        <th>ID</th>
+                        <th>Guest</th>
+                        <th>Room</th>
+                        <th>Rating</th>
+                        <th>Review</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Any())
+                    {
+                        @foreach (var feedback in Model)
+                        {
+                            <tr>
+                                <td class="text-center">@feedback.Id</td>
+                                <td>
+                                    @if (feedback.User != null)
+                                    {
+                                        <strong>@(feedback.User.FirstName + " " + feedback.User.LastName)</strong>
+
+                                        <br />
+                                        <small>@feedback.User.Email</small>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Unknown User</span>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    @if (feedback.Room != null)
+                                    {
+                                        <span>Room #@feedback.Room.RoomNumber</span>
+
+                                        <br />
+                                        <small class="badge bg-info">@feedback.Room.Category</small>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Unknown Room</span>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    <div class="rating">
+                                        @for (int i = 1; i <= 5; i++)
+                                        {
+                                            if (i <= feedback.Rating)
+                                            {
+                                                <i class="fa-solid fa-star text-warning"></i>
+                                            }
+                                            else
+                                            {
+                                                <i class="fa-regular fa-star text-muted"></i>
+                                            }
+                                        }
+                                    </div>
+                                    <div class="mt-1">
+                                        @feedback.Rating/5
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="review-text">
+                                        @if (feedback.Review.Length > 100)
+                                        {
+                                            @feedback.Review.Substring(0, 100)
+
+                                            <text>...</text>
+                                        }
+                                        else
+                                        {
+                                            @feedback.Review
+                                        }
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    @feedback.DateSubmitted.ToString("MMM dd, yyyy")
+                                </td>
+                                <td class="text-center">
+                                    <button type="button" class="btn btn-sm btn-info"
+                                            data-bs-toggle="modal" data-bs-target="#feedbackModal@(feedback.Id)">
+                                        <i class="fa-solid fa-eye"></i> View
+                                    </button>
+
+                                    <!-- Feedback Details Modal -->
+                                    <div class="modal fade" id="feedbackModal@(feedback.Id)" tabindex="-1" aria-hidden="true">
+                                        <div class="modal-dialog modal-lg">
+                                            <div class="modal-content">
+                                                <div class="modal-header bg-light">
+                                                    <h5 class="modal-title">Feedback #@feedback.Id Details</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="row mb-4">
+                                                        <div class="col-md-6">
+                                                            <h6 class="fw-bold">Guest Information</h6>
+                                                            @if (feedback.User != null)
+                                                            {
+                                                                <p><strong>Name:</strong> @(feedback.User.FirstName + " " + feedback.User.LastName)</p>
+                                                                <p><strong>Email:</strong> @feedback.User.Email</p>
+                                                                <p><strong>User ID:</strong> @feedback.UserId</p>
+                                                            }
+                                                            else
+                                                            {
+                                                                <p><strong>User:</strong> Unknown User</p>
+                                                            }
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <h6 class="fw-bold">Room Details</h6>
+                                                            @if (feedback.Room != null)
+                                                            {
+                                                                <p><strong>Room Number:</strong> @feedback.Room.RoomNumber</p>
+                                                                <p><strong>Category:</strong> @feedback.Room.Category</p>
+                                                                <p><strong>Floor:</strong> @feedback.Room.FloorNumber</p>
+                                                            }
+                                                            else
+                                                            {
+                                                                <p><strong>Room:</strong> Unknown Room</p>
+                                                            }
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row mb-4">
+                                                        <div class="col-md-12">
+                                                            <h6 class="fw-bold">Booking Details</h6>
+                                                            @if (feedback.Booking != null)
+                                                            {
+                                                                <p><strong>Booking ID:</strong> @feedback.BookingId</p>
+                                                                <p><strong>Stay Period:</strong> @feedback.Booking.CheckInDate.ToString("MMM dd, yyyy") - @feedback.Booking.CheckOutDate.ToString("MMM dd, yyyy")</p>
+                                                                <p><strong>Total Amount:</strong> $@feedback.Booking.TotalPrice.ToString("F2")</p>
+                                                            }
+                                                            else
+                                                            {
+                                                                <p><strong>Booking:</strong> Unknown Booking</p>
+                                                            }
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row mb-4">
+                                                        <div class="col-md-12">
+                                                            <h6 class="fw-bold">Rating & Review</h6>
+                                                            <div class="d-flex mb-2">
+                                                                <div class="me-2">
+                                                                    <strong>Rating:</strong>
+                                                                </div>
+                                                                <div class="rating">
+                                                                    @for (int i = 1; i <= 5; i++)
+                                                                    {
+                                                                        if (i <= feedback.Rating)
+                                                                        {
+                                                                            <i class="fa-solid fa-star text-warning"></i>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <i class="fa-regular fa-star text-muted"></i>
+                                                                        }
+                                                                    }
+                                                                </div>
+                                                                <div class="ms-2">
+                                                                    (@feedback.Rating/5)
+                                                                </div>
+                                                            </div>
+                                                            <p><strong>Date Submitted:</strong> @feedback.DateSubmitted.ToString("MMM dd, yyyy hh:mm tt")</p>
+                                                            <div class="card">
+                                                                <div class="card-body">
+                                                                    <p class="mb-0">@feedback.Review</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center py-4">
+                                <div class="alert alert-info mb-0">
+                                    <i class="fa-solid fa-info-circle me-2"></i> No feedback found with the specified criteria.
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Summary Dashboard -->
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Rating Summary</h5>
+            </div>
+            <div class="card-body">
+                <div class="rating-summary">
+                    @{
+                        var ratings = new int[6]; // Index 0 will be unused, 1-5 for stars
+                        foreach (var feedback in Model)
+                        {
+                            ratings[feedback.Rating]++;
+                        }
+                        var totalRatings = Model.Count();
+                        var avgRating = totalRatings > 0 ? Model.Average(f => f.Rating) : 0;
+                    }
+
+                    <div class="text-center mb-4">
+                        <h3 class="mb-0">@avgRating.ToString("F1")/5.0</h3>
+                        <div class="mb-2">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                if (i <= Math.Round(avgRating))
+                                {
+                                    <i class="fa-solid fa-star text-warning fa-lg"></i>
+                                }
+                                else if (i - 0.5 <= avgRating)
+                                {
+                                    <i class="fa-solid fa-star-half-stroke text-warning fa-lg"></i>
+                                }
+                                else
+                                {
+                                    <i class="fa-regular fa-star text-muted fa-lg"></i>
+                                }
+                            }
+                        </div>
+                        <p class="text-muted">@totalRatings total reviews</p>
+                    </div>
+
+                    <div class="rating-bars">
+                        @for (int i = 5; i >= 1; i--)
+                        {
+                            var percentage = totalRatings > 0 ? (ratings[i] * 100) / totalRatings : 0;
+                            <div class="rating-bar-row d-flex align-items-center mb-2">
+                                <div class="rating-label me-2">
+                                    @i <i class="fa-solid fa-star text-warning"></i>
+                                </div>
+                                <div class="progress flex-grow-1" style="height: 20px;">
+                                    <div class="progress-bar @GetProgressBarClass(i)" role="progressbar"
+                                         style="width: @percentage%;" aria-valuenow="@percentage"
+                                         aria-valuemin="0" aria-valuemax="100">
+                                        @percentage%
+                                    </div>
+                                </div>
+                                <div class="rating-count ms-2">
+                                    @ratings[i]
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Room Category Ratings</h5>
+            </div>
+            <div class="card-body">
+                @{
+                    var categoriesData = Model
+                    .GroupBy(f => f.Room?.Category ?? "Unknown")
+                    .Select(g => new
+                    {
+                        Category = g.Key,
+                        AverageRating = g.Average(f => f.Rating),
+                        Count = g.Count()
+                    })
+                    .OrderByDescending(g => g.AverageRating)
+                    .ToList();
+                }
+
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Room Category</th>
+                                <th>Average Rating</th>
+                                <th>Reviews</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var category in categoriesData)
+                            {
+                                <tr>
+                                    <td>@category.Category</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <span class="me-2">@category.AverageRating.ToString("F1")</span>
+                                            <div class="rating">
+                                                @for (int i = 1; i <= 5; i++)
+                                                {
+                                                    if (i <= Math.Round(category.AverageRating))
+                                                    {
+                                                        <i class="fa-solid fa-star text-warning"></i>
+                                                    }
+                                                    else if (i - 0.5 <= category.AverageRating)
+                                                    {
+                                                        <i class="fa-solid fa-star-half-stroke text-warning"></i>
+                                                    }
+                                                    else
+                                                    {
+                                                        <i class="fa-regular fa-star text-muted"></i>
+                                                    }
+                                                }
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>@category.Count</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@functions {
+    public string GetProgressBarClass(int rating)
+    {
+        return rating switch
+        {
+            5 => "bg-success",
+            4 => "bg-info",
+            3 => "bg-primary",
+            2 => "bg-warning",
+            1 => "bg-danger",
+            _ => "bg-secondary"
+        };
+    }
+}

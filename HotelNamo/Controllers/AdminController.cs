@@ -8,9 +8,6 @@ using HotelNamo.Data;
 using HotelNamo.Models;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using System;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Http;
-using System.IO;
 
 [Authorize(Roles = "Admin")]
 public class AdminController : Controller
@@ -32,127 +29,27 @@ public class AdminController : Controller
         _emailSender = emailSender;
     }
 
-    public async Task<IActionResult> Index()
+    public IActionResult Index()
     {
-        try
-        {
-            var dashboardData = new AdminDashboardViewModel
-            {
-                // User Statistics
-                TotalUsers = await _userManager.Users.CountAsync(),
-                TotalStaff = (await _userManager.GetUsersInRoleAsync("Staff")).Count,
-                TotalAdmins = (await _userManager.GetUsersInRoleAsync("Admin")).Count,
+        // Get counts for dashboard
+        ViewBag.TotalRooms = _context.Rooms.Count();
+        ViewBag.TotalBookings = _context.Bookings.Count();
+        ViewBag.ActiveBookings = _context.Bookings.Count(b => b.CheckOutDate >= DateTime.Today);
+        ViewBag.PendingMaintenanceRequests = _context.MaintenanceRequests.Count(m => m.Status == "Pending");
+        ViewBag.PendingHousekeepingTasks = _context.HousekeepingTasks.Count(h => h.Status == "Pending");
+        ViewBag.TotalSpaBookings = _context.SpaBookings.Count();
+        ViewBag.TotalDiningReservations = _context.TableReservations.Count();
+        ViewBag.NewFeedbackCount = _context.Feedbacks.Count(f => f.DateSubmitted.Date == DateTime.Today.Date);
 
-                // Room Statistics
-                TotalRooms = await _context.Rooms.CountAsync(),
-                AvailableRooms = await _context.Rooms.CountAsync(r => r.Status == "Available"),
-                OccupiedRooms = await _context.Rooms.CountAsync(r => r.Status == "Occupied"),
-                MaintenanceRooms = await _context.Rooms.CountAsync(r => r.Status == "Maintenance"),
+        // Get latest bookings for dashboard
+        ViewBag.LatestBookings = _context.Bookings
+            .Include(b => b.Room)
+            .Include(b => b.User)
+            .OrderByDescending(b => b.BookingDate)
+            .Take(5)
+            .ToList();
 
-                // Booking Statistics
-                TotalBookings = await _context.Bookings.CountAsync(),
-                ActiveBookings = await _context.Bookings.CountAsync(b => b.IsConfirmed && b.CheckOutDate > DateTime.Now),
-                CompletedBookings = await _context.Bookings.CountAsync(b => b.IsConfirmed && b.CheckOutDate <= DateTime.Now),
-                CancelledBookings = await _context.Bookings.CountAsync(b => !b.IsConfirmed),
-
-                // Financial Statistics
-                TotalRevenue = await _context.Payments.SumAsync(p => p.Amount),
-                MonthlyRevenue = await _context.Payments
-                    .Where(p => p.PaymentDate >= DateTime.Now.AddMonths(-1))
-                    .SumAsync(p => p.Amount),
-
-                // Recent Activities
-                RecentBookings = await _context.Bookings
-                    .Include(b => b.Room)
-                    .Include(b => b.User)
-                    .OrderByDescending(b => b.BookingDate)
-                    .Take(5)
-                    .ToListAsync(),
-
-                RecentPayments = await _context.Payments
-                    .Include(p => p.Booking)
-                    .OrderByDescending(p => p.PaymentDate)
-                    .Take(5)
-                    .ToListAsync(),
-
-                PendingMaintenance = await _context.MaintenanceRequests
-                    .Include(m => m.Room)
-                    .Where(m => m.Status == "Pending")
-                    .Take(5)
-                    .ToListAsync(),
-
-                PendingHousekeeping = await _context.HousekeepingTasks
-                    .Include(h => h.Room)
-                    .Where(h => h.Status == "Pending")
-                    .Take(5)
-                    .ToListAsync(),
-
-                // Chart Data
-                MonthlyBookings = await GetMonthlyBookings(),
-                RoomTypeDistribution = await GetRoomTypeDistribution(),
-                RevenueByMonth = await GetRevenueByMonth()
-            };
-
-            return View(dashboardData);
-        }
-        catch
-        {
-            // Log the exception (you can add proper logging here)
-            return View("Error", new ErrorViewModel { RequestId = "Dashboard Error" });
-        }
-    }
-
-    private async Task<List<ChartData>> GetMonthlyBookings()
-    {
-        var currentYear = DateTime.Now.Year;
-        var monthlyData = new List<ChartData>();
-
-        for (int month = 1; month <= 12; month++)
-        {
-            var count = await _context.Bookings
-                .CountAsync(b => b.BookingDate.Year == currentYear && b.BookingDate.Month == month);
-
-            monthlyData.Add(new ChartData
-            {
-                Label = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month),
-                Value = count
-            });
-        }
-
-        return monthlyData;
-    }
-
-    private async Task<List<ChartData>> GetRoomTypeDistribution()
-    {
-        return await _context.Rooms
-            .GroupBy(r => r.Category)
-            .Select(g => new ChartData
-            {
-                Label = g.Key,
-                Value = g.Count()
-            })
-            .ToListAsync();
-    }
-
-    private async Task<List<ChartData>> GetRevenueByMonth()
-    {
-        var currentYear = DateTime.Now.Year;
-        var monthlyData = new List<ChartData>();
-
-        for (int month = 1; month <= 12; month++)
-        {
-            var revenue = await _context.Payments
-                .Where(p => p.PaymentDate.Year == currentYear && p.PaymentDate.Month == month)
-                .SumAsync(p => p.Amount);
-
-            monthlyData.Add(new ChartData
-            {
-                Label = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month),
-                Value = (int)revenue
-            });
-        }
-
-        return monthlyData;
+        return View();
     }
 
     public async Task<IActionResult> ListUsers()
@@ -174,13 +71,9 @@ public class AdminController : Controller
         return View(list);
     }
 
-
-    [Authorize(Roles = "Admin")]
     [HttpGet]
     public IActionResult CreateStaff()
     {
-        ViewBag.Roles = _roleManager.Roles.Select(r => r.Name).ToList();
-        // No dynamic roles, just a text input for the role
         return View();
     }
 
@@ -189,11 +82,10 @@ public class AdminController : Controller
     {
         if (!ModelState.IsValid)
         {
-            ViewBag.Roles = _roleManager.Roles.Select(r => r.Name).ToList();
             return View(model);
         }
 
-        // 1. Create the user
+        // Create the user
         var user = new ApplicationUser
         {
             FirstName = model.FirstName,
@@ -205,147 +97,78 @@ public class AdminController : Controller
         var result = await _userManager.CreateAsync(user, model.Password);
         if (!result.Succeeded)
         {
-            // Show identity errors
             foreach (var error in result.Errors)
             {
                 ModelState.AddModelError("", error.Description);
             }
-            ViewBag.Roles = _roleManager.Roles.Select(r => r.Name).ToList();
             return View(model);
         }
 
-        // 2. Validate the typed role
+        // Validate the typed role
         if (!string.IsNullOrEmpty(model.SelectedRole))
         {
             bool roleExists = await _roleManager.RoleExistsAsync(model.SelectedRole);
             if (!roleExists)
             {
-                // If the typed role doesn't exist, show an error
                 ModelState.AddModelError("SelectedRole", $"Role '{model.SelectedRole}' does not exist.");
-                // Optionally delete the newly created user or handle differently
-                // await _userManager.DeleteAsync(user);
-                ViewBag.Roles = _roleManager.Roles.Select(r => r.Name).ToList();
                 return View(model);
             }
             else
             {
-                // 3. Assign the typed role
                 await _userManager.AddToRoleAsync(user, model.SelectedRole);
             }
         }
         else
         {
-            // If no role typed, you could default to "User" or show an error
-            ModelState.AddModelError("SelectedRole", "Please select a role.");
-            // Optionally delete the user or handle differently
-            ViewBag.Roles = _roleManager.Roles.Select(r => r.Name).ToList();
+            ModelState.AddModelError("SelectedRole", "Please enter a role.");
             return View(model);
         }
 
         return RedirectToAction("ListUsers");
     }
 
-
-    // ---------- ROOM MANAGEMENT -----------
+    // ROOM MANAGEMENT
     public IActionResult RoomList()
     {
-        var rooms = _context.Rooms
-            .Include(r => r.RoomImages)
-            .ToList();
+        var rooms = _context.Rooms.ToList();
         return View(rooms);
-    }
-
-    [HttpGet]
-    public IActionResult RoomDetails(int id)
-    {
-        var room = _context.Rooms
-            .Include(r => r.RoomImages)
-            .Include(r => r.RoomAmenities).ThenInclude(ra => ra.Amenity)
-            .FirstOrDefault(r => r.Id == id);
-        if (room == null) return NotFound();
-        return View(room);
-    }
-
-    [HttpGet]
-    public IActionResult EditRoom(int id)
-    {
-        var room = _context.Rooms
-            .Include(r => r.RoomImages)
-            .FirstOrDefault(r => r.Id == id);
-        if (room == null) return NotFound();
-        return View(room);
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> EditRoom(Room model)
-    {
-        if (!ModelState.IsValid)
-        {
-            return View(model);
-        }
-        var room = await _context.Rooms.FirstOrDefaultAsync(r => r.Id == model.Id);
-        if (room == null) return NotFound();
-        room.RoomNumber = model.RoomNumber;
-        room.Category = model.Category;
-        room.Price = model.Price;
-        room.Status = model.Status;
-        room.Description = model.Description;
-        await _context.SaveChangesAsync();
-        return RedirectToAction("RoomList");
     }
 
     [HttpGet]
     public IActionResult CreateRoom()
     {
         ViewBag.Amenities = _context.Amenities.ToList();
-
-        // Explicitly add existing images to ViewBag
         ViewBag.ExistingImages = new List<string>
-    {
-        "single-room.jpg",
-        "guest-room.jpg",
-        "deluxe-room.jpg",
-        "superior-room.jpg"
-    };
+        {
+            "single-room.jpg",
+            "guest-room.jpg",
+            "deluxe-room.jpg",
+            "superior-room.jpg"
+        };
 
         return View();
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateRoom(Room room, int[] selectedAmenities, string selectedImage, IFormFile uploadImage)
+    public async Task<IActionResult> CreateRoom(Room room, int[] selectedAmenities, string selectedImage)
     {
-        // Explicitly remove ModelState validation for RoomImages as we're assigning it manually
         ModelState.Remove("RoomImages");
 
         if (!ModelState.IsValid)
         {
             ViewBag.Amenities = _context.Amenities.ToList();
             ViewBag.ExistingImages = new List<string>
-        {
-            "single-room.jpg", "guest-room.jpg", "superior-room.jpg", "deluxe-room.jpg"
-        };
+            {
+                "single-room.jpg", "guest-room.jpg", "superior-room.jpg", "deluxe-room.jpg"
+            };
             return View(room);
         }
 
-        // Use uploaded image if provided
-        if (uploadImage != null && uploadImage.Length > 0)
-        {
-            var fileName = Guid.NewGuid() + Path.GetExtension(uploadImage.FileName);
-            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "rooms", fileName);
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await uploadImage.CopyToAsync(stream);
-            }
-            selectedImage = fileName;
-        }
-
         room.RoomAmenities = selectedAmenities.Select(a => new RoomAmenity { AmenityId = a }).ToList();
-
-        // Explicitly assign existing image clearly
         room.RoomImages = new List<RoomImage>
-    {
-        new RoomImage { ImagePath = selectedImage }
-    };
+        {
+            new RoomImage { ImagePath = selectedImage }
+        };
 
         _context.Rooms.Add(room);
         await _context.SaveChangesAsync();
@@ -353,159 +176,465 @@ public class AdminController : Controller
         return RedirectToAction("RoomList");
     }
 
-    // ---------- BOOKINGS MANAGEMENT -----------
-    [HttpGet]
-    public async Task<IActionResult> AllBookings()
+    // BOOKING MANAGEMENT
+    public async Task<IActionResult> AllBookings(DateTime? fromDate, DateTime? toDate, string status, string searchQuery)
     {
-        var bookings = await _context.Bookings
+        ViewBag.FromDate = fromDate?.ToString("yyyy-MM-dd");
+        ViewBag.ToDate = toDate?.ToString("yyyy-MM-dd");
+        ViewBag.Status = status;
+        ViewBag.SearchQuery = searchQuery;
+
+        var query = _context.Bookings
             .Include(b => b.Room)
             .Include(b => b.User)
-            .OrderByDescending(b => b.CreatedDate)
-            .ToListAsync();
+            .AsQueryable();
 
-        return View(bookings);
+        // Apply date filters
+        if (fromDate.HasValue)
+            query = query.Where(b => b.CheckInDate >= fromDate.Value);
+        if (toDate.HasValue)
+            query = query.Where(b => b.CheckOutDate <= toDate.Value);
+
+        // Apply status filter
+        switch (status)
+        {
+            case "pending":
+                query = query.Where(b => !b.IsConfirmed);
+                break;
+            case "confirmed":
+                query = query.Where(b => b.IsConfirmed && b.ActualCheckInTime == null);
+                break;
+            case "checkedIn":
+                query = query.Where(b => b.IsConfirmed && b.ActualCheckInTime != null && b.ActualCheckOutTime == null);
+                break;
+            case "checkedOut":
+                query = query.Where(b => b.IsConfirmed && b.ActualCheckOutTime != null);
+                break;
+        }
+
+        // Apply search query
+        if (!string.IsNullOrEmpty(searchQuery))
+        {
+            query = query.Where(b =>
+                (b.User != null && (
+                    b.User.FirstName.Contains(searchQuery) ||
+                    b.User.LastName.Contains(searchQuery) ||
+                    b.User.Email.Contains(searchQuery)
+                )) ||
+                (b.GuestName != null && b.GuestName.Contains(searchQuery)) ||
+                (b.GuestEmail != null && b.GuestEmail.Contains(searchQuery))
+            );
+        }
+
+        // Order by check-in date
+        query = query.OrderByDescending(b => b.CheckInDate);
+
+        return View(await query.ToListAsync());
     }
 
-    [HttpGet]
     public async Task<IActionResult> ConfirmBooking(int bookingId)
     {
-        var booking = await _context.Bookings.FirstOrDefaultAsync(b => b.Id == bookingId);
+        var booking = await _context.Bookings.FindAsync(bookingId);
         if (booking == null)
-        {
             return NotFound();
-        }
 
-        if (!booking.IsConfirmed)
+        booking.IsConfirmed = true;
+        await _context.SaveChangesAsync();
+
+        // Optional: Send confirmation email
+        if (!string.IsNullOrEmpty(booking.GuestEmail))
         {
-            booking.IsConfirmed = true;
-            await _context.SaveChangesAsync();
+            await _emailSender.SendEmailAsync(
+                booking.GuestEmail,
+                "Your Hotel Booking is Confirmed",
+                $"Dear {booking.GuestName},<br><br>Your booking (ID: {booking.Id}) has been confirmed. We look forward to welcoming you on {booking.CheckInDate:MMM dd, yyyy}.<br><br>Best regards,<br>HotelNamo Team"
+            );
         }
 
-        return RedirectToAction("AllBookings");
+        return RedirectToAction(nameof(AllBookings));
     }
 
-    [HttpGet]
     public async Task<IActionResult> AdminCheckIn(int bookingId)
     {
-        var booking = await _context.Bookings.Include(b => b.Room).FirstOrDefaultAsync(b => b.Id == bookingId);
+        var booking = await _context.Bookings.FindAsync(bookingId);
         if (booking == null)
-        {
             return NotFound();
-        }
 
-        if (booking.IsConfirmed && booking.ActualCheckInTime == null)
-        {
-            booking.ActualCheckInTime = DateTime.Now;
-            await _context.SaveChangesAsync();
-        }
+        booking.ActualCheckInTime = DateTime.Now;
+        await _context.SaveChangesAsync();
 
-        return RedirectToAction("AllBookings");
+        return RedirectToAction(nameof(AllBookings));
     }
 
-    [HttpGet]
     public async Task<IActionResult> AdminCheckOut(int bookingId)
     {
-        var booking = await _context.Bookings.Include(b => b.Room).FirstOrDefaultAsync(b => b.Id == bookingId);
+        var booking = await _context.Bookings.FindAsync(bookingId);
         if (booking == null)
-        {
             return NotFound();
-        }
 
-        if (booking.ActualCheckInTime != null && booking.ActualCheckOutTime == null)
-        {
-            booking.ActualCheckOutTime = DateTime.Now;
-            await _context.SaveChangesAsync();
-        }
+        booking.ActualCheckOutTime = DateTime.Now;
+        await _context.SaveChangesAsync();
 
-        return RedirectToAction("AllBookings");
+        return RedirectToAction(nameof(AllBookings));
     }
 
+    // SPA BOOKING MANAGEMENT
+    public async Task<IActionResult> ManageSpaBookings(DateTime? fromDate, DateTime? toDate, string status, string treatment, string searchQuery)
+    {
+        ViewBag.FromDate = fromDate?.ToString("yyyy-MM-dd");
+        ViewBag.ToDate = toDate?.ToString("yyyy-MM-dd");
+        ViewBag.Status = status;
+        ViewBag.Treatment = treatment;
+        ViewBag.SearchQuery = searchQuery;
+
+        // Get unique treatments for filter dropdown
+        ViewBag.Treatments = await _context.SpaBookings
+            .Select(sb => sb.Treatment)
+            .Distinct()
+            .OrderBy(t => t)
+            .ToListAsync();
+
+        var query = _context.SpaBookings
+            .Include(sb => sb.User)
+            .AsQueryable();
+
+        // Apply date filters
+        if (fromDate.HasValue)
+            query = query.Where(sb => sb.PreferredDate >= fromDate.Value);
+        if (toDate.HasValue)
+            query = query.Where(sb => sb.PreferredDate <= toDate.Value);
+
+        // Apply status filter
+        if (!string.IsNullOrEmpty(status))
+            query = query.Where(sb => sb.Status == status);
+
+        // Apply treatment filter
+        if (!string.IsNullOrEmpty(treatment))
+            query = query.Where(sb => sb.Treatment == treatment);
+
+        // Apply search query
+        if (!string.IsNullOrEmpty(searchQuery))
+        {
+            query = query.Where(sb =>
+                sb.FullName.Contains(searchQuery) ||
+                sb.Email.Contains(searchQuery) ||
+                sb.Phone.Contains(searchQuery)
+            );
+        }
+
+        // Order by date
+        query = query.OrderByDescending(sb => sb.PreferredDate);
+
+        return View(await query.ToListAsync());
+    }
+
+    public async Task<IActionResult> UpdateSpaBookingStatus(int bookingId, string status)
+    {
+        var booking = await _context.SpaBookings.FindAsync(bookingId);
+        if (booking == null)
+            return NotFound();
+
+        booking.Status = status;
+        await _context.SaveChangesAsync();
+
+        // Optional: Send notification email
+        if (status == "Confirmed" || status == "Cancelled")
+        {
+            await _emailSender.SendEmailAsync(
+                booking.Email,
+                $"Your Spa Booking is {status}",
+                $"Dear {booking.FullName},<br><br>Your spa booking for {booking.PreferredDate:MMM dd, yyyy} at {booking.PreferredTime} has been {status.ToLower()}.<br><br>Best regards,<br>HotelNamo Spa Team"
+            );
+        }
+
+        return RedirectToAction(nameof(ManageSpaBookings));
+    }
+
+    // DINING RESERVATION MANAGEMENT
+    public async Task<IActionResult> ManageDiningReservations(DateTime? fromDate, DateTime? toDate, string status, string venue, string searchQuery)
+    {
+        ViewBag.FromDate = fromDate?.ToString("yyyy-MM-dd");
+        ViewBag.ToDate = toDate?.ToString("yyyy-MM-dd");
+        ViewBag.Status = status;
+        ViewBag.Venue = venue;
+        ViewBag.SearchQuery = searchQuery;
+
+        // Get unique venues for filter dropdown
+        ViewBag.Venues = await _context.TableReservations
+            .Select(tr => tr.Venue)
+            .Distinct()
+            .OrderBy(v => v)
+            .ToListAsync();
+
+        var query = _context.TableReservations
+            .Include(tr => tr.User)
+            .AsQueryable();
+
+        // Apply date filters
+        if (fromDate.HasValue)
+            query = query.Where(tr => tr.ReservationDate >= fromDate.Value);
+        if (toDate.HasValue)
+            query = query.Where(tr => tr.ReservationDate <= toDate.Value);
+
+        // Apply status filter
+        if (!string.IsNullOrEmpty(status))
+            query = query.Where(tr => tr.Status == status);
+
+        // Apply venue filter
+        if (!string.IsNullOrEmpty(venue))
+            query = query.Where(tr => tr.Venue == venue);
+
+        // Apply search query
+        if (!string.IsNullOrEmpty(searchQuery))
+        {
+            query = query.Where(tr =>
+                tr.FullName.Contains(searchQuery) ||
+                tr.Email.Contains(searchQuery) ||
+                tr.Phone.Contains(searchQuery)
+            );
+        }
+
+        // Order by date
+        query = query.OrderByDescending(tr => tr.ReservationDate);
+
+        return View(await query.ToListAsync());
+    }
+
+    public async Task<IActionResult> UpdateDiningReservationStatus(int reservationId, string status)
+    {
+        var reservation = await _context.TableReservations.FindAsync(reservationId);
+        if (reservation == null)
+            return NotFound();
+
+        reservation.Status = status;
+        await _context.SaveChangesAsync();
+
+        // Optional: Send notification email
+        if (status == "Confirmed" || status == "Cancelled")
+        {
+            await _emailSender.SendEmailAsync(
+                reservation.Email,
+                $"Your Dining Reservation is {status}",
+                $"Dear {reservation.FullName},<br><br>Your reservation at {reservation.Venue} for {reservation.ReservationDate:MMM dd, yyyy} at {reservation.ReservationTime} has been {status.ToLower()}.<br><br>Best regards,<br>HotelNamo Dining Team"
+            );
+        }
+
+        return RedirectToAction(nameof(ManageDiningReservations));
+    }
+
+    // FEEDBACK MANAGEMENT
+    public async Task<IActionResult> ManageFeedback(int? minRating, int? maxRating, string roomCategory, DateTime? fromDate, DateTime? toDate)
+    {
+        ViewBag.MinRating = minRating;
+        ViewBag.MaxRating = maxRating;
+        ViewBag.RoomCategory = roomCategory;
+        ViewBag.FromDate = fromDate?.ToString("yyyy-MM-dd");
+        ViewBag.ToDate = toDate?.ToString("yyyy-MM-dd");
+
+        // Get unique room categories for filter dropdown
+        ViewBag.RoomCategories = await _context.Rooms
+            .Select(r => r.Category)
+            .Distinct()
+            .OrderBy(c => c)
+            .ToListAsync();
+
+        var query = _context.Feedbacks
+            .Include(f => f.User)
+            .Include(f => f.Room)
+            .Include(f => f.Booking)
+            .AsQueryable();
+
+        // Apply rating filters
+        if (minRating.HasValue)
+            query = query.Where(f => f.Rating >= minRating.Value);
+        if (maxRating.HasValue)
+            query = query.Where(f => f.Rating <= maxRating.Value);
+
+        // Apply room category filter
+        if (!string.IsNullOrEmpty(roomCategory))
+            query = query.Where(f => f.Room.Category == roomCategory);
+
+        // Apply date filters
+        if (fromDate.HasValue)
+            query = query.Where(f => f.DateSubmitted >= fromDate.Value);
+        if (toDate.HasValue)
+            query = query.Where(f => f.DateSubmitted <= toDate.Value);
+
+        // Order by date (newest first)
+        query = query.OrderByDescending(f => f.DateSubmitted);
+
+        return View(await query.ToListAsync());
+    }
+
+    // ADMIN PROFILE
     [HttpGet]
     public async Task<IActionResult> AdminProfile()
     {
         var user = await _userManager.GetUserAsync(User);
-        if (user == null) return NotFound();
+        if (user == null)
+        {
+            return NotFound();
+        }
 
-        var vm = new AdminProfileViewModel
+        var model = new AdminProfileViewModel
         {
             FirstName = user.FirstName,
             LastName = user.LastName,
             Email = user.Email
         };
-        return View(vm);
+
+        return View(model);
     }
 
     [HttpPost]
-    public async Task<IActionResult> AdminProfile(AdminProfileViewModel vm)
+    public async Task<IActionResult> AdminProfile(AdminProfileViewModel model)
     {
-        if (!ModelState.IsValid) return View(vm);
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
 
         var user = await _userManager.GetUserAsync(User);
-        if (user == null) return NotFound();
+        if (user == null)
+        {
+            return NotFound();
+        }
 
-        user.FirstName = vm.FirstName;
-        user.LastName = vm.LastName;
-        user.Email = vm.Email;
-        user.UserName = vm.Email;
+        user.FirstName = model.FirstName;
+        user.LastName = model.LastName;
 
-        await _userManager.UpdateAsync(user);
-        return RedirectToAction("Index");
+        // Email change requires additional verification and may affect the user identity
+        // So this is not implemented in this basic example
+
+        var result = await _userManager.UpdateAsync(user);
+        if (!result.Succeeded)
+        {
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError("", error.Description);
+            }
+            return View(model);
+        }
+
+        ViewBag.StatusMessage = "Your profile has been updated";
+        return View(model);
     }
-
-    // ---------- USER MANAGEMENT -----------
     [HttpGet]
     public async Task<IActionResult> EditUser(string id)
     {
+        if (id == null)
+        {
+            return NotFound();
+        }
+
         var user = await _userManager.FindByIdAsync(id);
-        if (user == null) return NotFound();
-        var roles = await _userManager.GetRolesAsync(user);
-        ViewBag.Roles = _roleManager.Roles.Select(r => r.Name).ToList();
-        var vm = new UserWithRolesViewModel { UserId = user.Id, Email = user.Email, Roles = roles };
-        return View(vm);
+        if (user == null)
+        {
+            return NotFound();
+        }
+
+        var userRoles = await _userManager.GetRolesAsync(user);
+
+        var model = new EditUserViewModel
+        {
+            Id = user.Id,
+            Email = user.Email,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            SelectedRole = userRoles.FirstOrDefault() // Gets the first role
+        };
+
+        return View(model);
     }
 
     [HttpPost]
-    public async Task<IActionResult> EditUser(UserWithRolesViewModel vm, string? selectedRole)
+    public async Task<IActionResult> EditUser(EditUserViewModel model)
     {
-        var user = await _userManager.FindByIdAsync(vm.UserId);
-        if (user == null) return NotFound();
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
 
-        // Update email/username
-        user.Email = vm.Email;
-        user.UserName = vm.Email;
-        await _userManager.UpdateAsync(user);
+        var user = await _userManager.FindByIdAsync(model.Id);
+        if (user == null)
+        {
+            ModelState.AddModelError("", "User not found");
+            return View(model);
+        }
 
-        // Update role: replace current roles with the selected one (if provided and exists)
+        // Update user details
+        user.FirstName = model.FirstName;
+        user.LastName = model.LastName;
+        user.Email = model.Email;
+        user.UserName = model.Email; // Update username to match email
+
+        var result = await _userManager.UpdateAsync(user);
+        if (!result.Succeeded)
+        {
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError("", error.Description);
+            }
+            return View(model);
+        }
+
+        // Handle role update
         var currentRoles = await _userManager.GetRolesAsync(user);
+
+        // Remove current roles
         if (currentRoles.Any())
         {
             await _userManager.RemoveFromRolesAsync(user, currentRoles);
         }
-        if (!string.IsNullOrWhiteSpace(selectedRole) && await _roleManager.RoleExistsAsync(selectedRole))
+
+        // Add new role if specified
+        if (!string.IsNullOrEmpty(model.SelectedRole))
         {
-            await _userManager.AddToRoleAsync(user, selectedRole);
+            bool roleExists = await _roleManager.RoleExistsAsync(model.SelectedRole);
+            if (!roleExists)
+            {
+                ModelState.AddModelError("SelectedRole", $"Role '{model.SelectedRole}' does not exist.");
+                return View(model);
+            }
+            else
+            {
+                await _userManager.AddToRoleAsync(user, model.SelectedRole);
+            }
         }
 
         return RedirectToAction("ListUsers");
     }
 
-    [HttpGet]
     public async Task<IActionResult> DeleteUser(string id)
     {
-        var user = await _userManager.FindByIdAsync(id);
-        if (user == null) return NotFound();
-        var vm = new UserWithRolesViewModel { UserId = user.Id, Email = user.Email };
-        return View(vm);
-    }
+        if (id == null)
+        {
+            return NotFound();
+        }
 
-    [HttpPost, ActionName("DeleteUser")]
-    public async Task<IActionResult> DeleteUserConfirmed(string id)
-    {
         var user = await _userManager.FindByIdAsync(id);
-        if (user == null) return NotFound();
-        await _userManager.DeleteAsync(user);
+        if (user == null)
+        {
+            return NotFound();
+        }
+
+        // Check if the user is the current admin (prevent self-deletion)
+        if (User.Identity.Name == user.UserName)
+        {
+            TempData["ErrorMessage"] = "You cannot delete your own account.";
+            return RedirectToAction("ListUsers");
+        }
+
+        var result = await _userManager.DeleteAsync(user);
+        if (!result.Succeeded)
+        {
+            TempData["ErrorMessage"] = "An error occurred while deleting the user.";
+        }
+        else
+        {
+            TempData["SuccessMessage"] = "User deleted successfully.";
+        }
+
         return RedirectToAction("ListUsers");
     }
-
-
 }

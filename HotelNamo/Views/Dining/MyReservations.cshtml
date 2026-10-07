@@ -1,0 +1,426 @@
+﻿@model IEnumerable<TableReservation>
+@{
+    ViewData["Title"] = "My Dining Reservations";
+    Layout = "_UserLayout";
+}
+
+<link rel="stylesheet" href="~/css/home-style.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<style>
+    .reservations-section {
+        font-family: 'Raleway', sans-serif;
+        padding: 60px 0;
+        background-color: #f8f9fa;
+    }
+
+    .reservations-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .section-title {
+        font-size: 18px;
+        color: #b29674;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+    }
+
+    .main-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 42px;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 15px;
+    }
+
+    .reservations-subtitle {
+        font-size: 18px;
+        color: #666;
+        max-width: 700px;
+        margin: 0 auto 30px;
+    }
+
+    .reservations-container {
+        background-color: white;
+        border-radius: 15px;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+    }
+
+    .reservation-card {
+        border-radius: 12px;
+        border: 1px solid #f0f0f0;
+        padding: 25px;
+        margin-bottom: 20px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .reservation-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .reservation-number {
+        font-size: 14px;
+        color: #888;
+    }
+
+    .reservation-status {
+        display: inline-block;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .status-confirmed {
+        background-color: #e8f5e9;
+        color: #2e7d32;
+    }
+
+    .status-cancelled {
+        background-color: #ffebee;
+        color: #c62828;
+    }
+
+    .status-completed {
+        background-color: #e3f2fd;
+        color: #1565c0;
+    }
+
+    .reservation-details {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .detail-group {
+        flex: 1;
+        min-width: 140px;
+    }
+
+    .detail-label {
+        font-size: 14px;
+        color: #888;
+        margin-bottom: 5px;
+    }
+
+    .detail-value {
+        font-size: 16px;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .reservation-table {
+        display: flex;
+        align-items: center;
+        background-color: #f9f5f0;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+
+    .table-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background-color: #b29674;
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: bold;
+        margin-right: 15px;
+    }
+
+    .table-info {
+        flex: 1;
+    }
+
+    .table-number {
+        font-size: 16px;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .table-venue {
+        font-size: 14px;
+        color: #666;
+    }
+
+    .card-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+
+    .btn-action {
+        padding: 8px 15px;
+        border-radius: 50px;
+        font-size: 14px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-cancel {
+        color: #b71c1c;
+        background-color: transparent;
+        border: 1px solid #b71c1c;
+    }
+
+        .btn-cancel:hover {
+            background-color: #ffebee;
+        }
+
+    .btn-modify {
+        color: #1565c0;
+        background-color: transparent;
+        border: 1px solid #1565c0;
+    }
+
+        .btn-modify:hover {
+            background-color: #e3f2fd;
+        }
+
+    .btn-view {
+        color: #333;
+        background-color: transparent;
+        border: 1px solid #333;
+    }
+
+        .btn-view:hover {
+            background-color: #f5f5f5;
+        }
+
+    .btn-new-reservation {
+        background-color: #b29674;
+        color: white;
+        padding: 12px 30px;
+        font-size: 16px;
+        border-radius: 50px;
+        border: none;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-top: 20px;
+        display: inline-block;
+        box-shadow: 0 5px 15px rgba(178, 150, 116, 0.3);
+        transition: all 0.3s ease;
+    }
+
+        .btn-new-reservation:hover {
+            background-color: #a38563;
+            box-shadow: 0 8px 20px rgba(178, 150, 116, 0.4);
+            color: white;
+        }
+
+    .empty-state {
+        text-align: center;
+        padding: 50px 0;
+    }
+
+    .empty-icon {
+        font-size: 50px;
+        color: #ddd;
+        margin-bottom: 20px;
+    }
+
+    .empty-title {
+        font-size: 24px;
+        color: #666;
+        margin-bottom: 15px;
+    }
+
+    .empty-message {
+        font-size: 16px;
+        color: #888;
+        margin-bottom: 30px;
+        max-width: 500px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    /* Responsive styles */
+    @@ media (max-width: 768px) {
+        .reservations-section
+
+    {
+        padding: 40px 0;
+    }
+
+    .main-title {
+        font-size: 32px;
+    }
+
+    .reservations-container {
+        padding: 20px;
+    }
+
+    .reservation-card {
+        padding: 20px;
+    }
+
+    .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .reservation-status {
+        margin-top: 10px;
+    }
+
+    .detail-group {
+        min-width: 100%;
+    }
+
+    .card-actions {
+        flex-wrap: wrap;
+    }
+
+    .btn-action {
+        width: 100%;
+        margin-bottom: 10px;
+        text-align: center;
+    }
+
+    }
+</style>
+
+<div class="reservations-section">
+    <div class="container">
+        <div class="reservations-header">
+            <h3 class="section-title">Your Bookings</h3>
+            <h1 class="main-title">My Dining Reservations</h1>
+            <p class="reservations-subtitle">View and manage all your dining reservations at HotelNamo's restaurants and lounges.</p>
+        </div>
+
+        <div class="reservations-container">
+            @if (Model.Any())
+            {
+                foreach (var reservation in Model)
+                {
+                    <div class="reservation-card">
+                        <div class="card-header">
+                            <div class="reservation-number">Reservation #@reservation.Id.ToString("D6")</div>
+
+                            @{
+                                string statusClass = "status-confirmed";
+                                var now = DateTime.Now;
+                                var reservationDateTime = reservation.ReservationDate.Date.Add(TimeSpan.Parse(reservation.ReservationTime));
+                                var isPast = reservationDateTime < now;
+
+                                if (reservation.Status == "Cancelled")
+                                {
+                                    statusClass = "status-cancelled";
+                                }
+                                else if (isPast)
+                                {
+                                    statusClass = "status-completed";
+                                }
+                            }
+
+                            <div class="reservation-status @statusClass">
+                                @if (reservation.Status == "Cancelled")
+                                {
+                                    @:Cancelled
+                                }
+                                else if (isPast)
+                                {
+                                    @:Completed
+                                }
+                                else
+                                {
+                                    @:Confirmed
+                                }
+                            </div>
+                        </div>
+
+                        <div class="reservation-details">
+                            <div class="detail-group">
+                                <div class="detail-label">Date</div>
+                                <div class="detail-value">@reservation.ReservationDate.ToString("MMM d, yyyy")</div>
+                            </div>
+
+                            <div class="detail-group">
+                                <div class="detail-label">Time</div>
+                                <div class="detail-value">@DateTime.Parse(reservation.ReservationTime).ToString("h:mm tt")</div>
+                            </div>
+
+                            <div class="detail-group">
+                                <div class="detail-label">Guests</div>
+                                <div class="detail-value">@reservation.NumberOfGuests</div>
+                            </div>
+
+                            <div class="detail-group">
+                                <div class="detail-label">Occasion</div>
+                                <div class="detail-value">@(string.IsNullOrEmpty(reservation.Occasion) ? "Regular Dining" : reservation.Occasion)</div>
+                            </div>
+                        </div>
+
+                        <div class="reservation-table">
+                            <div class="table-icon">@reservation.TableNumber</div>
+                            <div class="table-info">
+                                <div class="table-number">Table @reservation.TableNumber</div>
+                                <div class="table-venue">@reservation.Venue</div>
+                            </div>
+                        </div>
+
+                        <div class="card-actions">
+                            @{
+                                var now2 = DateTime.Now;
+                                var reservationDateTime2 = reservation.ReservationDate.Date.Add(TimeSpan.Parse(reservation.ReservationTime));
+                                var isFuture = reservationDateTime2 > now2;
+                            }
+
+                            @if (reservation.Status != "Cancelled" && isFuture)
+                            {
+                                <a href="@Url.Action("Cancel", "Dining", new { id = reservation.Id })" class="btn btn-action btn-cancel">
+                                    <i class="fas fa-times me-1"></i> Cancel
+                                </a>
+
+                                <a href="@Url.Action("Modify", "Dining", new { id = reservation.Id })" class="btn btn-action btn-modify">
+                                    <i class="fas fa-edit me-1"></i> Modify
+                                </a>
+                            }
+
+                            <a href="@Url.Action("Confirmation", "Dining", new { id = reservation.Id })" class="btn btn-action btn-view">
+                                <i class="fas fa-eye me-1"></i> View Details
+                            </a>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                    <h3 class="empty-title">No Reservations Found</h3>
+                    <p class="empty-message">
+                        You don't have any dining reservations yet. Make a reservation to enjoy a memorable dining experience at one of our restaurants or lounges.
+                    </p>
+                </div>
+            }
+
+            <div class="text-center">
+                <a href="@Url.Action("ReserveTable", "Dining")" class="btn btn-new-reservation">
+                    <i class="fas fa-plus me-2"></i> Make New Reservation
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

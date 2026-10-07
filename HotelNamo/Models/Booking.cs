@@ -8,8 +8,16 @@ namespace HotelNamo.Models
     {
         public int Id { get; set; }
 
-        [Required]
-        public string UserId { get; set; } = string.Empty;
+        // UserId is optional for guest bookings
+        public string? UserId { get; set; }
+
+        // For guest bookings
+        public string? GuestName { get; set; }
+        public string? GuestEmail { get; set; }
+        public string? GuestPhone { get; set; }
+        
+        [NotMapped]
+        public bool IsGuestBooking => string.IsNullOrEmpty(UserId);
 
         [Required]
         public int RoomId { get; set; }

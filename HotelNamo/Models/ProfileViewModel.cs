@@ -1,13 +1,25 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-public class ProfileViewModel
+namespace HotelNamo.Models
 {
-    [Required]
-    public string FirstName { get; set; }
+    public class ProfileViewModel
+    {
+        [Required]
+        [Display(Name = "First Name")]
+        public string FirstName { get; set; }
 
-    [Required]
-    public string LastName { get; set; }
+        [Required]
+        [Display(Name = "Last Name")]
+        public string LastName { get; set; }
 
-    [Required, EmailAddress]
-    public string Email { get; set; }
+        [Required]
+        [EmailAddress]
+        [Display(Name = "Email")]
+        public string Email { get; set; }
+
+        [Required]
+        [DataType(DataType.Password)]
+        [Display(Name = "Current Password")]
+        public string CurrentPassword { get; set; }
+    }
 }

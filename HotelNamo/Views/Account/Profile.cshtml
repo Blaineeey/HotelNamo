@@ -1,0 +1,291 @@
+﻿@model HotelNamo.Models.ProfileViewModel
+@{
+    ViewData["Title"] = "My Profile";
+    Layout = "_UserLayout";
+}
+
+<link rel="stylesheet" href="~/css/home-style.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<style>
+    .profile-section {
+        background-color: #f8f9fa;
+        padding: 60px 0;
+        font-family: 'Raleway', sans-serif;
+    }
+
+    .profile-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .profile-title {
+        font-size: 18px;
+        color: #b29674;
+        letter-spacing: 2px;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+    }
+
+    .profile-heading {
+        font-size: 36px;
+        font-weight: bold;
+        font-family: 'Playfair Display', serif;
+        color: #333;
+    }
+
+    .profile-card {
+        background-color: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .profile-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+    .profile-card-header {
+        background-color: #b29674;
+        color: white;
+        padding: 25px;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .profile-card-header::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 200%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: rotate(30deg);
+        }
+
+    .profile-card-body {
+        padding: 30px;
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+    }
+
+    .form-label {
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #555;
+        display: block;
+    }
+
+    .form-control {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 12px 15px;
+        width: 100%;
+        font-size: 16px;
+        transition: all 0.3s;
+    }
+
+        .form-control:focus {
+            border-color: #b29674;
+            box-shadow: 0 0 0 0.2rem rgba(178, 150, 116, 0.25);
+        }
+
+    .text-muted {
+        color: #888;
+        font-size: 14px;
+        margin-top: 5px;
+    }
+
+    .btn-save {
+        background-color: #b29674;
+        color: white;
+        padding: 14px 30px;
+        font-size: 16px;
+        border-radius: 50px;
+        border: none;
+        width: 100%;
+        margin-top: 10px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        box-shadow: 0 5px 15px rgba(178, 150, 116, 0.3);
+        transition: all 0.3s ease;
+    }
+
+        .btn-save:hover {
+            background-color: #a38563;
+            box-shadow: 0 8px 20px rgba(178, 150, 116, 0.4);
+            transform: translateY(-2px);
+        }
+
+    .field-validation-error {
+        color: #ff3860;
+        font-size: 14px;
+        margin-top: 5px;
+        display: block;
+    }
+
+    .validation-summary-errors ul {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 20px 0;
+        color: #ff3860;
+        background-color: rgba(255, 56, 96, 0.1);
+        padding: 15px;
+        border-radius: 8px;
+    }
+
+    .alert-success {
+        background-color: #ebfbee;
+        color: #28a745;
+        border: none;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+    }
+
+        .alert-success i {
+            font-size: 20px;
+            margin-right: 10px;
+        }
+
+    .btn-close {
+        background: none;
+        border: none;
+        color: #28a745;
+        font-size: 20px;
+        cursor: pointer;
+    }
+
+    .input-group {
+        position: relative;
+    }
+
+    .input-icon {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #b29674;
+        cursor: pointer;
+    }
+
+    /* Responsive adjustments */
+    @@ media (max-width: 768px) {
+        .profile-heading
+
+    {
+        font-size: 28px;
+    }
+
+    .profile-card-body {
+        padding: 20px;
+    }
+
+    }
+</style>
+
+<div class="profile-section">
+    <div class="container">
+        <div class="profile-header">
+            <h2 class="profile-title">Personal Information</h2>
+            <h1 class="profile-heading">Manage Your Profile</h1>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="profile-card">
+                    <div class="profile-card-header">
+                        <h4 class="mb-0">Your Account Details</h4>
+                    </div>
+                    <div class="profile-card-body">
+                        @if (TempData["StatusMessage"] != null)
+                        {
+                            <div class="alert-success alert-dismissible fade show" role="alert">
+                                <i class="fas fa-check-circle"></i>
+                                @TempData["StatusMessage"]
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        }
+
+                        <form asp-action="Profile" method="post">
+                            <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+
+                            <div class="form-group">
+                                <label asp-for="FirstName" class="form-label">First Name</label>
+                                <div class="input-group">
+                                    <input asp-for="FirstName" class="form-control" placeholder="Your first name" />
+                                    <span class="input-icon"><i class="fas fa-user"></i></span>
+                                </div>
+                                <span asp-validation-for="FirstName" class="field-validation-error"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label asp-for="LastName" class="form-label">Last Name</label>
+                                <div class="input-group">
+                                    <input asp-for="LastName" class="form-control" placeholder="Your last name" />
+                                    <span class="input-icon"><i class="fas fa-user"></i></span>
+                                </div>
+                                <span asp-validation-for="LastName" class="field-validation-error"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label asp-for="Email" class="form-label">Email Address</label>
+                                <div class="input-group">
+                                    <input asp-for="Email" class="form-control" placeholder="Your email address" />
+                                    <span class="input-icon"><i class="fas fa-envelope"></i></span>
+                                </div>
+                                <span asp-validation-for="Email" class="field-validation-error"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label asp-for="CurrentPassword" class="form-label">Current Password</label>
+                                <div class="input-group">
+                                    <input asp-for="CurrentPassword" class="form-control" placeholder="Enter your current password" />
+                                    <span class="input-icon toggle-password"><i class="fas fa-eye-slash"></i></span>
+                                </div>
+                                <span asp-validation-for="CurrentPassword" class="field-validation-error"></span>
+                                <small class="text-muted">Enter your current password to save changes</small>
+                            </div>
+
+                            <div class="form-group mb-0">
+                                <button type="submit" class="btn btn-save">
+                                    <i class="fas fa-save me-2"></i> Save Changes
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Password visibility toggle
+        document.querySelector('.toggle-password').addEventListener('click', function() {
+            const passwordInput = document.getElementById('CurrentPassword');
+            const icon = this.querySelector('i');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            }
+        });
+    </script>
+}
